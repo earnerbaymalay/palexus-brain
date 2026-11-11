@@ -60,7 +60,7 @@ jobs:
       - name: Build desktop frontend (required before cargo test)
         run: |
           pnpm install --frozen-lockfile
-          pnpm --filter desktop-app build
+          pnpm --fail-if-no-match --filter desktop-app build
       - uses: Swatinem/rust-cache@v2
       - name: cargo test --workspace
         run: cargo test --workspace --locked
@@ -80,11 +80,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Desktop tests
-        run: pnpm --filter desktop-app test
+        run: pnpm --fail-if-no-match --filter desktop-app test
       - name: Schema tests
-        run: pnpm --filter @Synapse/schema test
+        run: pnpm --fail-if-no-match --filter @synapse/schema test
       - name: Desktop production build
-        run: pnpm --filter desktop-app build
+        run: pnpm --fail-if-no-match --filter desktop-app build
 
   e2e-test:
     name: End-to-end suite
@@ -104,7 +104,7 @@ jobs:
       - name: Build CLI for E2E
         run: cargo build --package synapse
       - name: End-to-end tests
-        run: pnpm --filter @Synapse/e2e test
+        run: pnpm --fail-if-no-match --filter @synapse/e2e test
 
   shell:
     name: Shell lint
