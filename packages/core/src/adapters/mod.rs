@@ -75,6 +75,7 @@ pub fn write_if_changed(path: &Path, content: impl AsRef<[u8]>) -> std::io::Resu
             }
         }
     }
+    crate::backup::before_write(path)?;
     crate::security::write_atomic(path, content.as_ref())?;
     Ok(true)
 }

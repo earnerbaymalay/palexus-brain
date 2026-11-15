@@ -242,6 +242,7 @@ pub fn heal_master_prompt(brain_dir: &Path) -> Result<(), MasterPromptError> {
     };
 
     let healed = render_master_prompt(CANONICAL_ZONE1_CONTENT, &zone2_existing);
+    crate::backup::before_write(&prompt_path)?;
     fs::write(&prompt_path, healed)?;
     Ok(())
 }
