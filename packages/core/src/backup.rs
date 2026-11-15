@@ -242,7 +242,12 @@ pub fn list(brain_root: &Path) -> Result<Vec<Manifest>, BackupError> {
     let entries = match fs::read_dir(&root) {
         Ok(e) => e,
         Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
-        Err(e) => return Err(BackupError::Io(format!("couldn't read {}: {e}", root.display()))),
+        Err(e) => {
+            return Err(BackupError::Io(format!(
+                "couldn't read {}: {e}",
+                root.display()
+            )))
+        }
     };
     let mut out: Vec<Manifest> = entries
         .flatten()
@@ -272,7 +277,10 @@ pub fn restore(brain_root: &Path, id: Option<&str>) -> Result<Manifest, BackupEr
     // An id from the command line must name a folder directly under the
     // backups folder, never a path that climbs out of it.
     if manifest.id.contains(['/', '\\']) || manifest.id.contains("..") {
-        return Err(BackupError::NotFound(format!("no backup called {}", manifest.id)));
+        return Err(BackupError::NotFound(format!(
+            "no backup called {}",
+            manifest.id
+        )));
     }
     let dir = brain_root.join(BACKUPS_DIR).join(&manifest.id);
     for entry in &manifest.entries {
@@ -384,7 +392,10 @@ mod tests {
         assert!(!created.exists());
 
         // Nothing left to undo by default; the backup is still listed.
-        assert!(matches!(restore(brain.path(), None), Err(BackupError::NotFound(_))));
+        assert!(matches!(
+            restore(brain.path(), None),
+            Err(BackupError::NotFound(_))
+        ));
         assert_eq!(list(brain.path()).unwrap().len(), 1);
     }
 

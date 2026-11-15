@@ -1527,7 +1527,7 @@ fn resolve_tool_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
 
 fn pick_tool_root(
     explicit: Option<PathBuf>,
-    env: impl Fn(&str) -> Option<std::ffi::OsString>,
+    env: impl Fn(&'static str) -> Option<std::ffi::OsString>,
     home: Option<PathBuf>,
 ) -> Result<PathBuf, String> {
     if let Some(p) = explicit {
@@ -1951,14 +1951,20 @@ mod tests {
     fn tool_root_defaults_to_home_never_the_current_folder() {
         let home = PathBuf::from("/home/mara");
         let no_env = |_: &str| None;
-        assert_eq!(pick_tool_root(None, no_env, Some(home.clone())).unwrap(), home);
+        assert_eq!(
+            pick_tool_root(None, no_env, Some(home.clone())).unwrap(),
+            home
+        );
         assert_ne!(
             pick_tool_root(None, no_env, Some(home.clone())).unwrap(),
             std::env::current_dir().unwrap()
         );
         // An empty variable counts as unset.
         let empty = |_: &str| Some(std::ffi::OsString::new());
-        assert_eq!(pick_tool_root(None, empty, Some(home.clone())).unwrap(), home);
+        assert_eq!(
+            pick_tool_root(None, empty, Some(home.clone())).unwrap(),
+            home
+        );
         // No home and no override is an error, not a silent guess.
         assert!(pick_tool_root(None, no_env, None).is_err());
     }
@@ -1983,7 +1989,10 @@ mod tests {
             pick_tool_root(None, both, home.clone()).unwrap(),
             PathBuf::from("/ws")
         );
-        assert_eq!(pick_tool_root(None, only_tr, home).unwrap(), PathBuf::from("/tr"));
+        assert_eq!(
+            pick_tool_root(None, only_tr, home).unwrap(),
+            PathBuf::from("/tr")
+        );
     }
 
     #[test]

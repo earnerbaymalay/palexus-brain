@@ -876,7 +876,11 @@ mod tests {
         };
         let skill_dir = brain.path().join("skills/conventions");
         fs::create_dir_all(&skill_dir).unwrap();
-        fs::write(skill_dir.join("skill.yaml"), serde_json::to_string(&skill).unwrap()).unwrap();
+        fs::write(
+            skill_dir.join("skill.yaml"),
+            serde_json::to_string(&skill).unwrap(),
+        )
+        .unwrap();
 
         perform_project(brain.path(), tool_root.path()).unwrap();
 
