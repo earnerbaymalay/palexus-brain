@@ -838,10 +838,9 @@ mod tests {
 
         perform_project(brain.path(), tool_root.path()).unwrap();
 
-        assert!(tool_root
-            .path()
-            .join(".claude/skills/house-style/SKILL.md")
-            .exists());
+        // A plain skill lands in Claude Code's CLAUDE.md.
+        let claude_md = fs::read_to_string(tool_root.path().join("CLAUDE.md")).unwrap();
+        assert!(claude_md.contains("Use tabs."));
         for absent in [
             ".cursor",
             ".continue",
