@@ -10,7 +10,7 @@
 <helmet>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLI — SYNAPSE</title>
+  <title>CLI — PALEXUS</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Rubik+Mono+One&display=swap');
     :root {
@@ -74,7 +74,7 @@
   <aside class="sidebar">
     <div class="logo">
       <svg viewBox="0 0 48 48" fill="none"><line x1="24" y1="24" x2="10" y2="12" stroke="#1d9bf0" stroke-width="1.6" opacity="0.7"/><line x1="24" y1="24" x2="38" y2="12" stroke="#1d9bf0" stroke-width="1.6" opacity="0.7"/><line x1="24" y1="24" x2="8" y2="30" stroke="#1d9bf0" stroke-width="1.6" opacity="0.5"/><line x1="24" y1="24" x2="40" y2="32" stroke="#1d9bf0" stroke-width="1.6" opacity="0.5"/><line x1="24" y1="24" x2="24" y2="42" stroke="#1d9bf0" stroke-width="1.6" opacity="0.6"/><circle cx="24" cy="24" r="7" fill="#0b0e13" stroke="#1d9bf0" stroke-width="2"/><circle cx="24" cy="24" r="2.4" fill="#1d9bf0"/><circle cx="10" cy="12" r="2.6" fill="#5cb2f5"/><circle cx="38" cy="12" r="2.6" fill="#5cb2f5"/><circle cx="8" cy="30" r="2" fill="#5cb2f5" opacity="0.8"/><circle cx="40" cy="32" r="2" fill="#5cb2f5" opacity="0.8"/><circle cx="24" cy="42" r="2.2" fill="#5cb2f5" opacity="0.9"/></svg>
-      <div><div class="logo-text">Synapse</div><div class="logo-tagline">Synapse</div></div>
+      <div><div class="logo-text">Palexus</div><div class="logo-tagline">Palexus</div></div>
     </div>
     <nav class="nav-section">
       <div class="nav-title">Navigation</div>
@@ -110,21 +110,21 @@
       </g>
     </svg>
 
-    <div class="header"><div class="header-title">Command Line Interface</div><div class="header-subtitle">The synapse CLI — automation, scripting, CI</div></div>
+    <div class="header"><div class="header-title">Command Line Interface</div><div class="header-subtitle">The palexus CLI — automation, scripting, CI</div></div>
 
     <div class="content">
       <div class="section">
         <div class="section-title">Quick Start</div>
         <div class="terminal">
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse scan</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus scan</span></div>
           <div class="terminal-line"><span class="output success">✓ found 13 adapters on this machine</span></div>
           <div class="cmt"># preview an import — zero writes</div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse import --dry-run</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus import --dry-run</span></div>
           <div class="terminal-line"><span class="output">would import 7 skills, 6 agents, 0 MCP servers — nothing written</span></div>
           <div class="cmt"># commit to it</div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse import</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus import</span></div>
           <div class="terminal-line"><span class="output success">✓ imported into ~/AIBrain</span></div>
-          <div class="terminal-line" style="margin-top:0.5rem;"><span class="prompt">$</span><span class="command">synapse project</span><span class="caret"></span></div>
+          <div class="terminal-line" style="margin-top:0.5rem;"><span class="prompt">$</span><span class="command">palexus project</span><span class="caret"></span></div>
         </div>
       </div>
 
@@ -132,28 +132,28 @@
         <div class="section-title">Core Commands</div>
         <div class="grid-2">
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div class="command-name">synapse scan</div><div class="command-description">Discover every AI tool installed on this machine</div>
-            <div class="command-usage">synapse scan [--json]</div>
+            <div class="command-name">palexus scan</div><div class="command-description">Discover every AI tool installed on this machine</div>
+            <div class="command-usage">palexus scan [--json]</div>
           </div>
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div class="command-name">synapse import</div><div class="command-description">Ingest tool configs losslessly into the canonical Brain</div>
-            <div class="command-usage">synapse import [--dry-run]</div>
+            <div class="command-name">palexus import</div><div class="command-description">Ingest tool configs losslessly into the canonical Brain</div>
+            <div class="command-usage">palexus import [--dry-run]</div>
           </div>
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div class="command-name">synapse project</div><div class="command-description">Push the Brain back out to every detected tool</div>
-            <div class="command-usage">synapse project [--dry-run]</div>
+            <div class="command-name">palexus project</div><div class="command-description">Push the Brain back out to every detected tool</div>
+            <div class="command-usage">palexus project [--dry-run]</div>
           </div>
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div class="command-name">synapse sync</div><div class="command-description">Bidirectional sync with 3-way merge and conflict queue</div>
-            <div class="command-usage">synapse sync [--once | --daemon]</div>
+            <div class="command-name">palexus sync</div><div class="command-description">Bidirectional sync with 3-way merge and conflict queue</div>
+            <div class="command-usage">palexus sync [--once | --daemon]</div>
           </div>
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div class="command-name">synapse doctor</div><div class="command-description">Diagnose drift and broken links, auto-repair what it can</div>
-            <div class="command-usage">synapse doctor [--fix]</div>
+            <div class="command-name">palexus doctor</div><div class="command-description">Diagnose drift and broken links, auto-repair what it can</div>
+            <div class="command-usage">palexus doctor [--fix]</div>
           </div>
           <div class="command-card blueprint"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
             <div class="command-name">Time Machine</div><div class="command-description">Snapshot Brain state, or roll back to any prior commit</div>
-            <div class="command-usage">synapse snapshot "message"<br>synapse rollback &lt;hash&gt;</div>
+            <div class="command-usage">palexus snapshot "message"<br>palexus rollback &lt;hash&gt;</div>
           </div>
         </div>
       </div>
@@ -161,16 +161,16 @@
       <div class="section">
         <div class="section-title">Full Loop Example</div>
         <div class="terminal">
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse sync --daemon</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus sync --daemon</span></div>
           <div class="terminal-line"><span class="output">watching ~/AIBrain for changes…</span></div>
           <div class="terminal-line"><span class="output success">✓ 13/13 adapters synced</span></div>
           <div class="cmt"># something drifted — ask the doctor</div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse doctor --fix</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus doctor --fix</span></div>
           <div class="terminal-line"><span class="output success">✓ 3 issues resolved</span></div>
           <div class="cmt"># snapshot before a risky change, roll back if needed</div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse snapshot "before MCP server migration"</span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus snapshot "before MCP server migration"</span></div>
           <div class="terminal-line"><span class="output success">✓ a3f8b2c committed</span></div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="command">synapse rollback a3f8b2c</span><span class="caret"></span></div>
+          <div class="terminal-line"><span class="prompt">$</span><span class="command">palexus rollback a3f8b2c</span><span class="caret"></span></div>
         </div>
       </div>
     </div>

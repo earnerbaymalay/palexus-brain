@@ -198,7 +198,7 @@ export function AlertBanner({ exam, onHealed, onOpenOnboard }: AlertBannerProps)
       {showActions && fixable > 0 && (
         <p id="alert-heal-note" className="mt-1 text-[11px] text-ink-soft">
           Heal rewrites the auto-fixable files in place. A snapshot of the Brain is taken first; to undo a
-          heal, run <span className="text-drape">synapse rollback</span>.
+          heal, run <span className="text-drape">palexus rollback</span>.
         </p>
       )}
 
@@ -232,13 +232,13 @@ export function AlertBanner({ exam, onHealed, onOpenOnboard }: AlertBannerProps)
               <>
                 <span aria-hidden="true">● </span>
                 Healed {outcome.fixed.toLocaleString()} of {plural(outcome.offered, 'auto-fixable finding')}. Re-reading
-                vitals. <span className="text-ink-soft">Next</span> <span className="text-drape">synapse doctor</span>
+                vitals. <span className="text-ink-soft">Next</span> <span className="text-drape">palexus doctor</span>
               </>
             ) : (
               <>
                 <span aria-hidden="true">▲ </span>
                 Heal failed: {outcome.message}. Nothing was reported as fixed.{' '}
-                <span className="text-ink-soft">Next</span> <span className="text-drape">synapse doctor --fix</span>
+                <span className="text-ink-soft">Next</span> <span className="text-drape">palexus doctor --fix</span>
               </>
             )}
           </span>

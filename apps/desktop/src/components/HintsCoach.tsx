@@ -10,7 +10,7 @@ import { formatKeys } from '../lib/shortcuts'
  * never pushes controls around when it appears.
  */
 
-export const COACH_KEY_DISMISSED = 'synapse.hints.coach.dismissed'
+export const COACH_KEY_DISMISSED = 'palexus.hints.coach.dismissed'
 
 const readCoachDismissed = (): boolean => safeGet(COACH_KEY_DISMISSED) === 'true'
 

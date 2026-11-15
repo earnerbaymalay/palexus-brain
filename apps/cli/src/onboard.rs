@@ -1,7 +1,7 @@
-//! `synapse onboard` — interactive onboarding elicitation wizard.
+//! `palexus onboard` — interactive onboarding elicitation wizard.
 //!
 //! Interviews developers on tech stack, architectural pattern, testing rigor,
-//! and agent demeanor, synthesizing their customized `SYNAPSE.md` Zone 2
+//! and agent demeanor, synthesizing their customized `PALEXUS.md` Zone 2
 //! while preserving the immutable Zone 1 Clinical Core.
 
 use std::fs;
@@ -9,11 +9,11 @@ use std::io::{self, IsTerminal, Write};
 use std::path::Path;
 use std::process::ExitCode;
 
-use synapse_core::backup::{before_write, with_backup};
-use synapse_core::master_prompt::{
+use palexus_core::backup::{before_write, with_backup};
+use palexus_core::master_prompt::{
     render_master_prompt, CANONICAL_ZONE1_CONTENT, MASTER_PROMPT_FILENAME,
 };
-use synapse_core::sync::perform_project;
+use palexus_core::sync::perform_project;
 
 use crate::chart;
 
@@ -38,7 +38,7 @@ fn prompt_question(prompt: &str, default_val: &str) -> String {
 }
 
 pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> ExitCode {
-    chart::open("SYNAPSE · ONBOARDING WIZARD", "customizing master prompt");
+    chart::open("PALEXUS · ONBOARDING WIZARD", "customizing master prompt");
     chart::field("Brain", &brain_root.display().to_string());
     chart::field("Tools", &tool_root.display().to_string());
     chart::rule();
@@ -91,7 +91,7 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
 
     let custom_zone2 = format!(
         r#"# USER ENGINEERING CONTEXT & PERSONA
-<!-- Customized via Synapse Onboarding Wizard -->
+<!-- Customized via Palexus Onboarding Wizard -->
 
 ## 1. PROJECT STACK & TOOLCHAIN
 - Languages & Environment: {}
@@ -110,7 +110,7 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
 - Rule: Prioritize precise code diffs, objective tests, and direct answers over generic commentary.
 
 <!-- ======================================================================= -->
-<!-- SYNAPSE PROMPT SUGGESTIONS (Uncomment and customize as needed):         -->
+<!-- PALEXUS PROMPT SUGGESTIONS (Uncomment and customize as needed):         -->
 <!--                                                                         -->
 <!-- [SUGGESTION: SECURITY AUDIT]                                            -->
 <!-- - Check for OWASP Top 10 vulnerabilities on all untrusted inputs.       -->
@@ -134,9 +134,9 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
         return ExitCode::FAILURE;
     }
 
-    let prompt_file = brain_root.join(MASTER_PROMPT_FILENAME);
-    // The old SYNAPSE.md and every tool file the projection changes are
-    // saved first, so `synapse undo` can put them back.
+    let prompt_file = palexus_core::legacy::master_prompt_path(brain_root);
+    // The old PALEXUS.md and every tool file the projection changes are
+    // saved first, so `palexus undo` can put them back.
     let (outcome, saved) = with_backup(brain_root, "onboard", || {
         before_write(&prompt_file)?;
         fs::write(&prompt_file, &full_master_prompt)?;
@@ -185,13 +185,13 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
         chart::row(
             chart::Mark::Present,
             "backup",
-            &format!("previous files saved · undo with: synapse undo {}", b.id),
+            &format!("previous files saved · undo with: palexus undo {}", b.id),
         );
     }
 
     chart::close(
         "Master prompt configured and projected.",
-        Some("synapse doctor"),
+        Some("palexus doctor"),
     );
     ExitCode::SUCCESS
 }

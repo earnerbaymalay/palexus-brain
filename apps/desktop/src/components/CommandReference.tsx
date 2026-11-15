@@ -4,13 +4,13 @@ import { formatKeys, isMac, listShortcuts, subscribeShortcuts, useShortcut, type
 
 /**
  * Quick command reference: every registered keyboard shortcut plus the
- * synapse CLI commands. "?", mod+/ and mod+k open and close it; so does
+ * palexus CLI commands. "?", mod+/ and mod+k open and close it; so does
  * <CommandReferenceButton /> (or openCommandReference()). Self-contained:
  * the shell mounts <CommandReference /> once and it manages its own state.
  */
 
 /** Window event the visible opener uses; CommandReference listens for it. */
-export const COMMAND_REFERENCE_OPEN_EVENT = 'synapse:command-reference-open'
+export const COMMAND_REFERENCE_OPEN_EVENT = 'palexus:command-reference-open'
 
 /** Open the command reference from anywhere (focus returns to the caller's focused element). */
 export function openCommandReference(): void {
@@ -25,18 +25,18 @@ interface CliCommand {
 
 // Descriptions follow apps/cli/src/main.rs (clap doc comments) and docs/USER_GUIDE.md.
 export const CLI_COMMANDS: CliCommand[] = [
-  { command: 'synapse scan', description: 'Detect installed AI tools and the config files they own.' },
-  { command: 'synapse import [--dry-run]', description: 'Import detected configs into the Brain; --dry-run previews with no writes.' },
-  { command: 'synapse project [--dry-run]', description: 'Project the Brain out to your installed tools; --dry-run lists what each tool would get.' },
-  { command: 'synapse sync [--once]', description: 'Run one import + project pass and resolve or queue conflicts. --daemon watcher is planned, not yet shipped.' },
-  { command: 'synapse doctor [--fix]', description: 'Diagnose Brain/tool drift and explain fixes; --fix applies them.' },
-  { command: 'synapse snapshot "<message>"', description: 'Record a git snapshot of the current Brain state.' },
-  { command: 'synapse rollback <hash>', description: 'Restore the Brain to a prior snapshot (id or git ref).' },
-  { command: 'synapse backups', description: 'List the copies saved before project, sync, doctor --fix or onboard changed your tool files.' },
-  { command: 'synapse undo [id]', description: 'Put those files back; with no id, undoes the newest change not yet undone.' },
-  { command: 'synapse mem <search|timeline|get>', description: 'Agent memory: search the index, view context around an id, or get full detail.' },
-  { command: 'synapse hud [--once]', description: 'Open the live Vital Signs HUD; --once prints one snapshot and exits.' },
-  { command: 'synapse serve [--host] [--port]', description: 'Start the local runtime gateway proxy (default 127.0.0.1:8088).' },
+  { command: 'palexus scan', description: 'Detect installed AI tools and the config files they own.' },
+  { command: 'palexus import [--dry-run]', description: 'Import detected configs into the Brain; --dry-run previews with no writes.' },
+  { command: 'palexus project [--dry-run]', description: 'Project the Brain out to your installed tools; --dry-run lists what each tool would get.' },
+  { command: 'palexus sync [--once]', description: 'Run one import + project pass and resolve or queue conflicts. --daemon watcher is planned, not yet shipped.' },
+  { command: 'palexus doctor [--fix]', description: 'Diagnose Brain/tool drift and explain fixes; --fix applies them.' },
+  { command: 'palexus snapshot "<message>"', description: 'Record a git snapshot of the current Brain state.' },
+  { command: 'palexus rollback <hash>', description: 'Restore the Brain to a prior snapshot (id or git ref).' },
+  { command: 'palexus backups', description: 'List the copies saved before project, sync, doctor --fix or onboard changed your tool files.' },
+  { command: 'palexus undo [id]', description: 'Put those files back; with no id, undoes the newest change not yet undone.' },
+  { command: 'palexus mem <search|timeline|get>', description: 'Agent memory: search the index, view context around an id, or get full detail.' },
+  { command: 'palexus hud [--once]', description: 'Open the live Vital Signs HUD; --once prints one snapshot and exits.' },
+  { command: 'palexus serve [--host] [--port]', description: 'Start the local runtime gateway proxy (default 127.0.0.1:8088).' },
 ]
 
 const HELP_GROUP = 'Help'

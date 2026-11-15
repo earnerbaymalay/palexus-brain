@@ -1,9 +1,9 @@
-//! Dual-Zone Master Prompt (`SYNAPSE.md`) engine.
+//! Dual-Zone Master Prompt (`PALEXUS.md`) engine.
 //!
 //! Zone 1: Immutable Clinical Operating Core.
-//! Enforces agent identity, Synaptic Memory hooks (`synapse mem hook`), workspace safety bounds,
-//! and Sensory Gating token compression rules. Stamped with `<!-- SYNAPSE-CORE-HASH: <sha256> -->`.
-//! If tampered with, `synapse doctor` raises an unbypassable critical fault.
+//! Enforces agent identity, Synaptic Memory hooks (`palexus mem hook`), workspace safety bounds,
+//! and Sensory Gating token compression rules. Stamped with `<!-- PALEXUS-CORE-HASH: <sha256> -->`.
+//! If tampered with, `palexus doctor` raises an unbypassable critical fault.
 //!
 //! Zone 2: User Engineering Persona & Context.
 //! Fully customizable by the user. Pre-populated with high-leverage suggestion blocks
@@ -14,11 +14,11 @@ use std::fmt;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub const MASTER_PROMPT_FILENAME: &str = "SYNAPSE.md";
-pub const ZONE1_HEADER: &str = "<!-- === SYNAPSE CLINICAL CORE: ZONE 1 (IMMUTABLE) === -->";
-pub const ZONE1_FOOTER: &str = "<!-- === END SYNAPSE CLINICAL CORE: ZONE 1 === -->";
-pub const ZONE2_HEADER: &str = "<!-- === SYNAPSE USER CONTEXT: ZONE 2 (EDITABLE) === -->";
-pub const HASH_PREFIX: &str = "<!-- SYNAPSE-CORE-HASH: ";
+pub const MASTER_PROMPT_FILENAME: &str = "PALEXUS.md";
+pub const ZONE1_HEADER: &str = "<!-- === PALEXUS CLINICAL CORE: ZONE 1 (IMMUTABLE) === -->";
+pub const ZONE1_FOOTER: &str = "<!-- === END PALEXUS CLINICAL CORE: ZONE 1 === -->";
+pub const ZONE2_HEADER: &str = "<!-- === PALEXUS USER CONTEXT: ZONE 2 (EDITABLE) === -->";
+pub const HASH_PREFIX: &str = "<!-- PALEXUS-CORE-HASH: ";
 pub const HASH_SUFFIX: &str = " -->";
 
 #[derive(Debug)]
@@ -74,22 +74,22 @@ pub enum MasterPromptStatus {
 }
 
 /// The canonical Zone 1 text (without hash stamp).
-pub const CANONICAL_ZONE1_CONTENT: &str = r#"# SYNAPSE CLINICAL OPERATING CORE
+pub const CANONICAL_ZONE1_CONTENT: &str = r#"# PALEXUS CLINICAL OPERATING CORE
 <!-- Critical agent invariant: All AI models operating in this repository must adhere to these rules. -->
 
 ## 1. AGENT IDENTITY & RESPONSIBILITY
-You are an accountable surgical collaborator operating inside a SYNAPSE-governed repository.
+You are an accountable surgical collaborator operating inside a PALEXUS-governed repository.
 - Every modification must be deliberate, verifiable, and minimal.
 - Never invent placeholder code, unmeasured statistics, or mock implementations.
 - Always check that your changes compile and pass existing test suites before concluding.
 
 ## 2. SYNAPTIC MEMORY LIFECYCLE HOOKS
-- At session start, load architectural context using `synapse mem context`.
-- Query past decisions and historical fixes using `synapse mem search "<query>"`.
-- Record non-trivial decisions or resolved anomalies with `synapse mem observe "<summary>" --file <path>`.
+- At session start, load architectural context using `palexus mem context`.
+- Query past decisions and historical fixes using `palexus mem search "<query>"`.
+- Record non-trivial decisions or resolved anomalies with `palexus mem observe "<summary>" --file <path>`.
 
 ## 3. SENSORY GATING & TOKEN CONSERVATION
-- Run verbose build and test outputs through Synapse Sensory Gating (`synapse exec -- <command>`).
+- Run verbose build and test outputs through Palexus Sensory Gating (`palexus exec -- <command>`).
 - Filter repetitive test lines into concise milestone summaries while preserving 100% of errors and stack traces.
 
 ## 4. WORKSPACE CONTAINMENT & PRIVACY
@@ -107,7 +107,7 @@ pub const DEFAULT_ZONE2_CONTENT: &str = r#"# USER ENGINEERING CONTEXT & PERSONA
 - Code Style: Terse, idiomatic, thoroughly tested
 
 <!-- ======================================================================= -->
-<!-- SYNAPSE PROMPT SUGGESTIONS (Uncomment and customize as needed):         -->
+<!-- PALEXUS PROMPT SUGGESTIONS (Uncomment and customize as needed):         -->
 <!--                                                                         -->
 <!-- [SUGGESTION: STRICT TEST-DRIVEN DEVELOPMENT]                            -->
 <!-- - Write unit tests verifying failures before implementing new features. -->
@@ -130,7 +130,7 @@ pub fn hash_content(content: &str) -> String {
     format!("{:x}", hasher.finalize())
 }
 
-/// Builds the complete `SYNAPSE.md` document with Zone 1 stamped with its SHA-256 hash.
+/// Builds the complete `PALEXUS.md` document with Zone 1 stamped with its SHA-256 hash.
 pub fn render_master_prompt(zone1_core: &str, zone2_custom: &str) -> String {
     let core_clean = zone1_core.trim();
     let hash = hash_content(core_clean);
@@ -148,14 +148,14 @@ pub fn render_master_prompt(zone1_core: &str, zone2_custom: &str) -> String {
     )
 }
 
-/// Generates the canonical default `SYNAPSE.md`.
+/// Generates the canonical default `PALEXUS.md`.
 pub fn generate_default_master_prompt() -> String {
     render_master_prompt(CANONICAL_ZONE1_CONTENT, DEFAULT_ZONE2_CONTENT)
 }
 
-/// Inspects the `SYNAPSE.md` file in `brain_dir` and verifies Zone 1 integrity.
+/// Inspects the `PALEXUS.md` file in `brain_dir` and verifies Zone 1 integrity.
 pub fn verify_master_prompt_integrity(brain_dir: &Path) -> MasterPromptStatus {
-    let prompt_path = brain_dir.join(MASTER_PROMPT_FILENAME);
+    let prompt_path = crate::legacy::master_prompt_path(brain_dir);
     if !prompt_path.exists() {
         return MasterPromptStatus::Missing;
     }
@@ -185,7 +185,7 @@ pub fn verify_master_prompt_integrity(brain_dir: &Path) -> MasterPromptStatus {
     }
 }
 
-/// Extracts Zone 1, its declared hash, and Zone 2 from a `SYNAPSE.md` string.
+/// Extracts Zone 1, its declared hash, and Zone 2 from a `PALEXUS.md` string.
 pub fn extract_zones(content: &str) -> Result<(String, String, String), MasterPromptError> {
     let z1_start = content
         .find(ZONE1_HEADER)
@@ -226,9 +226,9 @@ pub fn extract_zones(content: &str) -> Result<(String, String, String), MasterPr
     Ok((zone1_content, declared_hash, zone2_content))
 }
 
-/// Heals `SYNAPSE.md` in `brain_dir` by restoring canonical Zone 1 while strictly preserving Zone 2.
+/// Heals `PALEXUS.md` in `brain_dir` by restoring canonical Zone 1 while strictly preserving Zone 2.
 pub fn heal_master_prompt(brain_dir: &Path) -> Result<(), MasterPromptError> {
-    let prompt_path = brain_dir.join(MASTER_PROMPT_FILENAME);
+    let prompt_path = crate::legacy::master_prompt_path(brain_dir);
     let zone2_existing = if prompt_path.exists() {
         if let Ok(content) = fs::read_to_string(&prompt_path) {
             extract_zones(&content)
@@ -257,7 +257,7 @@ mod tests {
         let rendered = generate_default_master_prompt();
         let (z1, hash, z2) = extract_zones(&rendered).expect("extract should succeed");
         assert_eq!(hash, hash_content(&z1));
-        assert!(z1.contains("SYNAPSE CLINICAL OPERATING CORE"));
+        assert!(z1.contains("PALEXUS CLINICAL OPERATING CORE"));
         assert!(z2.contains("USER ENGINEERING CONTEXT"));
     }
 
@@ -300,7 +300,7 @@ mod tests {
 
         let healed = fs::read_to_string(&prompt_path).unwrap();
         let (z1, _, z2) = extract_zones(&healed).unwrap();
-        assert!(z1.contains("SYNAPSE CLINICAL OPERATING CORE"));
+        assert!(z1.contains("PALEXUS CLINICAL OPERATING CORE"));
         assert!(z2.contains("Always write in Haskell."));
         assert_eq!(
             verify_master_prompt_integrity(dir.path()),

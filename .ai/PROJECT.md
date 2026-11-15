@@ -1,4 +1,4 @@
-# Project: Synapse Core Engine Adapters
+# Project: Palexus Core Engine Adapters
 
 ## Architecture
 - All 12 adapters implement the `Adapter` trait defined in `packages/core/src/adapter.rs`.

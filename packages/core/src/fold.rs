@@ -4,7 +4,7 @@
 //! demand", but deterministic and model-free: large tool results that have
 //! scrolled out of the recent window are replaced by a short digest stub, and
 //! the untouched original is kept in the spool under a content-addressed id.
-//! The agent restores any stub with `synapse spool show <id>` (it already has
+//! The agent restores any stub with `palexus spool show <id>` (it already has
 //! a shell), so no tool injection or response rewriting is needed.
 //!
 //! Folding is a pure function of message content, so a folded message looks
@@ -18,7 +18,7 @@ use sha2::{Digest, Sha256};
 use crate::compression::{compress_text, estimate_tokens, CompressionLevel, SpoolManager};
 
 /// Marker that makes folding idempotent.
-pub const FOLD_MARKER: &str = "[SYNAPSE folded";
+pub const FOLD_MARKER: &str = "[PALEXUS folded";
 /// Results smaller than this are never worth a stub.
 pub const MIN_FOLD_TOKENS: usize = 400;
 const DIGEST_MAX_CHARS: usize = 600;
@@ -103,7 +103,7 @@ fn fold_text(text: &str, spool: &SpoolManager, report: &mut FoldReport) -> Optio
     }
     let (digest, ..) = compress_text(text, CompressionLevel::Aggressive);
     let stub = format!(
-        "{FOLD_MARKER} tool output · ~{tokens} tokens · restore: synapse spool show {id} (supports --grep, --tail)]\n{}",
+        "{FOLD_MARKER} tool output · ~{tokens} tokens · restore: palexus spool show {id} (supports --grep, --tail)]\n{}",
         clip(&digest, DIGEST_MAX_CHARS)
     );
     let stub_tokens = estimate_tokens(&stub);
@@ -167,7 +167,7 @@ mod tests {
         let stub = msgs[0]["content"].as_str().unwrap();
         assert!(stub.starts_with(FOLD_MARKER) && stub.contains("error: boom"));
         let id = stub
-            .split("synapse spool show ")
+            .split("palexus spool show ")
             .nth(1)
             .unwrap()
             .split(' ')

@@ -702,7 +702,7 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
- "synapse-core",
+ "palexus-core",
  "tauri",
  "tauri-build",
  "tempfile",
@@ -3342,19 +3342,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "synapse"
+name = "palexus"
 version = "1.0.0"
 dependencies = [
  "clap",
  "crossterm",
  "dirs",
  "serde_json",
- "synapse-core",
+ "palexus-core",
  "tempfile",
 ]
 
 [[package]]
-name = "synapse-core"
+name = "palexus-core"
 version = "1.0.0"
 dependencies = [
  "base64 0.22.1",

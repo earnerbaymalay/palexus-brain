@@ -96,35 +96,35 @@ fn get_git_file_content(brain_root: &Path, rel_path: &str) -> Option<String> {
     }
 }
 
-pub const SYNAPSE_MEMORY_SKILL_ID: &str = "synapse-memory";
-pub const SYNAPSE_MEMORY_SKILL_CONTENT: &str = r#"---
-name: synapse-memory
+pub const PALEXUS_MEMORY_SKILL_ID: &str = "palexus-memory";
+pub const PALEXUS_MEMORY_SKILL_CONTENT: &str = r#"---
+name: palexus-memory
 description: Built-in persistent cross-session memory for AI coding sessions — load context at session start, record durable decisions and milestones, recall by meaning, and distil. Replaces vault/worklog note-taking across all tools.
 version: 1.0.0
-author: SYNAPSE AI
+author: PALEXUS AI
 license: MIT
 metadata:
-  synapse:
-    tags: [Memory, Synapse, Semantic, Distillation, All-Tools]
+  palexus:
+    tags: [Memory, Palexus, Semantic, Distillation, All-Tools]
 ---
 
-# Synapse Memory Skill
+# Palexus Memory Skill
 
 The single source of durable memory for every AI coding session (Claude Code,
 Cursor, Gemini CLI, Antigravity, Zed, Cline, Roo, Aider, Codex, OpenCode,
 Continue, Copilot). It is local-first and zero-telemetry: nothing leaves the
 machine. There is no Obsidian vault, Trilium, or external note store — memory
-lives in `~/.synapse/memory/` and is reached only through `synapse mem`.
+lives in `~/.palexus/memory/` and is reached only through `palexus mem`.
 
 ## When to use it
 
 - **At session start** — load prior context for the current project:
-  `synapse mem context` (the SessionStart hook does this automatically).
+  `palexus mem context` (the SessionStart hook does this automatically).
 - **When something durable happens** — a decision, a fix, a non-obvious
   discovery, an architectural trade-off — record it:
-  `synapse mem observe "<title>" -n "<detail>" -k <kind> --topic <area> --tag <kw> [--tag <kw>] --model <agent>`
+  `palexus mem observe "<title>" -n "<detail>" -k <kind> --topic <area> --tag <kw> [--tag <kw>] --model <agent>`
 - **Before relying on memory** — recall by meaning, not just keywords:
-  `synapse mem search <query>` → `synapse mem timeline <id>` → `synapse mem get <id>…`
+  `palexus mem search <query>` → `palexus mem timeline <id>` → `palexus mem get <id>…`
 
 ## How fragments are organised
 
@@ -132,18 +132,18 @@ Every observation carries, and can be filtered by:
 
 - **project** — the working directory it belongs to (automatic; `--all` searches every project).
 - **date/time** — assigned automatically; drives the timeline view.
-- **topic** — a subject area you set (e.g. `networking`, `audio`, `synapse`, `pentest`). Filter with `--topic <area>`.
+- **topic** — a subject area you set (e.g. `networking`, `audio`, `palexus`, `pentest`). Filter with `--topic <area>`.
 - **tags** — freeform keywords (`--tag`, repeatable).
-- **model** — which agent recorded it (`--model`, or `$SYNAPSE_MODEL`). Filter with `--model <agent>`.
+- **model** — which agent recorded it (`--model`, or `$PALEXUS_MODEL`). Filter with `--model <agent>`.
 - **kind** — `decision | solution | insight | runbook | research | note | summary`.
 
 ## Semantic recall (nomic-embed-text)
 
 Each fragment is embedded locally with `nomic-embed-text` via Ollama, so
-`synapse mem search` blends keyword relevance with meaning — paraphrases and
+`palexus mem search` blends keyword relevance with meaning — paraphrases and
 related subjects surface even with no shared words. If Ollama is unavailable it
-degrades silently to keyword search. `synapse mem reindex` embeds anything that
-is missing a vector. Set `$SYNAPSE_EMBED_MODEL=off` to disable embeddings.
+degrades silently to keyword search. `palexus mem reindex` embeds anything that
+is missing a vector. Set `$PALEXUS_EMBED_MODEL=off` to disable embeddings.
 
 ## Distillation (keep only genuinely valuable knowledge)
 
@@ -151,21 +151,21 @@ Memory must stay high-signal. Record distilled facts, not transcripts:
 
 - Prefer one dense observation over several near-identical ones.
 - Wrap anything sensitive in `<private>…</private>` — it never reaches disk.
-- Periodically run `synapse mem distill` (dry-run) to find semantically
-  near-duplicate fragments; `synapse mem distill --apply` collapses each cluster
+- Periodically run `palexus mem distill` (dry-run) to find semantically
+  near-duplicate fragments; `palexus mem distill --apply` collapses each cluster
   to its most informative member, shrinking the footprint without losing meaning.
 
 ## Auto-sync points
 
-1. **Session initialization** — `synapse mem context` loads the project's memory index.
+1. **Session initialization** — `palexus mem context` loads the project's memory index.
 2. **Milestones & git operations** — record decisions, resolved anomalies, commit-worthy outcomes as observations with a topic and tags.
-3. **Housekeeping** — distil before the store grows noisy; forget superseded facts with `synapse mem forget <id>`.
+3. **Housekeeping** — distil before the store grows noisy; forget superseded facts with `palexus mem forget <id>`.
 "#;
 
-/// Ensures built-in canonical skills (e.g. `synapse-memory`) exist in `brain_root/skills/`.
+/// Ensures built-in canonical skills (e.g. `palexus-memory`) exist in `brain_root/skills/`.
 pub fn ensure_default_skills(brain_root: &Path) -> Result<Vec<String>, String> {
     let mut provisioned = Vec::new();
-    let skill_dir = brain_root.join("skills").join(SYNAPSE_MEMORY_SKILL_ID);
+    let skill_dir = brain_root.join("skills").join(PALEXUS_MEMORY_SKILL_ID);
     let skill_md = skill_dir.join("SKILL.md");
     let skill_yaml = skill_dir.join("skill.yaml");
 
@@ -173,12 +173,12 @@ pub fn ensure_default_skills(brain_root: &Path) -> Result<Vec<String>, String> {
         fs::create_dir_all(&skill_dir)
             .map_err(|e| format!("Failed to create skill directory: {e}"))?;
 
-        write_if_changed(&skill_md, SYNAPSE_MEMORY_SKILL_CONTENT)
+        write_if_changed(&skill_md, PALEXUS_MEMORY_SKILL_CONTENT)
             .map_err(|e| format!("Failed to write SKILL.md: {e}"))?;
 
-        let sha256 = crate::adapters::compute_sha256(SYNAPSE_MEMORY_SKILL_CONTENT);
+        let sha256 = crate::adapters::compute_sha256(PALEXUS_MEMORY_SKILL_CONTENT);
         let skill = Skill {
-            id: SYNAPSE_MEMORY_SKILL_ID.to_string(),
+            id: PALEXUS_MEMORY_SKILL_ID.to_string(),
             version: "1.0.0".to_string(),
             triggers: vec![
                 "*".to_string(),
@@ -191,7 +191,7 @@ pub fn ensure_default_skills(brain_root: &Path) -> Result<Vec<String>, String> {
                 "agy-cli".to_string(),
                 "continue".to_string(),
             ],
-            source: SYNAPSE_MEMORY_SKILL_CONTENT.to_string(),
+            source: PALEXUS_MEMORY_SKILL_CONTENT.to_string(),
             sha256,
         };
 
@@ -200,7 +200,7 @@ pub fn ensure_default_skills(brain_root: &Path) -> Result<Vec<String>, String> {
         write_if_changed(&skill_yaml, yaml_content)
             .map_err(|e| format!("Failed to write skill.yaml: {e}"))?;
 
-        provisioned.push(format!("skills/{}/SKILL.md", SYNAPSE_MEMORY_SKILL_ID));
+        provisioned.push(format!("skills/{}/SKILL.md", PALEXUS_MEMORY_SKILL_ID));
     }
     Ok(provisioned)
 }
@@ -362,7 +362,7 @@ struct Canonical {
     agents: Vec<Agent>,
     mcp_servers: Vec<McpServer>,
     /// Skills and servers that name no tool of their own, plus the built-in
-    /// synapse-memory skill. These go only to tools that are installed; one
+    /// palexus-memory skill. These go only to tools that are installed; one
     /// that names a tool explicitly is still written for that tool.
     defaulted_skills: HashSet<String>,
     defaulted_mcp: HashSet<String>,
@@ -424,7 +424,7 @@ fn load_canonical(brain_root: &Path) -> Canonical {
 
             if let Ok(raw) = fs::read_to_string(&skill_yaml) {
                 if let Ok(mut skill) = serde_json::from_str::<Skill>(&raw) {
-                    if skill.targets.is_empty() || skill.id == SYNAPSE_MEMORY_SKILL_ID {
+                    if skill.targets.is_empty() || skill.id == PALEXUS_MEMORY_SKILL_ID {
                         defaulted_skills.insert(skill.id.clone());
                     }
                     if skill.targets.is_empty() {
@@ -758,7 +758,7 @@ mod tests {
     }
 
     #[test]
-    fn test_default_synapse_memory_skill_auto_provisioned_and_projected() {
+    fn test_default_palexus_memory_skill_auto_provisioned_and_projected() {
         let home = tempfile::tempdir().unwrap();
         let _home = crate::test_home::HomeGuard::set(home.path());
         let brain = tempfile::tempdir().unwrap();
@@ -768,50 +768,50 @@ mod tests {
             fs::create_dir_all(tool_root.path().join(marker)).unwrap();
         }
 
-        // Projecting from an empty brain should auto-provision the synapse-memory skill
+        // Projecting from an empty brain should auto-provision the palexus-memory skill
         let projected = perform_project(brain.path(), tool_root.path()).unwrap();
         assert!(!projected.is_empty());
 
         // Check brain has the skill
-        let brain_skill = brain.path().join("skills/synapse-memory/SKILL.md");
+        let brain_skill = brain.path().join("skills/palexus-memory/SKILL.md");
         assert!(
             brain_skill.exists(),
-            "Brain must contain synapse-memory SKILL.md"
+            "Brain must contain palexus-memory SKILL.md"
         );
         let content = fs::read_to_string(&brain_skill).unwrap();
-        assert!(content.contains("Synapse Memory Skill"));
+        assert!(content.contains("Palexus Memory Skill"));
 
         // Check projected to tool targets:
         // Claude Code
         let claude_skill = tool_root
             .path()
-            .join(".claude/skills/synapse-memory/SKILL.md");
+            .join(".claude/skills/palexus-memory/SKILL.md");
         assert!(
             claude_skill.exists(),
-            "Claude must have synapse-memory skill projected"
+            "Claude must have palexus-memory skill projected"
         );
 
         // Cursor
-        let cursor_rule = tool_root.path().join(".cursor/rules/synapse-memory.mdc");
+        let cursor_rule = tool_root.path().join(".cursor/rules/palexus-memory.mdc");
         assert!(
             cursor_rule.exists(),
-            "Cursor must have synapse-memory rule projected"
+            "Cursor must have palexus-memory rule projected"
         );
 
         // AGY / Agents
         let agy_skill = tool_root
             .path()
-            .join(".agents/skills/synapse-memory/SKILL.md");
+            .join(".agents/skills/palexus-memory/SKILL.md");
         assert!(
             agy_skill.exists(),
-            "AGY must have synapse-memory skill projected"
+            "AGY must have palexus-memory skill projected"
         );
 
         // Continue
-        let continue_rule = tool_root.path().join(".continue/rules/synapse-memory.md");
+        let continue_rule = tool_root.path().join(".continue/rules/palexus-memory.md");
         assert!(
             continue_rule.exists(),
-            "Continue must have synapse-memory rule projected"
+            "Continue must have palexus-memory rule projected"
         );
     }
 
@@ -893,7 +893,7 @@ mod tests {
         let _home = crate::test_home::HomeGuard::set(home.path());
         let brain = tempfile::tempdir().unwrap();
         let tool_root = tempfile::tempdir().unwrap();
-        let rules = tool_root.path().join(".cursor/rules/synapse-memory.mdc");
+        let rules = tool_root.path().join(".cursor/rules/palexus-memory.mdc");
         fs::create_dir_all(rules.parent().unwrap()).unwrap();
         fs::write(&rules, "mine").unwrap();
 

@@ -96,7 +96,7 @@ export function ChartHead({
     // run) is longer than the space beside the title.
     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-rule pb-2">
       <h1 className="flex shrink-0 items-baseline gap-2 uppercase tracking-[0.06em]">
-        <span className="font-display text-sm text-drape">Synapse</span>
+        <span className="font-display text-sm text-drape">Palexus</span>
         <span className="font-mono text-sm font-semibold tracking-[0.14em]">
           <span className="text-ink-soft">·</span> {procedure}
         </span>

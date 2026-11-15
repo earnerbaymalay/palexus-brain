@@ -59,7 +59,7 @@ describe('Intake counts', () => {
     expect(
       screen.getByText(/105 skills, 7 agents and 15 mcp servers would enter the Brain from 15 tools\./),
     ).toBeInTheDocument()
-    expect(nextCommand()).toBe('synapse import --dry-run')
+    expect(nextCommand()).toBe('palexus import --dry-run')
   })
 
   it('none present: every tool still gets a row and a next command is named', () => {
@@ -67,7 +67,7 @@ describe('Intake counts', () => {
     expect(context()).toBe('0 of 15 present')
     expect(screen.getAllByText('not present')).toHaveLength(15)
     expect(screen.getByText(/None of the 15 supported tools has a config/)).toBeInTheDocument()
-    expect(nextCommand()).toBe('synapse onboard')
+    expect(nextCommand()).toBe('palexus onboard')
   })
 
   it('mixed: counts only readable tools and reports the unreadable one', () => {
@@ -81,7 +81,7 @@ describe('Intake counts', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('detected, but could not be read')).toBeInTheDocument()
     expect(screen.getByTitle('malformed config: not valid UTF-8')).toBeInTheDocument()
-    expect(nextCommand()).toBe('synapse doctor')
+    expect(nextCommand()).toBe('palexus doctor')
   })
 
   it('sorts present first, then absent, alphabetical within each group', () => {
@@ -99,14 +99,14 @@ describe('Intake counts', () => {
     expect(context()).toBe('0 of 0 present')
     expect(screen.queryAllByRole('listitem')).toHaveLength(0)
     expect(screen.getByText(/No tool adapters are registered/)).toBeInTheDocument()
-    expect(nextCommand()).toBe('synapse doctor')
+    expect(nextCommand()).toBe('palexus doctor')
   })
 
   it('every present tool unreadable: no claim that anything would enter the Brain', () => {
     render(<Intake report={report([broken('cline', 'boom'), absent('zed')])} />)
     expect(screen.queryByText(/would enter the Brain/)).not.toBeInTheDocument()
     expect(screen.getByText('1 tool could not be read. Nothing has been written.')).toBeInTheDocument()
-    expect(nextCommand()).toBe('synapse doctor')
+    expect(nextCommand()).toBe('palexus doctor')
   })
 
   it('a present row with null counts shows "not measured", never zero', () => {

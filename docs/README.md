@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📚 Synapse Documentation Hub
+# 📚 Palexus Documentation Hub
 
 [🌐 Live Landing Page](index.html) • [⬅️ Return to Repository Root](../README.md)
 
@@ -11,7 +11,7 @@
 
 ### 🚀 1. Onboarding & Guides
 * **[Quickstart Guide](QUICKSTART.md)** — Install dependencies, configure OS permissions, and perform your first sync in under 60 seconds.
-* **[User Guide](USER_GUIDE.md)** — Day-to-day commands, managing Model Context Protocol (MCP) servers, and using the Synapse Doctor.
+* **[User Guide](USER_GUIDE.md)** — Day-to-day commands, managing Model Context Protocol (MCP) servers, and using the Palexus Doctor.
 * **[Onboarding Journey](ONBOARDING.md)** — Four-phase walkthrough from fragmented configs to permanent lockstep.
 
 ### 🏛️ 2. Architecture & Design
@@ -52,15 +52,15 @@
 ## ⌨️ Command Reference
 
 ```bash
-synapse scan              # Scan filesystem for active AI coding tools
-synapse import --dry-run  # Preview config ingestion into ~/AIBrain
-synapse import            # Ingest native configs into ~/AIBrain
-synapse project           # Project canonical Brain configs out to all tools
-synapse sync --daemon     # Launch real-time background sync daemon
-synapse doctor            # Run diagnostic self-healing health check
-synapse doctor --fix      # Remediate config drift and broken symlinks
-synapse snapshot "msg"    # Commit a named snapshot in the Brain Time Machine
-synapse rollback <hash>   # Revert Brain working tree to a prior snapshot
+palexus scan              # Scan filesystem for active AI coding tools
+palexus import --dry-run  # Preview config ingestion into ~/AIBrain
+palexus import            # Ingest native configs into ~/AIBrain
+palexus project           # Project canonical Brain configs out to all tools
+palexus sync --daemon     # Launch real-time background sync daemon
+palexus doctor            # Run diagnostic self-healing health check
+palexus doctor --fix      # Remediate config drift and broken symlinks
+palexus snapshot "msg"    # Commit a named snapshot in the Brain Time Machine
+palexus rollback <hash>   # Revert Brain working tree to a prior snapshot
 ```
 
 ---

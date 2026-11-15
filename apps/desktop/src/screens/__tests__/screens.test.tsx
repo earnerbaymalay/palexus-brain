@@ -43,7 +43,7 @@ describe('Intake', () => {
 
   it('names the next command to run', () => {
     render(<Intake report={intakeReport()} />)
-    expect(screen.getByText('synapse import --dry-run')).toBeInTheDocument()
+    expect(screen.getByText('palexus import --dry-run')).toBeInTheDocument()
   })
 
   it('states that nothing was written', () => {
@@ -74,18 +74,18 @@ describe('Intake', () => {
   })
 
   // IDENTITY.md rule 1: no surface is a dead end. When nothing was scanned the
-  // next step is `synapse doctor`; when tools exist but none is present it is
-  // `synapse onboard`. (This replaced an older test asserting no Next line.)
-  it('names synapse doctor when no adapters were scanned', () => {
+  // next step is `palexus doctor`; when tools exist but none is present it is
+  // `palexus onboard`. (This replaced an older test asserting no Next line.)
+  it('names palexus doctor when no adapters were scanned', () => {
     render(
       <Intake report={intakeReport({ present: 0, total: 0, findings: [] })} />,
     )
     expect(screen.getByText(/No tool adapters are registered/)).toBeInTheDocument()
     expect(screen.getByText(/^Next/)).toBeInTheDocument()
-    expect(screen.getByText('synapse doctor')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor')).toBeInTheDocument()
   })
 
-  it('names synapse onboard when no supported tool is present', () => {
+  it('names palexus onboard when no supported tool is present', () => {
     render(
       <Intake
         report={intakeReport({
@@ -95,7 +95,7 @@ describe('Intake', () => {
       />,
     )
     expect(screen.getByText(/^Next/)).toBeInTheDocument()
-    expect(screen.getByText('synapse onboard')).toBeInTheDocument()
+    expect(screen.getByText('palexus onboard')).toBeInTheDocument()
   })
 })
 
@@ -160,11 +160,11 @@ describe('Examination', () => {
       ],
     })
     const { unmount } = render(<Examination report={fixable} />)
-    expect(screen.getByText('synapse doctor --fix')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor --fix')).toBeInTheDocument()
     unmount()
 
     render(<Examination report={examReport()} />)
-    expect(screen.queryByText('synapse doctor --fix')).not.toBeInTheDocument()
+    expect(screen.queryByText('palexus doctor --fix')).not.toBeInTheDocument()
   })
 })
 

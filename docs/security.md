@@ -1,13 +1,13 @@
-# Security Audit & Threat Model — SYNAPSE
-### Synapse — Local-First Security Architecture
+# Security Audit & Threat Model — PALEXUS
+### Palexus — Local-First Security Architecture
 
-This document details the security posture, threat model, and defense mechanisms implemented across SYNAPSE (`packages/core`).
+This document details the security posture, threat model, and defense mechanisms implemented across PALEXUS (`packages/core`).
 
 ---
 
 ## 1. Threat Model Overview
 
-SYNAPSE operates local-first on developer workstations. It ingests configurations from local tools and Git repositories, storing them in `~/AIBrain`.
+PALEXUS operates local-first on developer workstations. It ingests configurations from local tools and Git repositories, storing them in `~/AIBrain`.
 
 ```mermaid
 flowchart TD
@@ -89,7 +89,7 @@ if entry.file_type().is_symlink() {
 All security mechanisms are verified by automated tests in `packages/core/tests/adapter_stress_tests.rs`:
 
 ```bash
-cargo test -p synapse-core --test adapter_stress_tests
+cargo test -p palexus-core --test adapter_stress_tests
 ```
 
 - `test_windsurf_adapter_path_traversal_and_missing`: **PASSED**

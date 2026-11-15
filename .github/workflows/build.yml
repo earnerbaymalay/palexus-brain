@@ -59,10 +59,10 @@ jobs:
           pnpm --filter desktop-app build
 
       - name: cargo build --release (CLI, keychain on)
-        run: cargo build --release -p synapse --features synapse-core/os-keychain
+        run: cargo build --release -p palexus --features palexus-core/os-keychain
 
       - name: cargo build --release (desktop, keychain on)
-        run: cargo build --release -p desktop-app --features synapse-core/os-keychain
+        run: cargo build --release -p desktop-app --features palexus-core/os-keychain
 
       - name: Build Tauri Desktop Package & Platform Installers
         run: |
@@ -71,10 +71,10 @@ jobs:
       - name: Upload binaries and platform bundles
         uses: actions/upload-artifact@v7
         with:
-          name: synapse-${{ matrix.os }}
+          name: palexus-${{ matrix.os }}
           path: |
-            target/release/synapse
-            target/release/synapse.exe
+            target/release/palexus
+            target/release/palexus.exe
             target/release/desktop-app
             target/release/desktop-app.exe
             apps/desktop/src-tauri/target/release/bundle/**/*

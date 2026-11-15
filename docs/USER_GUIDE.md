@@ -1,7 +1,7 @@
-# SYNAPSE User Guide
+# PALEXUS User Guide
 ### The Clinical Engine for AI Context — One Brain. All Models.
 
-Welcome to the **SYNAPSE** User Guide. This document provides a complete reference for managing your AI coding tool configurations using the `synapse` CLI and the React desktop application.
+Welcome to the **PALEXUS** User Guide. This document provides a complete reference for managing your AI coding tool configurations using the `palexus` CLI and the React desktop application.
 
 ---
 
@@ -9,18 +9,18 @@ Welcome to the **SYNAPSE** User Guide. This document provides a complete referen
 
 1. [Core Concepts](#1-core-concepts)
 2. [CLI Command Reference](#2-cli-command-reference)
-   - [synapse scan](#synapse-scan)
-   - [synapse import](#synapse-import)
-   - [synapse project](#synapse-project)
-   - [synapse sync](#synapse-sync)
-   - [synapse doctor](#synapse-doctor)
-   - [synapse snapshot & rollback](#synapse-snapshot--rollback)
-   - [synapse backups & undo](#synapse-backups--undo)
-   - [synapse exec & filter](#synapse-exec--filter-synaptic-auto-compression)
-   - [synapse spool](#synapse-spool)
-   - [synapse serve](#synapse-serve-runtime-gateway)
-   - [synapse mem](#synapse-mem-3-layer-context-retrieval)
-   - [synapse hud](#synapse-hud-vital-signs-cockpit)
+   - [palexus scan](#palexus-scan)
+   - [palexus import](#palexus-import)
+   - [palexus project](#palexus-project)
+   - [palexus sync](#palexus-sync)
+   - [palexus doctor](#palexus-doctor)
+   - [palexus snapshot & rollback](#palexus-snapshot--rollback)
+   - [palexus backups & undo](#palexus-backups--undo)
+   - [palexus exec & filter](#palexus-exec--filter-synaptic-auto-compression)
+   - [palexus spool](#palexus-spool)
+   - [palexus serve](#palexus-serve-runtime-gateway)
+   - [palexus mem](#palexus-mem-3-layer-context-retrieval)
+   - [palexus hud](#palexus-hud-vital-signs-cockpit)
 3. [Supported Tool Adapters (15/15)](#3-supported-tool-adapters-1515)
 4. [Desktop GUI Application](#4-desktop-gui-application)
 5. [MCP Hub & OS Keychain Integration](#5-mcp-hub--os-keychain-integration)
@@ -31,7 +31,7 @@ Welcome to the **SYNAPSE** User Guide. This document provides a complete referen
 
 ## 1. Core Concepts
 
-SYNAPSE unifies configuration management across all AI tools installed on your system using a single, Git-backed directory — **the Brain** (`~/AIBrain`).
+PALEXUS unifies configuration management across all AI tools installed on your system using a single, Git-backed directory — **the Brain** (`~/AIBrain`).
 
 ```mermaid
 flowchart TD
@@ -57,8 +57,8 @@ flowchart TD
 
 > [!NOTE]
 > **The Three-Command Loop:**  
-> `synapse scan` → `synapse import` → `synapse project`.  
-> Once imported into `~/AIBrain`, use `synapse sync --daemon` to keep every tool automatically in lockstep.
+> `palexus scan` → `palexus import` → `palexus project`.  
+> Once imported into `~/AIBrain`, use `palexus sync --daemon` to keep every tool automatically in lockstep.
 
 ### Inbuilt Obsidian Session Worklog Skill
 Every freshly initialized or imported Brain automatically provisions the canonical `obsidian-session-worklog` skill into `~/AIBrain/skills/obsidian-session-worklog/` and projects it across all tools:
@@ -70,162 +70,162 @@ Every freshly initialized or imported Brain automatically provisions the canonic
 
 ## 2. CLI Command Reference
 
-Both binary names `synapse` and `synapse` can be used interchangeably.
+Both binary names `palexus` and `palexus` can be used interchangeably.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Unconfigured
-    Unconfigured --> Discovered : synapse scan
-    Discovered --> Imported : synapse import
-    Imported --> Projected : synapse project
-    Projected --> AutoSync : synapse sync --daemon
-    Projected --> Snapshot : synapse snapshot
-    Snapshot --> Restored : synapse rollback
+    Unconfigured --> Discovered : palexus scan
+    Discovered --> Imported : palexus import
+    Imported --> Projected : palexus project
+    Projected --> AutoSync : palexus sync --daemon
+    Projected --> Snapshot : palexus snapshot
+    Snapshot --> Restored : palexus rollback
 ```
 
-### `synapse scan`
+### `palexus scan`
 Discovers all AI coding tools installed across your home directory and active workspace.
 
 ```bash
-synapse scan
+palexus scan
 ```
 
-### `synapse import`
+### `palexus import`
 Losslessly ingests tool configs into `~/AIBrain`. Always run with `--dry-run` first to preview changes.
 
 ```bash
-synapse import --dry-run
-synapse import
+palexus import --dry-run
+palexus import
 ```
 
 > [!TIP]
-> `synapse import --dry-run` produces zero disk writes and displays a structured preview of skills, agents, rules, and MCP servers to be ingested.
+> `palexus import --dry-run` produces zero disk writes and displays a structured preview of skills, agents, rules, and MCP servers to be ingested.
 
-### `synapse project`
-Pushes Brain configurations out to the tools you have installed. Generates symlinks where supported, or stamped files marked `<!-- GENERATED BY SYNAPSE / Synapse — edit in the Brain -->`.
+### `palexus project`
+Pushes Brain configurations out to the tools you have installed. Generates symlinks where supported, or stamped files marked `<!-- GENERATED BY PALEXUS / Palexus — edit in the Brain -->`.
 
-A tool counts as installed when its config is found in the tools folder: your home folder, or `--tool-root`, `$SYNAPSE_WORKSPACE_PATH` or `$SYNAPSE_TOOL_ROOT` if set. The folder you run the command from is never used, so the CLI and the desktop app always look at the same files. Tools that are not installed get nothing, except a skill whose `targets` names them explicitly. `--dry-run` lists what each tool would get and writes nothing.
+A tool counts as installed when its config is found in the tools folder: your home folder, or `--tool-root`, `$PALEXUS_WORKSPACE_PATH` or `$PALEXUS_TOOL_ROOT` if set. The folder you run the command from is never used, so the CLI and the desktop app always look at the same files. Tools that are not installed get nothing, except a skill whose `targets` names them explicitly. `--dry-run` lists what each tool would get and writes nothing.
 
 ```bash
-synapse project --dry-run
-synapse project
+palexus project --dry-run
+palexus project
 ```
 
-### `synapse sync`
+### `palexus sync`
 Starts background lockstep monitoring or executes a one-time reconciliation.
 
 ```bash
 # One-time sync
-synapse sync --once
+palexus sync --once
 
 # Background daemon watcher
-synapse sync --daemon
+palexus sync --daemon
 ```
 
-### `synapse doctor`
+### `palexus doctor`
 Diagnoses configuration drift, broken symlinks, or missing projections across all 13 tools.
 
 ```bash
 # Health report
-synapse doctor
+palexus doctor
 
 # One-command auto-repair
-synapse doctor --fix
+palexus doctor --fix
 ```
 
-### `synapse snapshot & rollback`
+### `palexus snapshot & rollback`
 Marks deliberate history points in your Brain Git repository or restores working tree state.
 
 ```bash
 # Take Git snapshot
-synapse snapshot "Added Rust refactoring skill"
+palexus snapshot "Added Rust refactoring skill"
 
 # Revert to snapshot revision
-synapse rollback <commit-hash>
+palexus rollback <commit-hash>
 ```
 
-### `synapse backups & undo`
-A snapshot covers the Brain only. `project`, `sync`, `doctor --fix` and `onboard` also change files that belong to your tools. So before a file is overwritten, Synapse saves the original under `~/AIBrain/.brain/backups/<id>/` and prints the id. If the original can't be saved, the file is not written. A run that changes nothing leaves no backup. Backups are kept out of Brain snapshots, and a rollback leaves them alone.
+### `palexus backups & undo`
+A snapshot covers the Brain only. `project`, `sync`, `doctor --fix` and `onboard` also change files that belong to your tools. So before a file is overwritten, Palexus saves the original under `~/AIBrain/.brain/backups/<id>/` and prints the id. If the original can't be saved, the file is not written. A run that changes nothing leaves no backup. Backups are kept out of Brain snapshots, and a rollback leaves them alone.
 
 ```bash
 # List saved copies, newest first
-synapse backups
+palexus backups
 
 # Put back the newest change not yet undone (files it created are removed)
-synapse undo
+palexus undo
 
 # Or a specific one
-synapse undo <id>
+palexus undo <id>
 ```
 
-### `synapse exec & filter` (Synaptic Auto-Compression)
+### `palexus exec & filter` (Synaptic Auto-Compression)
 Executes arbitrary terminal commands or streams with intelligent sensory gating—reducing agent token consumption by ~95% while strictly preserving errors and stack traces.
 
 ```bash
 # Wrap command execution with real-time semantic compression
-synapse exec -- cargo test --workspace
-synapse exec -- pnpm test:e2e
-synapse exec -- pytest tests/
+palexus exec -- cargo test --workspace
+palexus exec -- pnpm test:e2e
+palexus exec -- pytest tests/
 
 # Pipe standard input through the compression filter
-cargo test 2>&1 | synapse filter --level aggressive
+cargo test 2>&1 | palexus filter --level aggressive
 ```
 
-### `synapse spool`
+### `palexus spool`
 Inspects, searches, or replays the local raw uncompressed execution logs.
 
 ```bash
 # List all cached execution logs and token reduction ratios
-synapse spool list
+palexus spool list
 
 # Display full uncompressed log or filter by pattern
-synapse spool show <id>
-synapse spool show <id> --grep "panic"
-synapse spool show <id> --tail 50
+palexus spool show <id>
+palexus spool show <id> --grep "panic"
+palexus spool show <id> --tail 50
 ```
 
-### `synapse serve` (Runtime Gateway)
+### `palexus serve` (Runtime Gateway)
 Starts a local HTTP reverse proxy (`< 15MB RAM`) that intercepts OpenAI `/v1/chat/completions` and Anthropic `/v1/messages` requests from coding agents (Claude Code, Antigravity CLI, Cursor, Aider). Automatically prunes bloated token payloads with Sensory Gating and enforces valid JSON tool-calling structures when routing to local models (Ollama, llama.cpp).
 
 ```bash
 # Start gateway proxying to local Ollama instance on port 8088
-synapse serve --port 8088 --upstream http://localhost:11434 --model qwen2.5-coder:7b
+palexus serve --port 8088 --upstream http://localhost:11434 --model qwen2.5-coder:7b
 
 # Run with aggressive Sensory Gating compression level
-synapse serve --gate-level aggressive
+palexus serve --gate-level aggressive
 ```
 
-### `synapse mem` (3-Layer Context Retrieval)
+### `palexus mem` (3-Layer Context Retrieval)
 Synaptic Memory gives agents and humans 3-tier progressive context retrieval without blowing up prompt context windows:
 
-* **Layer 1 (`synapse mem search <query>`)**: Compact, token-costed index of past observations, decisions, and files.
-* **Layer 2 (`synapse mem timeline <id>`)**: Chronological surrounding context (before/after) for an observation.
-* **Layer 3 (`synapse mem get <id...>`)**: Full high-fidelity details, code diffs, and notes.
-* **Agent Lifecycle Hooks (`synapse mem hook <event>`)**: Seamless hooks for `session-start`, `prompt`, `post-tool`, and `stop` events.
+* **Layer 1 (`palexus mem search <query>`)**: Compact, token-costed index of past observations, decisions, and files.
+* **Layer 2 (`palexus mem timeline <id>`)**: Chronological surrounding context (before/after) for an observation.
+* **Layer 3 (`palexus mem get <id...>`)**: Full high-fidelity details, code diffs, and notes.
+* **Agent Lifecycle Hooks (`palexus mem hook <event>`)**: Seamless hooks for `session-start`, `prompt`, `post-tool`, and `stop` events.
 
 ```bash
 # Layer 1: Search index for relevant context
-synapse mem "database migration sqlite"
+palexus mem "database migration sqlite"
 
 # Layer 2: View chronological timeline around a specific observation
-synapse mem timeline 42 --before 3 --after 3
+palexus mem timeline 42 --before 3 --after 3
 
 # Layer 3: Retrieve full detail for specific IDs
-synapse mem get 42 43
+palexus mem get 42 43
 
 # Record manual observation
-synapse mem observe "Migrated to 15 adapters" --file packages/core/src/adapters/mod.rs
+palexus mem observe "Migrated to 15 adapters" --file packages/core/src/adapters/mod.rs
 ```
 
-### `synapse hud` (Vital Signs Cockpit)
+### `palexus hud` (Vital Signs Cockpit)
 Launches the zero-RAM terminal cockpit HUD displaying live gateway connectivity, token burn rate, Sensory Gating compression percentages, upstream latency, and canonical `~/AIBrain` doctor health diagnostics.
 
 ```bash
 # Open interactive live refreshing HUD
-synapse hud
+palexus hud
 
 # Print single clinical snapshot and exit
-synapse hud --once
+palexus hud --once
 ```
 
 ---
@@ -254,15 +254,15 @@ synapse hud --once
 
 ## 4. Desktop GUI Application
 
-The Tauri v2 Desktop GUI provides a clinical operating console built with the **SYNAPSE Dark Precision Design System** (`#06080b` ground, `#1d9bf0` synapse accent, sharp geometric borders, zero emojis).
+The Tauri v2 Desktop GUI provides a clinical operating console built with the **PALEXUS Dark Precision Design System** (`#06080b` ground, `#1d9bf0` palexus accent, sharp geometric borders, zero emojis).
 
-The desktop app implements two measured screens backed directly by `synapse-core` native bindings:
+The desktop app implements two measured screens backed directly by `palexus-core` native bindings:
 - **Intake**: Live inspection of discovered AI tools, installed rules, active skills, and canonical Brain status.
 - **Examination**: Clinical examination identifying configuration drift, broken projection symlinks, and fault diagnosis.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│  SYNAPSE // CLINICAL ENGINE FOR AI CONTEXT                     v1.0.0  │
+│  PALEXUS // CLINICAL ENGINE FOR AI CONTEXT                     v1.0.0  │
 ├───────────────┬────────────────────────────────────────────────────────┤
 │ Intake        │  INTAKE REPORT                                         │
 │ Examination   │  Canonical Brain: ~/Desktop/AI BRAIN                   │
@@ -275,13 +275,13 @@ The desktop app implements two measured screens backed directly by `synapse-core
 
 ## 5. MCP Hub & OS Keychain Integration
 
-SYNAPSE manages Model Context Protocol (MCP) servers across all tools with built-in OS Keychain secret resolution.
+PALEXUS manages Model Context Protocol (MCP) servers across all tools with built-in OS Keychain secret resolution.
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User
-    participant CLI as SYNAPSE MCP Hub
+    participant CLI as PALEXUS MCP Hub
     participant KC as OS Keychain
     participant Config as Tool Config (.mcp.json)
 
@@ -302,10 +302,10 @@ The Doctor engine continuously monitors your machine for configuration drift, or
 
 ```mermaid
 flowchart LR
-    A[synapse doctor] --> B{Scan Vitals}
+    A[palexus doctor] --> B{Scan Vitals}
     B -->|Clean| C[All Tools Healthy]
     B -->|Drift / Faults Found| D[Generate Fault Report]
-    D -->|synapse doctor --fix| E[Auto-Heal Checksums & Symlinks]
+    D -->|palexus doctor --fix| E[Auto-Heal Checksums & Symlinks]
     E --> C
 ```
 
@@ -322,9 +322,9 @@ flowchart LR
 - **Where is my Brain located?**  
   By default, the Brain is stored at `~/AIBrain`. You can override this location by setting `AIBRAIN_PATH=/your/custom/path`.
 - **How do I roll back a bad configuration edit?**  
-  Run `synapse rollback HEAD~1` to restore the previous Git snapshot of your Brain working tree.
-- **A Synapse command overwrote a tool file I had edited by hand. Can I get it back?**  
-  Yes. `synapse undo` puts back the files the last command changed, and `synapse backups` lists earlier ones.
+  Run `palexus rollback HEAD~1` to restore the previous Git snapshot of your Brain working tree.
+- **A Palexus command overwrote a tool file I had edited by hand. Can I get it back?**  
+  Yes. `palexus undo` puts back the files the last command changed, and `palexus backups` lists earlier ones.
 
 ---
 

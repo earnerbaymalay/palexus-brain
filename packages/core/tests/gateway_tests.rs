@@ -1,9 +1,9 @@
 use serde_json::json;
-use synapse_core::compression::CompressionLevel;
-use synapse_core::gateway::{
+use palexus_core::compression::CompressionLevel;
+use palexus_core::gateway::{
     sanitize_tool_calling_response, GatewayConfig, GatewayServer, UpstreamKind,
 };
-use synapse_core::hud::{format_hud, HudSnapshot};
+use palexus_core::hud::{format_hud, HudSnapshot};
 
 #[test]
 fn test_upstream_kind_detection() {
@@ -105,7 +105,7 @@ fn test_gateway_server_lifecycle_and_endpoints() {
     assert_eq!(res.status(), 200);
     let health_body: serde_json::Value = res.into_json().unwrap();
     assert_eq!(health_body["status"], "healthy");
-    assert_eq!(health_body["service"], "SYNAPSE Runtime Gateway");
+    assert_eq!(health_body["service"], "PALEXUS Runtime Gateway");
 
     // Test GET /v1/models
     let models_res = ureq::get("http://127.0.0.1:18088/v1/models")
@@ -193,7 +193,7 @@ fn test_hud_formatting() {
         gateway_active: true,
         gateway_bind: "127.0.0.1:8088".to_string(),
         upstream_url: "http://127.0.0.1:11434 (Ollama)".to_string(),
-        stats: synapse_core::gateway::GatewayStats {
+        stats: palexus_core::gateway::GatewayStats {
             total_requests: 42,
             prompt_tokens_raw: 100000,
             prompt_tokens_gated: 5000,
@@ -211,7 +211,7 @@ fn test_hud_formatting() {
     };
 
     let formatted = format_hud(&snap, false);
-    assert!(formatted.contains("SYNAPSE VITAL SIGNS HUD"));
+    assert!(formatted.contains("PALEXUS VITAL SIGNS HUD"));
     assert!(formatted.contains("ONLINE"));
     assert!(formatted.contains("95% reduction"));
     assert!(formatted.contains("15 verified tools"));

@@ -1,5 +1,5 @@
 # GitHub Copilot & Zed Adapter Specifications
-### Synapse
+### Palexus
 
 [Docs Hub](../README.md) > [Adapters](README.md) > **Copilot & Zed**
 

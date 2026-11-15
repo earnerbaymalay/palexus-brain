@@ -1,5 +1,5 @@
 # Cline & Roo Code Adapter Specification
-### Synapse
+### Palexus
 
 [Docs Hub](../README.md) > [Adapters](README.md) > **Cline & Roo Code**
 

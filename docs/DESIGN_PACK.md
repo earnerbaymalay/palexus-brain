@@ -6,7 +6,7 @@
 
 #### Brand Information (Gate 0 pending)
 - Brand A: Cortex
-- Brand B: Synapse  
+- Brand B: Palexus  
 - Brand C: Cerebra
 
 #### UI Components Overview
@@ -20,7 +20,7 @@ Based on Tauri 2.0 + React + TypeScript + Tailwind architecture:
 Total: 8 screens for ASCII wireframes
 
 #### Visual Tokens
-- Primary: #667eea (Cortex), #58a6ff (Synapse), #3fb950 (Cerebra)
+- Primary: #667eea (Cortex), #58a6ff (Palexus), #3fb950 (Cerebra)
 - Dark theme default (based on cross-platform CLI tools conventions)
 - Typography: system fonts (Inter, SF Mono, Monaco)
 
@@ -153,7 +153,7 @@ Total: 8 screens for ASCII wireframes
 │                                                         │
 │  ╭───────────────────────────────────────────────────╮ │
 │  │ error: Adapter mismatch                          │ │
-│  │ at /workspace/synapse/adapter-smith/...    │ │
+│  │ at /workspace/palexus/adapter-smith/...    │ │
 │  │ Time: 2026-07-07 14:23:12                       │ │
 │  │ Stack: ...                                        │ │
 │  │                                                   │ │
@@ -175,7 +175,7 @@ Total: 8 screens for ASCII wireframes
 │                    Onboarding Wizard                   │
 │                                                         │
 │  ┌─────────────────────────────────────────────────┐    │
-│  │ 🎯 Welcome to Synapse                    │    │
+│  │ 🎯 Welcome to Palexus                    │    │
 │  │                                                 │    │
 │  │  Step 1/3: Select Dev Environment               │    │
 │  │  ┌─────────────────────────────────────────┐    │

@@ -1,18 +1,18 @@
 # 🏛️ Architecture & Engine Internals
-### Synapse
+### Palexus
 
 [Docs Hub](README.md) > **Architecture**
 
-This document describes the architectural layout, core Rust engine components, 3-way merge algorithm, and IPC communications of **Synapse**.
+This document describes the architectural layout, core Rust engine components, 3-way merge algorithm, and IPC communications of **Palexus**.
 
 ---
 
 ## 🏗️ Monorepo Component Layout
 
 ```text
-Synapse/
+Palexus/
 ├── apps/
-│   ├── cli/             # Rust CLI entry point (`synapse` / `synapse`)
+│   ├── cli/             # Rust CLI entry point (`palexus` / `palexus`)
 │   └── desktop/         # Tauri 2 + React TS Dark Precision GUI
 ├── packages/
 │   ├── core/            # Core engine: scanner, 13 adapters, projector, sync, doctor

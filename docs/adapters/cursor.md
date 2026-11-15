@@ -1,5 +1,5 @@
 # Cursor MDC Adapter Specification
-### Synapse
+### Palexus
 
 [Docs Hub](../README.md) > [Adapters](README.md) > **Cursor**
 

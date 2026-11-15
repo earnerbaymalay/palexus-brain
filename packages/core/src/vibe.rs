@@ -1,6 +1,6 @@
 //! Vibe-coded vs hand-coded line counter over a rolling window (default 24h).
 //!
-//! Ported natively into Synapse Core from the lab lines subsystem for sub-10ms CLI
+//! Ported natively into Palexus Core from the lab lines subsystem for sub-10ms CLI
 //! and status-bar genmon reporting.
 //!
 //! Vibe (AI) lines come directly from agent transcripts:
@@ -763,7 +763,7 @@ pub fn render_genmon(r: &VibeReport) -> String {
         .replace('<', "&lt;")
         .replace('>', "&gt;");
     format!(
-        "<txt><span foreground='#cba6f7'>󰚩 {}</span><span foreground='#6c7086'> · </span><span foreground='#89b4fa'>✍ {}</span></txt>\n<tool>{}</tool>\n<txtclick>xfce4-terminal --hold -x synapse vibe</txtclick>",
+        "<txt><span foreground='#cba6f7'>󰚩 {}</span><span foreground='#6c7086'> · </span><span foreground='#89b4fa'>✍ {}</span></txt>\n<tool>{}</tool>\n<txtclick>xfce4-terminal --hold -x palexus vibe</txtclick>",
         r.vibe, r.hand, tip
     )
 }

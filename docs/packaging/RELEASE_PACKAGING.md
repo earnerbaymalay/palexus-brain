@@ -13,8 +13,8 @@
 ## Build All Artifacts
 ```bash
 # 1. Build the CLI binary
-cargo build -p synapse --release
-# Binary at: target/release/synapse
+cargo build -p palexus --release
+# Binary at: target/release/palexus
 
 # 2. Build the desktop frontend
 cd apps/desktop
@@ -35,31 +35,31 @@ pnpm tauri build
 ## Platform Installers
 | Platform | Format | Location |
 |---|---|---|
-| Linux | .deb | `.../bundle/deb/synapse_0.7.4_amd64.deb` |
-| Linux | .AppImage | `.../bundle/appimage/synapse_0.7.4_amd64.AppImage` |
-| macOS | .dmg | `.../bundle/dmg/synapse_0.7.4_x64.dmg` (requires Apple Developer ID) |
-| Windows | .msi | `.../bundle/msi/synapse_0.7.4_x64_en-US.msi` (requires code signing cert) |
+| Linux | .deb | `.../bundle/deb/palexus_0.7.4_amd64.deb` |
+| Linux | .AppImage | `.../bundle/appimage/palexus_0.7.4_amd64.AppImage` |
+| macOS | .dmg | `.../bundle/dmg/palexus_0.7.4_x64.dmg` (requires Apple Developer ID) |
+| Windows | .msi | `.../bundle/msi/palexus_0.7.4_x64_en-US.msi` (requires code signing cert) |
 
 ## CLI Only (no desktop)
 If you only need the CLI, you can skip the Tauri build entirely:
 ```bash
-cargo build -p synapse --release
-sudo cp target/release/synapse /usr/local/bin/
+cargo build -p palexus --release
+sudo cp target/release/palexus /usr/local/bin/
 ```
 
 ---
 
-# Synapse — Release Packaging & Distribution Guide
+# Palexus — Release Packaging & Distribution Guide
 
-This document specifies the release packaging configurations, installer scripts, platform bundlers, code signing workflows, and package manager formulae for **Synapse** (Desktop GUI and CLI engine).
+This document specifies the release packaging configurations, installer scripts, platform bundlers, code signing workflows, and package manager formulae for **Palexus** (Desktop GUI and CLI engine).
 
 ---
 
 ## 1. Overview & Distribution Strategy
 
-Synapse is distributed in two primary forms:
+Palexus is distributed in two primary forms:
 1. **Desktop GUI Application**: A Tauri v2 application shipping native installers for macOS (`.dmg`), Windows (`.msi`), and Linux (`.AppImage`, `.deb`).
-2. **CLI Engine (`synapse`)**: A standalone, zero-dependency Rust binary distributed via Homebrew, shell installer scripts (`install.sh`, `install.ps1`), and direct release tarballs/zip archives.
+2. **CLI Engine (`palexus`)**: A standalone, zero-dependency Rust binary distributed via Homebrew, shell installer scripts (`install.sh`, `install.ps1`), and direct release tarballs/zip archives.
 
 ---
 
@@ -70,9 +70,9 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
 ```json
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Synapse",
+  "productName": "Palexus",
   "version": "0.7.4",
-  "identifier": "dev.synapse.desktop",
+  "identifier": "dev.palexus.desktop",
   "build": {
     "frontendDist": "../dist"
   },
@@ -82,7 +82,7 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
     },
     "windows": [
       {
-        "title": "Synapse",
+        "title": "Palexus",
         "width": 1280,
         "height": 800,
         "resizable": true,
@@ -93,8 +93,8 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
   "bundle": {
     "active": true,
     "targets": ["dmg", "msi", "appimage", "deb"],
-    "identifier": "dev.synapse.desktop",
-    "publisher": "Synapse Core Team",
+    "identifier": "dev.palexus.desktop",
+    "publisher": "Palexus Core Team",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -103,16 +103,16 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
       "icons/icon.ico"
     ],
     "resources": [],
-    "copyright": "Copyright © 2026 Synapse Contributors",
+    "copyright": "Copyright © 2026 Palexus Contributors",
     "category": "DeveloperTool",
     "shortDescription": "Universal agent harness and multi-tool config migration engine",
-    "longDescription": "Synapse provides deterministic sync, conflict resolution, security sandboxing, and drift detection across 12 AI developer tools.",
+    "longDescription": "Palexus provides deterministic sync, conflict resolution, security sandboxing, and drift detection across 12 AI developer tools.",
     "macOS": {
       "frameworks": [],
       "minimumSystemVersion": "10.15.0",
       "exceptionDomain": "",
       "signing": {
-        "identity": "Developer ID Application: Synapse LLC (XYZ1234567)"
+        "identity": "Developer ID Application: Palexus LLC (XYZ1234567)"
       },
       "entitlements": "entitlements.plist",
       "dmg": {
@@ -150,7 +150,7 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
           "libwebkit2gtk-4.1-0 (>= 2.38.0)",
           "libayatana-appindicator3-1"
         ],
-        "desktopTemplate": "assets/synapse.desktop",
+        "desktopTemplate": "assets/palexus.desktop",
         "section": "devel",
         "priority": "optional"
       },
@@ -167,23 +167,23 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
 ## 3. Platform Installer Specifications
 
 ### 3.1 macOS Package (.dmg) & Notarization
-- **Artifact**: `Synapse_0.7.4_x64.dmg`, `Synapse_0.7.4_aarch64.dmg`
+- **Artifact**: `Palexus_0.7.4_x64.dmg`, `Palexus_0.7.4_aarch64.dmg`
 - **Signing**: Signed via `codesign` using Apple Developer ID Application certificate.
 - **Notarization Workflow**:
   ```bash
   # Submit DMG for Apple Notarization
-  xcrun notarytool submit target/release/bundle/dmg/synapse_0.7.4_aarch64.dmg \
+  xcrun notarytool submit target/release/bundle/dmg/palexus_0.7.4_aarch64.dmg \
     --apple-id "$APPLE_ID" \
     --team-id "$APPLE_TEAM_ID" \
     --password "$APPLE_APP_SPECIFIC_PASSWORD" \
     --wait
 
   # Staple ticket to DMG
-  xcrun stapler staple target/release/bundle/dmg/synapse_0.7.4_aarch64.dmg
+  xcrun stapler staple target/release/bundle/dmg/palexus_0.7.4_aarch64.dmg
   ```
 
 ### 3.2 Windows Package (.msi) & Authenticode
-- **Artifact**: `Synapse_0.7.4_x64_en-US.msi`
+- **Artifact**: `Palexus_0.7.4_x64_en-US.msi`
 - **Engine**: WiX Toolset v3/v4 wrapped by Tauri CLI.
 - **Signing**: Authenticode signing via Azure Key Vault / Signtool:
   ```powershell
@@ -192,18 +192,18 @@ Below is the production `bundle` configuration block for `apps/desktop/src-tauri
     /td sha256 `
     /fd sha256 `
     /sha1 "$CODE_SIGNING_CERT_THUMBPRINT" `
-    target/release/bundle/msi/synapse_0.7.4_x64_en-US.msi
+    target/release/bundle/msi/palexus_0.7.4_x64_en-US.msi
   ```
 
 ### 3.3 Linux Debian Package (.deb)
-- **Artifact**: `Synapse_0.7.4_amd64.deb`
+- **Artifact**: `Palexus_0.7.4_amd64.deb`
 - **Dependencies**: `libc6`, `libgtk-3-0`, `libwebkit2gtk-4.1-0`, `libayatana-appindicator3-1`.
 - **Maintainer Scripts**:
   - `postinst`: Registers MIME types and updates desktop database (`update-desktop-database -q`).
   - `postrm`: Deletes desktop caches on removal.
 
 ### 3.4 Linux AppImage
-- **Artifact**: `Synapse_0.7.4_amd64.AppImage`
+- **Artifact**: `Palexus_0.7.4_amd64.AppImage`
 - **Portable Design**: Self-contained runtime bundling standard webkit dependencies, using `AppRun` script launcher.
 
 ---
@@ -214,12 +214,12 @@ POSIX-compliant shell installer script for CLI deployment on Linux and macOS:
 
 ```bash
 #!/bin/sh
-# Synapse CLI Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/earnerbaymalay/synapse/main/scripts/install.sh | sh
+# Palexus CLI Installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/earnerbaymalay/palexus/main/scripts/install.sh | sh
 
 set -e
 
-REPO="earnerbaymalay/synapse"
+REPO="earnerbaymalay/palexus"
 VERSION="${VERSION:-latest}"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
@@ -244,13 +244,13 @@ detect_platform() {
 
 fetch_release() {
   detect_platform
-  echo "Installing Synapse CLI ($TARGET)..."
+  echo "Installing Palexus CLI ($TARGET)..."
 
   if [ "$VERSION" = "latest" ]; stream
-    DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/synapse-${TARGET}.tar.gz"
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/palexus-${TARGET}.tar.gz"
     CHECKSUM_URL="https://github.com/${REPO}/releases/latest/download/SHA256SUMS"
   else
-    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/synapse-${TARGET}.tar.gz"
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/palexus-${TARGET}.tar.gz"
     CHECKSUM_URL="https://github.com/${REPO}/releases/download/v${VERSION}/SHA256SUMS"
   fi
 
@@ -258,25 +258,25 @@ fetch_release() {
   trap 'rm -rf "$TMP_DIR"' EXIT
 
   echo "Downloading $DOWNLOAD_URL..."
-  curl -sSL "$DOWNLOAD_URL" -o "$TMP_DIR/synapse.tar.gz"
+  curl -sSL "$DOWNLOAD_URL" -o "$TMP_DIR/palexus.tar.gz"
   curl -sSL "$CHECKSUM_URL" -o "$TMP_DIR/SHA256SUMS"
 
   echo "Verifying SHA-256 checksum..."
-  (cd "$TMP_DIR" && grep "synapse-${TARGET}.tar.gz" SHA256SUMS | sha256sum -c -)
+  (cd "$TMP_DIR" && grep "palexus-${TARGET}.tar.gz" SHA256SUMS | sha256sum -c -)
 
   echo "Extracting binary..."
-  tar -xzf "$TMP_DIR/synapse.tar.gz" -C "$TMP_DIR"
+  tar -xzf "$TMP_DIR/palexus.tar.gz" -C "$TMP_DIR"
 
   echo "Installing to $INSTALL_DIR..."
   if [ -w "$INSTALL_DIR" ]; then
-    mv "$TMP_DIR/synapse" "$INSTALL_DIR/synapse"
+    mv "$TMP_DIR/palexus" "$INSTALL_DIR/palexus"
   else
-    sudo mv "$TMP_DIR/synapse" "$INSTALL_DIR/synapse"
+    sudo mv "$TMP_DIR/palexus" "$INSTALL_DIR/palexus"
   fi
 
-  chmod +x "$INSTALL_DIR/synapse"
-  echo "Successfully installed synapse to $INSTALL_DIR/synapse"
-  "$INSTALL_DIR/synapse" --version
+  chmod +x "$INSTALL_DIR/palexus"
+  echo "Successfully installed palexus to $INSTALL_DIR/palexus"
+  "$INSTALL_DIR/palexus" --version
 }
 
 fetch_release
@@ -289,43 +289,43 @@ fetch_release
 PowerShell script for automated Windows CLI installation:
 
 ```powershell
-# Synapse CLI Windows Installer
-# Usage: iwr -useb https://raw.githubusercontent.com/earnerbaymalay/synapse/main/scripts/install.ps1 | iex
+# Palexus CLI Windows Installer
+# Usage: iwr -useb https://raw.githubusercontent.com/earnerbaymalay/palexus/main/scripts/install.ps1 | iex
 
 $ErrorActionPreference = 'Stop'
 
-$Repo = "earnerbaymalay/synapse"
-$InstallDir = "$env:LOCALAPPDATA\Programs\Synapse\bin"
+$Repo = "earnerbaymalay/palexus"
+$InstallDir = "$env:LOCALAPPDATA\Programs\Palexus\bin"
 
-function Install-Synapse {
+function Install-Palexus {
     $Arch = if ([Environment]::Is64BitOperatingSystem) { "x86_64" } else { throw "32-bit Windows is not supported." }
     $Target = "$Arch-pc-windows-msvc"
     
-    $DownloadUrl = "https://github.com/$Repo/releases/latest/download/synapse-$Target.zip"
+    $DownloadUrl = "https://github.com/$Repo/releases/latest/download/palexus-$Target.zip"
     $ChecksumUrl = "https://github.com/$Repo/releases/latest/download/SHA256SUMS"
 
     $TmpDir = New-Item -ItemType Directory -Path ([System.IO.Path]::GetTempPath() + [System.Guid]::NewGuid().ToString())
     try {
-        Write-Host "Downloading Synapse CLI ($Target)..." -ForegroundColor Cyan
-        Invoke-WebRequest -Uri $DownloadUrl -OutFile "$TmpDir\synapse.zip"
+        Write-Host "Downloading Palexus CLI ($Target)..." -ForegroundColor Cyan
+        Invoke-WebRequest -Uri $DownloadUrl -OutFile "$TmpDir\palexus.zip"
         Invoke-WebRequest -Uri $ChecksumUrl -OutFile "$TmpDir\SHA256SUMS"
 
         Write-Host "Verifying checksum..." -ForegroundColor Cyan
-        $ExpectedHash = (Get-Content "$TmpDir\SHA256SUMS" | Select-String "synapse-$Target.zip").Line.Split(" ")[0]
-        $ActualHash = (Get-FileHash "$TmpDir\synapse.zip" -Algorithm SHA256).Hash.ToLower()
+        $ExpectedHash = (Get-Content "$TmpDir\SHA256SUMS" | Select-String "palexus-$Target.zip").Line.Split(" ")[0]
+        $ActualHash = (Get-FileHash "$TmpDir\palexus.zip" -Algorithm SHA256).Hash.ToLower()
 
         if ($ExpectedHash -ne $ActualHash) {
             throw "Checksum verification failed! Expected: $ExpectedHash, Got: $ActualHash"
         }
 
         Write-Host "Extracting binary..." -ForegroundColor Cyan
-        Expand-Archive -Path "$TmpDir\synapse.zip" -DestinationPath $TmpDir -Force
+        Expand-Archive -Path "$TmpDir\palexus.zip" -DestinationPath $TmpDir -Force
 
         if (!(Test-Path $InstallDir)) {
             New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
         }
 
-        Move-Item -Path "$TmpDir\synapse.exe" -Destination "$InstallDir\synapse.exe" -Force
+        Move-Item -Path "$TmpDir\palexus.exe" -Destination "$InstallDir\palexus.exe" -Force
 
         # User PATH updates
         $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -334,33 +334,33 @@ function Install-Synapse {
             Write-Host "Added $InstallDir to User PATH." -ForegroundColor Green
         }
 
-        Write-Host "Synapse CLI successfully installed to $InstallDir\synapse.exe" -ForegroundColor Green
+        Write-Host "Palexus CLI successfully installed to $InstallDir\palexus.exe" -ForegroundColor Green
     }
     finally {
         Remove-Item -Recurse -Force $TmpDir
     }
 }
 
-Install-Synapse
+Install-Palexus
 ```
 
 ---
 
-## 6. Homebrew Formula Draft (`synapse.rb`)
+## 6. Homebrew Formula Draft (`palexus.rb`)
 
-Formula draft for Homebrew deployment (`brew install synapse`):
+Formula draft for Homebrew deployment (`brew install palexus`):
 
 ```ruby
-class Synapse < Formula
+class Palexus < Formula
   desc "Universal agent harness & multi-tool config migration engine"
-  homepage "https://github.com/earnerbaymalay/synapse"
-  url "https://github.com/earnerbaymalay/synapse/releases/download/v0.7.4/synapse-src-v0.7.4.tar.gz"
+  homepage "https://github.com/earnerbaymalay/palexus-brain"
+  url "https://github.com/earnerbaymalay/palexus-brain/releases/download/v0.7.4/palexus-src-v0.7.4.tar.gz"
   sha256 "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0"
   license "MIT"
-  head "https://github.com/earnerbaymalay/synapse.git", branch: "main"
+  head "https://github.com/earnerbaymalay/palexus-brain.git", branch: "main"
 
   bottle do
-    root_url "https://github.com/earnerbaymalay/synapse/releases/download/v0.7.4"
+    root_url "https://github.com/earnerbaymalay/palexus-brain/releases/download/v0.7.4"
     sha256 cellar: :any_skip_relocation, arm64_sequoia: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     sha256 cellar: :any_skip_relocation, ventura:       "123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0"
     sha256 cellar: :any_skip_relocation, x86_64_linux:  "23456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01"
@@ -373,12 +373,12 @@ class Synapse < Formula
   end
 
   test do
-    assert_match "synapse #{version}", shell_output("#{bin}/synapse --version")
+    assert_match "palexus #{version}", shell_output("#{bin}/palexus --version")
     
     # Smoke test scan command on empty directory
     test_dir = testpath/"test_project"
     test_dir.mkpath
-    output = shell_output("#{bin}/synapse scan --json", 0)
+    output = shell_output("#{bin}/palexus scan --json", 0)
     assert_match "detected_tools", output
   end
 end
@@ -392,5 +392,5 @@ Before publishing any release package:
 - [ ] All `.dmg`, `.msi`, `.deb`, and `.AppImage` bundles pass automated smoke tests.
 - [ ] Codesign signatures on `.dmg` and `.msi` are validated via `spctl` and `signtool`.
 - [ ] `SHA256SUMS` file signed with release PGP / minisign key.
-- [ ] Homebrew formula passes `brew audit --strict --online synapse.rb`.
+- [ ] Homebrew formula passes `brew audit --strict --online palexus.rb`.
 - [ ] Install scripts tested on fresh macOS (ARM64/x86_64), Ubuntu 22.04/24.04, and Windows 11.

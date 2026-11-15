@@ -222,7 +222,7 @@ describe('Cockpit data path', () => {
     render(<Cockpit />)
     await flush()
     expect(screen.getByText('2 critical findings need a human.')).toBeInTheDocument()
-    expect(screen.getByText('synapse doctor --fix')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor --fix')).toBeInTheDocument()
     expect(screen.getByText('2')).toHaveClass('text-alarm')
   })
 })

@@ -6,14 +6,14 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use synapse_core::adapters::all_adapters;
-use synapse_core::backup::{self, Manifest};
-use synapse_core::doctor::{apply_fixes, diagnose, DoctorContext, DoctorError, Severity};
+use palexus_core::adapters::all_adapters;
+use palexus_core::backup::{self, Manifest};
+use palexus_core::doctor::{apply_fixes, diagnose, DoctorContext, DoctorError, Severity};
 
-/// Synapse — scan, import, project, and sync AI tool configs
+/// Palexus — scan, import, project, and sync AI tool configs
 /// through one canonical Brain.
 #[derive(Debug, Parser)]
-#[command(name = "synapse", version, about, long_about = None)]
+#[command(name = "palexus", version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -50,10 +50,10 @@ enum Command {
         /// Apply the suggested fix for every diagnosis instead of just reporting
         #[arg(long)]
         fix: bool,
-        /// Brain directory to examine (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
+        /// Brain directory to examine (defaults to $PALEXUS_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
+        /// Tool config root (defaults to $PALEXUS_WORKSPACE_PATH, then $PALEXUS_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -67,11 +67,11 @@ enum Command {
         /// Snapshot id or git ref to restore
         snapshot: String,
     },
-    /// List the copies saved before Synapse changed your tool files
+    /// List the copies saved before Palexus changed your tool files
     Backups,
-    /// Put tool files back the way they were before a Synapse command
+    /// Put tool files back the way they were before a Palexus command
     Undo {
-        /// Backup id from `synapse backups` (defaults to the newest not yet undone)
+        /// Backup id from `palexus backups` (defaults to the newest not yet undone)
         id: Option<String>,
     },
     /// Execute a command and compress its terminal output for AI agents
@@ -79,7 +79,7 @@ enum Command {
         /// Compression level: balanced (default), aggressive, or strict
         #[arg(short, long)]
         level: Option<String>,
-        /// Custom spool directory for raw logs (defaults to ~/.synapse/spool)
+        /// Custom spool directory for raw logs (defaults to ~/.palexus/spool)
         #[arg(long, value_name = "PATH")]
         spool_dir: Option<PathBuf>,
         /// Command and arguments to execute
@@ -105,7 +105,7 @@ enum Command {
         /// Compression level: balanced (default), aggressive, or strict
         #[arg(short, long)]
         level: Option<String>,
-        /// Custom spool directory for raw logs (defaults to ~/.synapse/spool)
+        /// Custom spool directory for raw logs (defaults to ~/.palexus/spool)
         #[arg(long, value_name = "PATH")]
         spool_dir: Option<PathBuf>,
         /// Command and arguments to execute, or action (view, list, filter)
@@ -116,7 +116,7 @@ enum Command {
         )]
         command: Vec<String>,
     },
-    /// Start the SYNAPSE local runtime gateway proxy on localhost
+    /// Start the PALEXUS local runtime gateway proxy on localhost
     Serve {
         /// Port to bind the local proxy to (default: 8088)
         #[arg(short, long, default_value_t = 8088)]
@@ -137,7 +137,7 @@ enum Command {
         #[arg(long)]
         api_key: Option<String>,
         /// Fold tool results older than the newest N messages into stubs restorable
-        /// via `synapse spool show <id>` (off unless set; try 8)
+        /// via `palexus spool show <id>` (off unless set; try 8)
         #[arg(long, value_name = "N")]
         fold_keep: Option<usize>,
         /// Disable the Context Firewall (which masks hardware MACs, IPs, and API keys before upstream forwarding)
@@ -166,11 +166,11 @@ enum Command {
         /// Brain directory to examine
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
+        /// Tool config root (defaults to $PALEXUS_WORKSPACE_PATH, then $PALEXUS_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
-    /// Interactive onboarding interview to configure your master prompt (SYNAPSE.md)
+    /// Interactive onboarding interview to configure your master prompt (PALEXUS.md)
     Onboard {
         /// Tech stack (e.g. "Rust + React", "Python", "Go")
         #[arg(long)]
@@ -184,10 +184,10 @@ enum Command {
         /// Agent communication style (e.g. "Terse/Clinical", "Pair Programmer", "Auditor")
         #[arg(long)]
         demeanor: Option<String>,
-        /// Brain directory (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
+        /// Brain directory (defaults to $PALEXUS_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
+        /// Tool config root (defaults to $PALEXUS_WORKSPACE_PATH, then $PALEXUS_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -228,11 +228,11 @@ enum SpoolAction {
 }
 
 use std::io::{Read, Write};
-use synapse_core::compression::{execute_with_compression, CompressionLevel, SpoolManager};
-use synapse_core::gateway::{GatewayConfig, GatewayServer, UpstreamKind};
-use synapse_core::hud::{format_hud, HudSnapshot};
-use synapse_core::snapshot::{rollback, snapshot};
-use synapse_core::sync::{perform_import, perform_project, perform_sync, SyncLock, SyncOutcome};
+use palexus_core::compression::{execute_with_compression, CompressionLevel, SpoolManager};
+use palexus_core::gateway::{GatewayConfig, GatewayServer, UpstreamKind};
+use palexus_core::hud::{format_hud, HudSnapshot};
+use palexus_core::snapshot::{rollback, snapshot};
+use palexus_core::sync::{perform_import, perform_project, perform_sync, SyncLock, SyncOutcome};
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
@@ -277,12 +277,12 @@ fn main() -> ExitCode {
                                 "{} now in the Brain.",
                                 chart::plural(paths.len(), "artifact"),
                             ),
-                            Some("synapse snapshot \"after import\""),
+                            Some("palexus snapshot \"after import\""),
                         );
                         ExitCode::SUCCESS
                     }
                     Err(e) => {
-                        chart::fault("intake", &e.to_string(), Some("synapse doctor"));
+                        chart::fault("intake", &e.to_string(), Some("palexus doctor"));
                         ExitCode::FAILURE
                     }
                 }
@@ -324,14 +324,14 @@ fn main() -> ExitCode {
                                 "{} projected out of the Brain.",
                                 chart::plural(paths.len(), "file"),
                             ),
-                            Some("synapse doctor"),
+                            Some("palexus doctor"),
                         );
                         ExitCode::SUCCESS
                     }
                     Err(e) => {
                         // Some tools may already have been written; offer the way back.
                         let next = backup.as_ref().map(undo_command);
-                        let next = next.as_deref().unwrap_or("synapse doctor");
+                        let next = next.as_deref().unwrap_or("palexus doctor");
                         chart::fault("graft", &e.to_string(), Some(next));
                         ExitCode::FAILURE
                     }
@@ -360,7 +360,7 @@ fn main() -> ExitCode {
                     chart::fault(
                         "circulation",
                         &format!("could not acquire the Brain lock: {e}"),
-                        Some("check whether another synapse is running"),
+                        Some("check whether another palexus is running"),
                     );
                     return ExitCode::FAILURE;
                 }
@@ -384,7 +384,7 @@ fn main() -> ExitCode {
                         "brain",
                         "already in sync with every tool",
                     );
-                    chart::close("Nothing to do.", Some("synapse doctor"));
+                    chart::close("Nothing to do.", Some("palexus doctor"));
                     ExitCode::SUCCESS
                 }
                 Ok(SyncOutcome::Applied { changed_paths }) => {
@@ -400,7 +400,7 @@ fn main() -> ExitCode {
                     }
                     chart::close(
                         &format!("{} applied.", chart::plural(changed_paths.len(), "change")),
-                        Some("synapse snapshot \"after sync\""),
+                        Some("palexus snapshot \"after sync\""),
                     );
                     ExitCode::SUCCESS
                 }
@@ -438,7 +438,7 @@ fn main() -> ExitCode {
                 }
                 Err(e) => {
                     let next = backup.as_ref().map(undo_command);
-                    let next = next.as_deref().unwrap_or("synapse doctor");
+                    let next = next.as_deref().unwrap_or("palexus doctor");
                     chart::fault("circulation", &e.to_string(), Some(next));
                     ExitCode::FAILURE
                 }
@@ -483,7 +483,7 @@ fn main() -> ExitCode {
                     chart::row(chart::Mark::Present, "snapshot", &sha);
                     chart::close(
                         "The Brain is protected and can be returned to this state anytime.",
-                        Some("synapse hud"),
+                        Some("palexus hud"),
                     );
                     ExitCode::SUCCESS
                 }
@@ -512,7 +512,7 @@ fn main() -> ExitCode {
                     chart::row(chart::Mark::Present, "restored", &sha);
                     chart::close(
                         "Tools still hold the old projection.",
-                        Some("synapse project"),
+                        Some("palexus project"),
                     );
                     ExitCode::SUCCESS
                 }
@@ -611,7 +611,7 @@ fn main() -> ExitCode {
                                 chart::row(chart::Mark::Present, &e.id, &desc);
                             }
                         }
-                        chart::close("View full logs with: synapse spool show <id>", None);
+                        chart::close("View full logs with: palexus spool show <id>", None);
                         ExitCode::SUCCESS
                     }
                     Err(e) => {
@@ -654,7 +654,7 @@ fn main() -> ExitCode {
 
             if command[0] == "view" || command[0] == "show" {
                 if command.len() < 2 {
-                    chart::fault("squash", "usage: synapse squash view <id>", None);
+                    chart::fault("squash", "usage: palexus squash view <id>", None);
                     return ExitCode::FAILURE;
                 }
                 let id = &command[1];
@@ -685,7 +685,7 @@ fn main() -> ExitCode {
                                 chart::row(chart::Mark::Present, &e.id, &desc);
                             }
                         }
-                        chart::close("View full logs with: synapse squash view <id>", None);
+                        chart::close("View full logs with: palexus squash view <id>", None);
                         ExitCode::SUCCESS
                     }
                     Err(e) => {
@@ -891,7 +891,7 @@ fn main() -> ExitCode {
                     .filter(|p| !p.as_os_str().is_empty())
                     .collect()
             });
-            let report = synapse_core::compute_vibe(hours, custom_roots);
+            let report = palexus_core::compute_vibe(hours, custom_roots);
             match format.to_lowercase().as_str() {
                 "json" => match serde_json::to_string_pretty(&report) {
                     Ok(json_str) => println!("{json_str}"),
@@ -901,10 +901,10 @@ fn main() -> ExitCode {
                     }
                 },
                 "genmon" => {
-                    println!("{}", synapse_core::render_genmon(&report));
+                    println!("{}", palexus_core::render_genmon(&report));
                 }
                 _ => {
-                    println!("{}", synapse_core::render_text(&report));
+                    println!("{}", palexus_core::render_text(&report));
                 }
             }
             ExitCode::SUCCESS
@@ -1090,22 +1090,22 @@ fn run_interactive_hud(
                                         } else {
                                             brain_root.join("mappings.json")
                                         };
-                                    let ctx = synapse_core::doctor::DoctorContext {
+                                    let ctx = palexus_core::doctor::DoctorContext {
                                         brain_root: brain_root.to_path_buf(),
                                         tool_root: tool_root.to_path_buf(),
                                         mappings_path,
                                     };
-                                    let diags = synapse_core::doctor::diagnose(&ctx);
+                                    let diags = palexus_core::doctor::diagnose(&ctx);
                                     let criticals = diags
                                         .iter()
                                         .filter(|d| {
-                                            d.severity == synapse_core::doctor::Severity::Critical
+                                            d.severity == palexus_core::doctor::Severity::Critical
                                         })
                                         .count();
                                     let warnings = diags
                                         .iter()
                                         .filter(|d| {
-                                            d.severity == synapse_core::doctor::Severity::Warning
+                                            d.severity == palexus_core::doctor::Severity::Warning
                                         })
                                         .count();
                                     if diags.is_empty() {
@@ -1126,7 +1126,7 @@ fn run_interactive_hud(
                                         } else {
                                             brain_root.join("mappings.json")
                                         };
-                                    let ctx = synapse_core::doctor::DoctorContext {
+                                    let ctx = palexus_core::doctor::DoctorContext {
                                         brain_root: brain_root.to_path_buf(),
                                         tool_root: tool_root.to_path_buf(),
                                         mappings_path,
@@ -1281,22 +1281,22 @@ fn run_interactive_hud(
                                     } else {
                                         brain_root.join("mappings.json")
                                     };
-                                let ctx = synapse_core::doctor::DoctorContext {
+                                let ctx = palexus_core::doctor::DoctorContext {
                                     brain_root: brain_root.to_path_buf(),
                                     tool_root: tool_root.to_path_buf(),
                                     mappings_path,
                                 };
-                                let diags = synapse_core::doctor::diagnose(&ctx);
+                                let diags = palexus_core::doctor::diagnose(&ctx);
                                 let criticals = diags
                                     .iter()
                                     .filter(|d| {
-                                        d.severity == synapse_core::doctor::Severity::Critical
+                                        d.severity == palexus_core::doctor::Severity::Critical
                                     })
                                     .count();
                                 let warnings = diags
                                     .iter()
                                     .filter(|d| {
-                                        d.severity == synapse_core::doctor::Severity::Warning
+                                        d.severity == palexus_core::doctor::Severity::Warning
                                     })
                                     .count();
                                 if diags.is_empty() {
@@ -1401,7 +1401,7 @@ fn report_scan(root: &Path, json: bool) -> ExitCode {
     let next = if detected.is_empty() {
         None
     } else {
-        Some("synapse import --dry-run")
+        Some("palexus import --dry-run")
     };
     chart::close(&finding, next);
 
@@ -1473,7 +1473,7 @@ fn report_import_dry_run(root: &Path) -> ExitCode {
             "(none)",
             "no supported tool configs under this site",
         );
-        chart::close("Nothing to import.", Some("synapse scan"));
+        chart::close("Nothing to import.", Some("palexus scan"));
         return ExitCode::SUCCESS;
     }
 
@@ -1489,23 +1489,23 @@ fn report_import_dry_run(root: &Path) -> ExitCode {
     );
 
     if had_error {
-        chart::close(&finding, Some("synapse doctor"));
+        chart::close(&finding, Some("palexus doctor"));
         ExitCode::FAILURE
     } else {
-        chart::close(&finding, Some("synapse import"));
+        chart::close(&finding, Some("palexus import"));
         ExitCode::SUCCESS
     }
 }
 
 /// Resolves the Brain directory for `doctor`. Precedence: an explicit
-/// `--brain` flag, then `$SYNAPSE_BRAIN_PATH` / `$SYNAPSE_BRAIN`, then
+/// `--brain` flag, then `$PALEXUS_BRAIN_PATH` / `$PALEXUS_BRAIN`, then
 /// `~/Desktop/AI BRAIN` if present on disk, else the default `~/AIBrain`.
 fn resolve_brain_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
     if let Some(p) = explicit {
         return Ok(p);
     }
     if let Some(env) =
-        std::env::var_os("SYNAPSE_BRAIN_PATH").or_else(|| std::env::var_os("SYNAPSE_BRAIN"))
+        std::env::var_os("PALEXUS_BRAIN_PATH").or_else(|| std::env::var_os("PALEXUS_BRAIN"))
     {
         return Ok(PathBuf::from(env));
     }
@@ -1516,7 +1516,7 @@ fn resolve_brain_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
 }
 
 /// Resolves the tool config root that projection paths are relative to.
-/// Precedence: `--tool-root`, then `$SYNAPSE_WORKSPACE_PATH` / `$SYNAPSE_TOOL_ROOT`, then home.
+/// Precedence: `--tool-root`, then `$PALEXUS_WORKSPACE_PATH` / `$PALEXUS_TOOL_ROOT`, then home.
 ///
 /// The folder you happen to be in is never used: the desktop app always
 /// looks in the home folder, and the two must agree on which tool configs
@@ -1533,7 +1533,7 @@ fn pick_tool_root(
     if let Some(p) = explicit {
         return Ok(p);
     }
-    for key in ["SYNAPSE_WORKSPACE_PATH", "SYNAPSE_TOOL_ROOT"] {
+    for key in ["PALEXUS_WORKSPACE_PATH", "PALEXUS_TOOL_ROOT"] {
         if let Some(value) = env(key).filter(|v| !v.is_empty()) {
             return Ok(PathBuf::from(value));
         }
@@ -1542,7 +1542,7 @@ fn pick_tool_root(
 }
 
 // Every command that writes into tool configs runs through one of these, so
-// the files it changes are saved first and `synapse undo` can put them back.
+// the files it changes are saved first and `palexus undo` can put them back.
 
 fn project_backed_up(
     brain_root: &Path,
@@ -1565,7 +1565,7 @@ fn fix_backed_up(ctx: &DoctorContext) -> (Result<usize, DoctorError>, Option<Man
 }
 
 fn undo_command(b: &Manifest) -> String {
-    format!("synapse undo {}", b.id)
+    format!("palexus undo {}", b.id)
 }
 
 fn backup_summary(b: &Manifest) -> String {
@@ -1600,9 +1600,9 @@ fn ago(now_ms: u64, then_ms: u64) -> String {
     }
 }
 
-/// `synapse project --dry-run`: what each tool would get, writing nothing.
+/// `palexus project --dry-run`: what each tool would get, writing nothing.
 fn report_project_plan(brain_root: &Path, tool_root: &Path) -> ExitCode {
-    let plan = synapse_core::sync::plan_project(brain_root, tool_root);
+    let plan = palexus_core::sync::plan_project(brain_root, tool_root);
     chart::open("graft · dry run", "nothing will be written");
     chart::field("Brain", &brain_root.display().to_string());
     chart::field("Tools", &tool_root.display().to_string());
@@ -1636,12 +1636,12 @@ fn report_project_plan(brain_root: &Path, tool_root: &Path) -> ExitCode {
     }
     chart::close(
         "Dry run only — no file was touched.",
-        Some("synapse project"),
+        Some("palexus project"),
     );
     ExitCode::SUCCESS
 }
 
-/// `synapse backups`: every saved copy, newest first.
+/// `palexus backups`: every saved copy, newest first.
 fn report_backups(brain_root: &Path) -> ExitCode {
     let list = match backup::list(brain_root) {
         Ok(l) => l,
@@ -1658,7 +1658,7 @@ fn report_backups(brain_root: &Path) -> ExitCode {
         chart::row(
             chart::Mark::Absent,
             "none",
-            "no Synapse command has changed a tool file yet",
+            "no Palexus command has changed a tool file yet",
         );
         chart::close("Nothing to undo.", None);
         return ExitCode::SUCCESS;
@@ -1680,13 +1680,13 @@ fn report_backups(brain_root: &Path) -> ExitCode {
         chart::row(mark, &b.id, &detail);
     }
     chart::close(
-        "synapse undo puts back the newest; synapse undo <id> a given one.",
-        Some("synapse undo"),
+        "palexus undo puts back the newest; palexus undo <id> a given one.",
+        Some("palexus undo"),
     );
     ExitCode::SUCCESS
 }
 
-/// `synapse undo [id]`: puts back the files a backup saved.
+/// `palexus undo [id]`: puts back the files a backup saved.
 fn run_undo(brain_root: &Path, id: Option<&str>) -> ExitCode {
     match backup::restore(brain_root, id) {
         Ok(m) => {
@@ -1704,12 +1704,12 @@ fn run_undo(brain_root: &Path, id: Option<&str>) -> ExitCode {
             }
             chart::close(
                 "Files are back to how they were before that command.",
-                Some("synapse doctor"),
+                Some("palexus doctor"),
             );
             ExitCode::SUCCESS
         }
         Err(e) => {
-            chart::fault("undo", &e.to_string(), Some("synapse backups"));
+            chart::fault("undo", &e.to_string(), Some("palexus backups"));
             ExitCode::FAILURE
         }
     }
@@ -1780,7 +1780,7 @@ fn run_doctor(brain_root: &Path, tool_root: &Path, fix: bool) -> ExitCode {
 
     if diagnoses.is_empty() {
         chart::row(chart::Mark::Present, "brain", "no drift, no faults");
-        chart::close("Clean bill of health.", Some("synapse sync --once"));
+        chart::close("Clean bill of health.", Some("palexus sync --once"));
         return ExitCode::SUCCESS;
     }
 
@@ -1812,11 +1812,11 @@ fn run_doctor(brain_root: &Path, tool_root: &Path, fix: bool) -> ExitCode {
     };
 
     let next = if fixable > 0 && !fix {
-        Some("synapse doctor --fix")
+        Some("palexus doctor --fix")
     } else if criticals > 0 {
         None
     } else {
-        Some("synapse sync --once")
+        Some("palexus sync --once")
     };
     chart::close(&finding, next);
 
@@ -1831,7 +1831,7 @@ fn run_doctor(brain_root: &Path, tool_root: &Path, fix: bool) -> ExitCode {
 /// `snapshot`/`rollback`, are Phase 3/4 scope not yet landed.
 #[allow(dead_code)]
 fn not_yet_implemented(verb: &str, args: &str) -> ExitCode {
-    eprintln!("synapse {verb}: not yet implemented ({args}) — see PLAN.md Phase 3/4");
+    eprintln!("palexus {verb}: not yet implemented ({args}) — see PLAN.md Phase 3/4");
     ExitCode::FAILURE
 }
 
@@ -1858,29 +1858,29 @@ mod tests {
 
     #[test]
     fn parses_each_verb() {
-        assert!(Cli::try_parse_from(["synapse", "scan"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "import", "--dry-run"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "project"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "sync", "--once"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "doctor", "--fix"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "snapshot", "before upgrade"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "rollback", "abc123"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "exec", "--", "cargo", "test"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "filter", "--level", "aggressive"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "spool", "list"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "spool", "show", "test_id"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "serve", "--port", "8088"]).is_ok());
-        assert!(Cli::try_parse_from(["synapse", "hud", "--once"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "scan"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "import", "--dry-run"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "project"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "sync", "--once"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "doctor", "--fix"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "snapshot", "before upgrade"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "rollback", "abc123"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "exec", "--", "cargo", "test"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "filter", "--level", "aggressive"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "spool", "list"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "spool", "show", "test_id"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "serve", "--port", "8088"]).is_ok());
+        assert!(Cli::try_parse_from(["palexus", "hud", "--once"]).is_ok());
     }
 
     #[test]
     fn rejects_unknown_verb() {
-        assert!(Cli::try_parse_from(["synapse", "frobnicate"]).is_err());
+        assert!(Cli::try_parse_from(["palexus", "frobnicate"]).is_err());
     }
 
     #[test]
     fn rollback_requires_a_snapshot_argument() {
-        assert!(Cli::try_parse_from(["synapse", "rollback"]).is_err());
+        assert!(Cli::try_parse_from(["palexus", "rollback"]).is_err());
     }
 
     #[test]
@@ -1933,8 +1933,8 @@ mod tests {
         );
         // With no override, the default is <home>/Desktop/AI BRAIN (if present) or <home>/AIBrain.
         if let Some(home) = dirs::home_dir() {
-            if std::env::var_os("SYNAPSE_BRAIN").is_none()
-                && std::env::var_os("SYNAPSE_BRAIN_PATH").is_none()
+            if std::env::var_os("PALEXUS_BRAIN").is_none()
+                && std::env::var_os("PALEXUS_BRAIN_PATH").is_none()
             {
                 let expected =
                     if home.join("Desktop/AI BRAIN").is_dir() && !home.join("AIBrain").exists() {
@@ -1973,12 +1973,12 @@ mod tests {
     fn tool_root_prefers_flag_then_workspace_then_tool_root_env() {
         let home = Some(PathBuf::from("/home/mara"));
         let both = |key: &str| match key {
-            "SYNAPSE_WORKSPACE_PATH" => Some("/ws".into()),
-            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            "PALEXUS_WORKSPACE_PATH" => Some("/ws".into()),
+            "PALEXUS_TOOL_ROOT" => Some("/tr".into()),
             _ => None,
         };
         let only_tr = |key: &str| match key {
-            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            "PALEXUS_TOOL_ROOT" => Some("/tr".into()),
             _ => None,
         };
         assert_eq!(
@@ -2025,8 +2025,8 @@ mod tests {
         // Seed a mapping whose canonical Brain source doesn't exist →
         // canonical-source-missing (Critical), which the CLI surfaces as a
         // FAILURE exit code so scripts/CI can gate on it.
-        use synapse_core::mappings::{Mapping, MappingsFile};
-        use synapse_core::projector::ProjectionPolicy;
+        use palexus_core::mappings::{Mapping, MappingsFile};
+        use palexus_core::projector::ProjectionPolicy;
 
         let brain = tempfile::tempdir().unwrap();
         let tool = tempfile::tempdir().unwrap();

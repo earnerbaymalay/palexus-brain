@@ -16,8 +16,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
  *   const { enabled, setEnabled } = useHints()
  */
 
-export const HINTS_KEY_ENABLED = 'synapse.hints.enabled'
-export const HINTS_KEY_DISMISSED = 'synapse.hints.dismissed'
+export const HINTS_KEY_ENABLED = 'palexus.hints.enabled'
+export const HINTS_KEY_DISMISSED = 'palexus.hints.dismissed'
 /** Shortcut that toggles hints. The shell registers it; the coach advertises it. */
 export const HINTS_TOGGLE_KEYS = 'mod+h'
 

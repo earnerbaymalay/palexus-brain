@@ -6,9 +6,9 @@
 //! Ollama down, model missing, malformed response — so memory never blocks the
 //! agent and keyword search keeps working without a vector backend.
 //!
-//! * Endpoint — `$SYNAPSE_OLLAMA_URL` (default `http://127.0.0.1:11434`).
-//! * Model    — `$SYNAPSE_EMBED_MODEL` (default `nomic-embed-text`).
-//! * Off switch — set `$SYNAPSE_EMBED_MODEL=off` (or empty) to disable entirely.
+//! * Endpoint — `$PALEXUS_OLLAMA_URL` (default `http://127.0.0.1:11434`).
+//! * Model    — `$PALEXUS_EMBED_MODEL` (default `nomic-embed-text`).
+//! * Off switch — set `$PALEXUS_EMBED_MODEL=off` (or empty) to disable entirely.
 
 use std::time::Duration;
 
@@ -20,7 +20,7 @@ const DEFAULT_OLLAMA_URL: &str = "http://127.0.0.1:11434";
 
 /// Resolved embedding model name, or `None` when embeddings are disabled.
 pub fn model() -> Option<String> {
-    match std::env::var("SYNAPSE_EMBED_MODEL") {
+    match std::env::var("PALEXUS_EMBED_MODEL") {
         Ok(m) if m.trim().is_empty() || m.trim().eq_ignore_ascii_case("off") => None,
         Ok(m) => Some(m),
         Err(_) => Some(DEFAULT_EMBED_MODEL.to_string()),
@@ -33,7 +33,7 @@ pub fn enabled() -> bool {
 }
 
 fn ollama_url() -> String {
-    std::env::var("SYNAPSE_OLLAMA_URL")
+    std::env::var("PALEXUS_OLLAMA_URL")
         .ok()
         .filter(|s| !s.trim().is_empty())
         .unwrap_or_else(|| DEFAULT_OLLAMA_URL.to_string())
@@ -143,8 +143,8 @@ mod tests {
     #[test]
     fn disabled_when_model_off() {
         // Not a strict test of env (parallel tests share env), just the parser.
-        std::env::set_var("SYNAPSE_EMBED_MODEL", "off");
+        std::env::set_var("PALEXUS_EMBED_MODEL", "off");
         assert!(model().is_none());
-        std::env::remove_var("SYNAPSE_EMBED_MODEL");
+        std::env::remove_var("PALEXUS_EMBED_MODEL");
     }
 }

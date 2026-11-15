@@ -1,11 +1,11 @@
 use std::fs;
 use std::sync::Mutex;
-use synapse_core::adapter::{Adapter, AdapterError};
-use synapse_core::adapters::{
+use palexus_core::adapter::{Adapter, AdapterError};
+use palexus_core::adapters::{
     cline::ClineAdapter, github_copilot::GitHubCopilotAdapter, opencode::OpenCodeAdapter,
     windsurf::WindsurfAdapter, zed::ZedAdapter,
 };
-use synapse_core::model::Skill;
+use palexus_core::model::Skill;
 use tempfile::tempdir;
 
 /// `cargo test` runs tests in this file concurrently by default, but
@@ -368,13 +368,13 @@ fn test_windsurf_adapter_writes_outside_root() {
     let home_dir = tempdir().unwrap();
     std::env::set_var("HOME", home_dir.path());
 
-    let server = synapse_core::model::McpServer {
+    let server = palexus_core::model::McpServer {
         id: "wind-mcp".to_string(),
         transport: "stdio".to_string(),
         command_or_url: "python main.py".to_string(),
         env_placeholders: vec![],
         targets: vec!["windsurf".to_string()],
-        health: synapse_core::model::HealthStatus::Unknown,
+        health: palexus_core::model::HealthStatus::Unknown,
     };
 
     let res = adapter.project(dir.path(), &[], &[], &[server]);
@@ -459,7 +459,7 @@ fn test_zed_adapter_boundary_cases() {
 
 #[test]
 fn test_cwe74_cwe94_cwe116_indirect_prompt_injection_stripped_on_import() {
-    use synapse_core::adapters::{
+    use palexus_core::adapters::{
         agy_cli::AgyCliAdapter, claude_code::ClaudeCodeAdapter, cursor::CursorAdapter,
         kiro::KiroAdapter, trae::TraeAdapter,
     };
@@ -539,8 +539,8 @@ fn test_cwe74_cwe94_cwe116_indirect_prompt_injection_stripped_on_import() {
 #[cfg(unix)]
 #[test]
 fn test_cwe59_cwe61_symlink_escape_blocked_across_projection_and_sync() {
-    use synapse_core::adapters::cursor::CursorAdapter;
-    use synapse_core::sync::SyncLock;
+    use palexus_core::adapters::cursor::CursorAdapter;
+    use palexus_core::sync::SyncLock;
 
     let workspace = tempdir().unwrap();
     let outside = tempdir().unwrap();

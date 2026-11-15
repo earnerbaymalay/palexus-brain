@@ -1,4 +1,4 @@
-//! `synapse mem` — Synaptic Memory commands (see `synapse_core::memory`).
+//! `palexus mem` — Synaptic Memory commands (see `palexus_core::memory`).
 //!
 //! Output intended for agents (search/timeline/get/context/hook) is plain text;
 //! human-facing confirmations use the chart helpers.
@@ -9,7 +9,7 @@ use std::process::ExitCode;
 
 use clap::Subcommand;
 use serde_json::Value;
-use synapse_core::memory::{observation_from_tool, summarize_session, MemoryStore, NewObservation};
+use palexus_core::memory::{observation_from_tool, summarize_session, MemoryStore, NewObservation};
 
 use crate::chart;
 
@@ -72,7 +72,7 @@ pub enum MemAction {
         /// Keyword tag (repeatable)
         #[arg(short, long)]
         tag: Vec<String>,
-        /// Recording model/agent (defaults to $SYNAPSE_MODEL)
+        /// Recording model/agent (defaults to $PALEXUS_MODEL)
         #[arg(long)]
         model: Option<String>,
         #[arg(long)]
@@ -180,7 +180,7 @@ pub fn run(action: MemAction) -> ExitCode {
                     for o in hits {
                         println!("{}", o.index_line());
                     }
-                    println!("\nNext: `synapse mem timeline <id>` or `synapse mem get <id>…`");
+                    println!("\nNext: `palexus mem timeline <id>` or `palexus mem get <id>…`");
                     ExitCode::SUCCESS
                 }
                 Err(e) => fail(&e.to_string()),
@@ -210,7 +210,7 @@ pub fn run(action: MemAction) -> ExitCode {
                         "## #{} · {} · {} · {}",
                         o.id,
                         o.kind,
-                        synapse_core::memory::format_ts(o.ts),
+                        palexus_core::memory::format_ts(o.ts),
                         o.project
                     );
                     println!("{}\n", o.title);
@@ -259,7 +259,7 @@ pub fn run(action: MemAction) -> ExitCode {
                 topic,
                 tags: tag,
                 model: model
-                    .or_else(|| std::env::var("SYNAPSE_MODEL").ok())
+                    .or_else(|| std::env::var("PALEXUS_MODEL").ok())
                     .unwrap_or_default(),
             };
             match store(dir).add(new) {
@@ -304,9 +304,9 @@ pub fn run(action: MemAction) -> ExitCode {
             Err(e) => fail(&e.to_string()),
         },
         MemAction::Reindex { dir } => {
-            if !synapse_core::embedding::enabled() {
+            if !palexus_core::embedding::enabled() {
                 return fail(
-                    "embeddings are disabled (SYNAPSE_EMBED_MODEL=off); nothing to reindex",
+                    "embeddings are disabled (PALEXUS_EMBED_MODEL=off); nothing to reindex",
                 );
             }
             match store(dir).reembed_missing() {
@@ -314,7 +314,7 @@ pub fn run(action: MemAction) -> ExitCode {
                     chart::open("memory", "reindex");
                     chart::field(
                         "Model",
-                        &synapse_core::embedding::model().unwrap_or_default(),
+                        &palexus_core::embedding::model().unwrap_or_default(),
                     );
                     chart::close(
                         &format!("{} embedded", chart::plural(n, "observation")),
@@ -336,14 +336,14 @@ pub fn run(action: MemAction) -> ExitCode {
             let scope = if all { None } else { Some(proj.as_str()) };
             match store(dir).distill(scope, threshold, apply) {
                 Ok(r) if r.clusters.is_empty() => {
-                    if synapse_core::embedding::enabled() {
+                    if palexus_core::embedding::enabled() {
                         println!(
                             "Nothing to distil — no near-duplicate clusters at cosine ≥ {:.2}.",
                             threshold
                         );
                     } else {
                         println!(
-                            "Embeddings are disabled (SYNAPSE_EMBED_MODEL=off); distillation needs them."
+                            "Embeddings are disabled (PALEXUS_EMBED_MODEL=off); distillation needs them."
                         );
                     }
                     ExitCode::SUCCESS
@@ -405,7 +405,7 @@ pub fn run(action: MemAction) -> ExitCode {
                             "{} / {} ({})",
                             embedded,
                             st.observations,
-                            synapse_core::embedding::model().unwrap_or_else(|| "off".into())
+                            palexus_core::embedding::model().unwrap_or_else(|| "off".into())
                         ),
                     );
                     chart::field("On disk", &format!("{} bytes", st.bytes));
@@ -441,9 +441,9 @@ fn run_hook(event: &str, store: &MemoryStore) -> std::io::Result<()> {
         s if s.is_empty() => cwd_project(None),
         s => s,
     };
-    // Which agent/model is recording — from the hook payload, else $SYNAPSE_MODEL.
+    // Which agent/model is recording — from the hook payload, else $PALEXUS_MODEL.
     let model = match str_of("model") {
-        s if s.is_empty() => std::env::var("SYNAPSE_MODEL").unwrap_or_default(),
+        s if s.is_empty() => std::env::var("PALEXUS_MODEL").unwrap_or_default(),
         s => s,
     };
 
@@ -499,12 +499,12 @@ const HOOKS_SNIPPET: &str = r#"Merge into ~/.claude/settings.json (or a project'
 
 {
   "hooks": {
-    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "synapse mem hook session-start" }] }],
-    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "synapse mem hook prompt" }] }],
-    "PostToolUse":      [{ "matcher": "*", "hooks": [{ "type": "command", "command": "synapse mem hook post-tool" }] }],
-    "Stop":             [{ "hooks": [{ "type": "command", "command": "synapse mem hook stop" }] }]
+    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "palexus mem hook session-start" }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "palexus mem hook prompt" }] }],
+    "PostToolUse":      [{ "matcher": "*", "hooks": [{ "type": "command", "command": "palexus mem hook post-tool" }] }],
+    "Stop":             [{ "hooks": [{ "type": "command", "command": "palexus mem hook stop" }] }]
   }
 }
 
 SessionStart stdout is injected into the new session as a compact memory index.
-Agents then drill down with `synapse mem search | timeline | get`."#;
+Agents then drill down with `palexus mem search | timeline | get`."#;

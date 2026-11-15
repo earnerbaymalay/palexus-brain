@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **SYNAPSE / Synapse** will be documented in this file.
+All notable changes to **PALEXUS / Palexus** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,41 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Backups and undo for tool files** — `project`, `sync`, `doctor --fix` and `onboard` save the original of every file they change under `<brain>/.brain/backups/<id>/` first, and refuse to write if they can't. `synapse backups` lists them; `synapse undo [id]` puts the files back.
-- **`synapse project --dry-run` shows the plan** — which tools would get which skills and MCP servers, without writing anything.
-- **Context Firewall (`packages/core/src/firewall.rs`)** — zero-leak egress pseudonymization and response rehydration for runtime gateway traffic (`synapse serve`):
+- **Backups and undo for tool files** — `project`, `sync`, `doctor --fix` and `onboard` save the original of every file they change under `<brain>/.brain/backups/<id>/` first, and refuse to write if they can't. `palexus backups` lists them; `palexus undo [id]` puts the files back.
+- **`palexus project --dry-run` shows the plan** — which tools would get which skills and MCP servers, without writing anything.
+- **Context Firewall (`packages/core/src/firewall.rs`)** — zero-leak egress pseudonymization and response rehydration for runtime gateway traffic (`palexus serve`):
   - Masks physical hardware MAC addresses, RFC 1918 private IPv4/IPv6 ranges, and API keys/tokens before forwarding prompts to upstream models.
   - Automatically rehydrates synthetic placeholder tokens upon response return and inside tool-call JSON arguments so local execution operates without breaking.
-  - Exposes `--no-firewall` CLI flag on `synapse serve` to toggle egress protection (enabled by default).
-- **Synaptic Memory (`synapse mem`)** — persistent cross-session memory for AI agents, adapted from claude-mem but local-first and zero-telemetry:
+  - Exposes `--no-firewall` CLI flag on `palexus serve` to toggle egress protection (enabled by default).
+- **Synaptic Memory (`palexus mem`)** — persistent cross-session memory for AI agents, adapted from claude-mem but local-first and zero-telemetry:
   - `mem hook session-start|prompt|post-tool|stop` captures lifecycle events from agent hooks (`mem hooks` prints the Claude Code config; nothing is written automatically).
   - Progressive disclosure: `mem search` (token-costed index) → `mem timeline <id>` → `mem get <ids>`; `mem context` is the SessionStart injection block.
   - No LLM in the loop: tool output is distilled with the Sensory Gating engine; `<private>…</private>` spans are dropped and credential-looking tokens redacted before anything touches disk.
-  - Storage is an append-only JSONL at `~/.synapse/memory/` (override: `SYNAPSE_MEMORY_DIR`); `mem forget`, `mem stats`, `mem observe` for management.
-- **Reversible context folding (`synapse serve --fold-keep N`)** — inspired by billion-context, but deterministic and model-free: tool results older than the newest N messages (OpenAI `tool` and Anthropic `tool_result` shapes) collapse into a short digest stub; the original is spooled under a content-addressed id and restored with `synapse spool show <id>`. Stubs are byte-stable across requests so prefix caching is preserved. Off by default.
+  - Storage is an append-only JSONL at `~/.palexus/memory/` (override: `PALEXUS_MEMORY_DIR`); `mem forget`, `mem stats`, `mem observe` for management.
+- **Reversible context folding (`palexus serve --fold-keep N`)** — inspired by billion-context, but deterministic and model-free: tool results older than the newest N messages (OpenAI `tool` and Anthropic `tool_result` shapes) collapse into a short digest stub; the original is spooled under a content-addressed id and restored with `palexus spool show <id>`. Stubs are byte-stable across requests so prefix caching is preserved. Off by default.
 
 ### Fixed
-- The CLI looked for tool configs in the current folder while the desktop app used the home folder, so the two could disagree. Both now use the home folder unless `--tool-root`, `SYNAPSE_WORKSPACE_PATH` or `SYNAPSE_TOOL_ROOT` says otherwise.
-- `synapse project` no longer writes configs for tools that are not installed. Only skills and servers that name such a tool explicitly are written for it.
+- The CLI looked for tool configs in the current folder while the desktop app used the home folder, so the two could disagree. Both now use the home folder unless `--tool-root`, `PALEXUS_WORKSPACE_PATH` or `PALEXUS_TOOL_ROOT` says otherwise.
+- `palexus project` no longer writes configs for tools that are not installed. Only skills and servers that name such a tool explicitly are written for it.
 
 ## [1.0.0] - 2026-08-19
 
 ### Added
-- **SYNAPSE Rebrand Package & Visual Identity**:
-  - Integrated complete SYNAPSE brand identity (`SYNAPSE / Synapse: One Brain. All Models.`).
-  - Applied design tokens: Synapse Blue accent (`#1d9bf0`), dark ink interface (`#06080b`), Inter, JetBrains Mono, and Rubik Mono One typography, and "Surgical precision. Zero friction." tone anchor.
+- **PALEXUS Rebrand Package & Visual Identity**:
+  - Integrated complete PALEXUS brand identity (`PALEXUS / Palexus: One Brain. All Models.`).
+  - Applied design tokens: Palexus Blue accent (`#1d9bf0`), dark ink interface (`#06080b`), Inter, JetBrains Mono, and Rubik Mono One typography, and "Surgical precision. Zero friction." tone anchor.
 - **Clinical Record React Desktop UI (`chart.tsx`, `Intake.tsx`, `Examination.tsx`)**:
-  - Implemented the clinical operating theatre record identity per `IDENTITY.md` backed by live `synapse-core` calls with zero fabricated sample data.
+  - Implemented the clinical operating theatre record identity per `IDENTITY.md` backed by live `palexus-core` calls with zero fabricated sample data.
 - **4-Phase Onboarding Journey Guide (`docs/ONBOARDING.md`)**:
-  - Authored structured 4-phase journey covering Phase 1 (The Hook), Phase 2 (The Solution - The Brain), Phase 3 (Immediate Value - `synapse scan` / `import` / `project`), and Phase 4 (Long-Term Power - Time Machine, Auto-Sync Daemon, Doctor, MCP Hub, Marketplace).
+  - Authored structured 4-phase journey covering Phase 1 (The Hook), Phase 2 (The Solution - The Brain), Phase 3 (Immediate Value - `palexus scan` / `import` / `project`), and Phase 4 (Long-Term Power - Time Machine, Auto-Sync Daemon, Doctor, MCP Hub, Marketplace).
 - **Interactive Cyber-Dark GitHub Pages Landing Site (`docs/index.html`)**:
   - Standalone interactive terminal simulator with tabbed verbs (`scan`, `import`, `project`, `sync`, `doctor`), live ECG vitals pulse, and 13 tool adapter specifications.
 - **CLI Binary Alias Integration**:
-  - Exposed binary aliases `synapse` and `synapse` across CLI commands (`scan`, `import`, `project`, `sync`, `doctor`, `snapshot`, `rollback`).
+  - Exposed binary aliases `palexus` and `palexus` across CLI commands (`scan`, `import`, `project`, `sync`, `doctor`, `snapshot`, `rollback`).
 - **Antigravity CLI Adapter (`agy-cli`)**:
   - Implemented 13th tool adapter supporting Antigravity CLI rule files (`AGENTS.md`), custom skills (`.agy/skills/`), and settings configurations (`.gemini/settings.json`).
 - **Full CLI Non-Dry-Run Write Paths**:
-  - Implemented write execution for `synapse import`, `synapse project`, `synapse sync` (`--once`, `--daemon`, `--poll-interval`), `synapse snapshot`, and `synapse rollback`.
+  - Implemented write execution for `palexus import`, `palexus project`, `palexus sync` (`--once`, `--daemon`, `--poll-interval`), `palexus snapshot`, and `palexus rollback`.
 - **E2E Quality & Test Hardening (100% Pass Rate)**:
   - Achieved 142/142 (100%) test pass rate across the full E2E Vitest suite:
     - Sanity suite: 4/4 passing (100%)
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Authored standard **Changelog** (`CHANGELOG.md`) documenting all development milestones from Phase 0 to Phase 7.
   - Updated root `README.md` to reflect completed Phase 7 status, architecture overview, Quickstart instructions, and documentation links.
 - **Doctor Engine & CLI Wiring (T7.2)**:
-  - Implemented `synapse doctor [--fix]` CLI subcommand wired to `packages/core/src/doctor.rs`.
+  - Implemented `palexus doctor [--fix]` CLI subcommand wired to `packages/core/src/doctor.rs`.
   - Added 13 diagnostic rules covering un-initialized Git repositories, missing projections, detached symlinks, retargeted symlinks, and content checksum drift.
   - Implemented self-verifying corrupted-brain fixture test (`doctor_fixes_every_seeded_fault_in_a_corrupted_brain`).
 - **Update Channel Dry-Run Engine (T7.3)**:
@@ -171,5 +171,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Discovery & Wireframes (T0.1 - T0.5)**:
   - Initialized repository state files (`PLAN.md`, `PROGRESS.md`, `DECISIONS.md`, `QUESTIONS.md`).
   - Authored 12 tool reconnaissance briefs in `docs/research/`.
-  - Created 3 brand identity package mocks (Cortex, Synapse, Cerebra).
+  - Created 3 brand identity package mocks (Cortex, Palexus, Cerebra).
   - Drafted ASCII wireframes for all 8 application screens.

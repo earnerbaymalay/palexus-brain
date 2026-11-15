@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-// SYNAPSE tokens (brands/synapse/tokens.json), exposed as CSS variables in
-// index.css. `drape` is the one working UI accent (Synapse Blue). Gold is
+// PALEXUS tokens (brands/palexus/tokens.json), exposed as CSS variables in
+// index.css. `drape` is the one working UI accent (Palexus Blue). Gold is
 // deliberately absent here — the brand book reserves it for the marketing
 // hero device only, never UI chrome, so it has no Tailwind color at all in
 // the app.

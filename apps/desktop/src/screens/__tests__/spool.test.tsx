@@ -11,7 +11,7 @@ const entry = (over: Partial<SpoolEntryDto> = {}): SpoolEntryDto => ({
   id: 'a1b2c3d4',
   timestamp: 1_760_000_000,
   raw_bytes: 2048,
-  log_path: '/home/mara/.synapse/spool/a1b2c3d4.log',
+  log_path: '/home/mara/.palexus/spool/a1b2c3d4.log',
   command: 'cargo test --workspace',
   ...over,
 })
@@ -62,7 +62,7 @@ describe('Spool states', () => {
     delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__
     render(<Spool />)
     expect(screen.getByText(/no backend attached/i)).toBeInTheDocument()
-    expect(screen.getByText('synapse spool list')).toBeInTheDocument()
+    expect(screen.getByText('palexus spool list')).toBeInTheDocument()
     expect(invokeMock).not.toHaveBeenCalled()
   })
 
@@ -77,7 +77,7 @@ describe('Spool states', () => {
     backend({ spool_list: () => [] })
     render(<Spool />)
     expect(await screen.findByText(/spool is empty/i)).toBeInTheDocument()
-    expect(screen.getByText('synapse squash <command>')).toBeInTheDocument()
+    expect(screen.getByText('palexus squash <command>')).toBeInTheDocument()
   })
 
   it('list error shows the error and retry re-reads', async () => {
@@ -85,12 +85,12 @@ describe('Spool states', () => {
     let fail = true
     backend({
       spool_list: () => {
-        if (fail) throw 'permission denied: ~/.synapse/spool'
+        if (fail) throw 'permission denied: ~/.palexus/spool'
         return []
       },
     })
     render(<Spool />)
-    expect(await screen.findByRole('alert')).toHaveTextContent('permission denied: ~/.synapse/spool')
+    expect(await screen.findByRole('alert')).toHaveTextContent('permission denied: ~/.palexus/spool')
     fail = false
     await user.click(screen.getByRole('button', { name: /re-read the spool/i }))
     expect(await screen.findByText(/spool is empty/i)).toBeInTheDocument()
@@ -108,7 +108,7 @@ describe('Spool inspector', () => {
     const inspector = await screen.findByRole('region', { name: /spool inspector/i })
     // 11 chars -> 3 tokens, measured, not hard-coded
     await waitFor(() => expect(within(inspector).getAllByText(/≈ 3 tokens/).length).toBeGreaterThan(0))
-    expect(within(inspector).getByText('/home/mara/.synapse/spool/a1b2c3d4.log')).toBeInTheDocument()
+    expect(within(inspector).getByText('/home/mara/.palexus/spool/a1b2c3d4.log')).toBeInTheDocument()
 
     // second run has no command: falls back to its id, and its empty log is reported
     await user.click(within(within(screen.getByRole('navigation', { name: /spooled runs/i })).getByRole('list')).getAllByRole('button')[1])
@@ -181,14 +181,14 @@ describe('Spool inspector', () => {
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
 
     await user.click(screen.getByRole('button', { name: 'Copy path' }))
-    expect(writeText).toHaveBeenLastCalledWith('/home/mara/.synapse/spool/a1b2c3d4.log')
+    expect(writeText).toHaveBeenLastCalledWith('/home/mara/.palexus/spool/a1b2c3d4.log')
     expect(await screen.findByText('Copied log path.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Copy full log' }))
     expect(writeText).toHaveBeenLastCalledWith(big) // the full log, not the capped view
 
-    await user.click(screen.getByRole('button', { name: /copy synapse spool show/i }))
-    expect(writeText).toHaveBeenLastCalledWith('synapse spool show a1b2c3d4')
+    await user.click(screen.getByRole('button', { name: /copy palexus spool show/i }))
+    expect(writeText).toHaveBeenLastCalledWith('palexus spool show a1b2c3d4')
   })
 
   it('clipboard failure is reported, not swallowed', async () => {

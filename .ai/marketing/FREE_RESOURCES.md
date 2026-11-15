@@ -1,4 +1,4 @@
-# SYNAPSE — Free Resources for Launch
+# PALEXUS — Free Resources for Launch
 
 Real, free (or free-tier) tools for producing and distributing the marketing pack. No paid tools required for a full launch.
 
@@ -16,13 +16,13 @@ Real, free (or free-tier) tools for producing and distributing the marketing pac
 
 ## Code &amp; command screenshots
 
-- **[Carbon](https://carbon.now.sh)** — beautiful code screenshots; supports custom background/theme — set the background transparent and it'll match the SYNAPSE ink palette.
+- **[Carbon](https://carbon.now.sh)** — beautiful code screenshots; supports custom background/theme — set the background transparent and it'll match the PALEXUS ink palette.
 - **[Ray.so](https://ray.so)** — similar, faster, fewer options.
 
 ## Icons
 
 - **[Lucide](https://lucide.dev)** — free, thin-stroke icon set (MIT) if the hand-authored line icons ever need to expand — matches the brand's 1.6–1.8px stroke weight.
-- **[Simple Icons](https://simpleicons.org)** — free SVG logos for real tools/platforms, for any comparison chart that needs to reference Cursor, VS Code, etc. by their real mark (never use these as SYNAPSE's own adapter icons — those stay monogram badges).
+- **[Simple Icons](https://simpleicons.org)** — free SVG logos for real tools/platforms, for any comparison chart that needs to reference Cursor, VS Code, etc. by their real mark (never use these as PALEXUS's own adapter icons — those stay monogram badges).
 
 ## Badges &amp; repo stats
 
@@ -31,7 +31,7 @@ Real, free (or free-tier) tools for producing and distributing the marketing pac
 
 ## OG / social preview images
 
-- Use `SYNAPSE_Social_Templates.dc.html` in this package (1200×630 OG card, 1280×640 GitHub social preview, 1500×500 X header) — export each via the platform's snapshot tool, no external service needed.
+- Use `PALEXUS_Social_Templates.dc.html` in this package (1200×630 OG card, 1280×640 GitHub social preview, 1500×500 X header) — export each via the platform's snapshot tool, no external service needed.
 - **[GitHub social preview docs](https://docs.github.com/en/repository/customizing-your-repository/customizing-your-repositorys-social-media-preview)** — Settings → General → Social preview, upload the 1280×640 export.
 
 ## Favicon

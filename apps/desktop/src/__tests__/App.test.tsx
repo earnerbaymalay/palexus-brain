@@ -156,7 +156,7 @@ describe('App shell', () => {
     })
     render(<App />)
     expect(await screen.findByText('intake halted.')).toBeInTheDocument()
-    expect(screen.getByText('synapse doctor')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor')).toBeInTheDocument()
     fail = false
     fireEvent.click(screen.getByRole('button', { name: 'retry' }))
     expect(await screen.findByTestId('screen-intake')).toBeInTheDocument()

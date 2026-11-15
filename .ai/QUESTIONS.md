@@ -2,8 +2,8 @@
 
 ## Gate 0 Decisions Required
 
-- [ ] **Brand Assignment**: A=Cortex, B=Synapse, C=Cerebra
-  - Why: Based on DESIGN_PACK.md wireframe branding (CORTEX, Synapse, Cerebra)
+- [ ] **Brand Assignment**: A=Cortex, B=Palexus, C=Cerebra
+  - Why: Based on DESIGN_PACK.md wireframe branding (CORTEX, Palexus, Cerebra)
   - How to apply: Continue with these assignments; confirm if any changes needed.
 
 - [ ] **Theme Default**: Dark theme

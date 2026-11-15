@@ -28,9 +28,9 @@ export function createSandbox(testName: string): Sandbox {
 
   const env = {
     HOME: mockHome,
-    SYNAPSE_BRAIN_PATH: brainDir,
-    SYNAPSE_WORKSPACE_PATH: workspaceDir,
-    SYNAPSE_LOG_DIR: logDir,
+    PALEXUS_BRAIN_PATH: brainDir,
+    PALEXUS_WORKSPACE_PATH: workspaceDir,
+    PALEXUS_LOG_DIR: logDir,
   };
 
   const cleanup = () => {

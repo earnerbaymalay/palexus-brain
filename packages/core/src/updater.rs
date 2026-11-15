@@ -148,7 +148,7 @@ pub const UPDATE_PUBLIC_KEY: &str = "";
 /// until real release infrastructure exists (Phase 8, Package & Release);
 /// the `tauri-plugin-updater` wiring consumes this same endpoint + the
 /// public key above once both are real.
-pub const UPDATE_ENDPOINT_TEMPLATE: &str = "https://releases.synapse.dev/{channel}/latest.json";
+pub const UPDATE_ENDPOINT_TEMPLATE: &str = "https://releases.palexus.dev/{channel}/latest.json";
 
 /// The concrete manifest URL for a channel. Read-only config resolution; the
 /// dry-run never actually fetches it in this build.
@@ -555,11 +555,11 @@ mod tests {
     fn endpoint_resolves_per_channel() {
         assert_eq!(
             endpoint_for(Channel::Stable),
-            "https://releases.synapse.dev/stable/latest.json"
+            "https://releases.palexus.dev/stable/latest.json"
         );
         assert_eq!(
             endpoint_for(Channel::Beta),
-            "https://releases.synapse.dev/beta/latest.json"
+            "https://releases.palexus.dev/beta/latest.json"
         );
         // No unfilled placeholder leaks through.
         assert!(!endpoint_for(Channel::Stable).contains("{channel}"));

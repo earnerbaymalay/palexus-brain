@@ -81,7 +81,7 @@ function examFixture(scenario: MockScenario, healed: boolean) {
       rule_id: 'master-prompt-tampered',
       severity: 'critical',
       message: 'Zone 1 checksum does not match the sealed master prompt',
-      subject: `${BRAIN}/SYNAPSE.md`,
+      subject: `${BRAIN}/PALEXUS.md`,
       auto_fixable: true,
     },
     {
@@ -128,7 +128,7 @@ function memoryFixture() {
   })
   return {
     nodes: [
-      n('core', 'AIBrain', 'core', 'Canonical brain root.', ['SYNAPSE.md'], 1.0, 0),
+      n('core', 'AIBrain', 'core', 'Canonical brain root.', ['PALEXUS.md'], 1.0, 0),
       n('proj-atlas', 'atlas', 'project', 'Project memory for atlas.', ['atlas/'], 0.8, 1),
       n('obs-1', 'Prefers pnpm', 'observation', 'User consistently uses pnpm workspaces.', [], 0.62, 2),
       n('obs-2', 'Strict TDD', 'observation', 'Tests are written before implementation.', ['tests/'], 0.71, 3),
@@ -152,7 +152,7 @@ function spoolFixture() {
   const base = 1_794_380_000 // unix seconds (2026-11-11)
   const longLog = [
     '$ cargo test --workspace',
-    '   Compiling synapse-core v1.0.0 (/home/mara/work/atlas/packages/core)',
+    '   Compiling palexus-core v1.0.0 (/home/mara/work/atlas/packages/core)',
     ...Array.from({ length: 140 }, (_, i) =>
       i % 23 === 7
         ? `test doctor::rules::r${String(i).padStart(3, '0')} ... FAILED`
@@ -246,7 +246,7 @@ export function installTauriMock(w: Window & typeof globalThis, options: MockOpt
     get_cockpit_telemetry: () => cockpitFixture(scenario, healed),
     check_for_update: () => ({
       decision: { status: 'up_to_date', current: '1.0.0' },
-      report: 'synapse 1.0.0 is the newest build on the stable channel.',
+      report: 'palexus 1.0.0 is the newest build on the stable channel.',
       signing: 'not_configured',
     }),
     // Spool: SpoolEntryDto[] (src/screens/Spool.tsx), newest first
@@ -315,7 +315,7 @@ export function installTauriMock(w: Window & typeof globalThis, options: MockOpt
     'plugin:window|scale_factor': () => 1,
     'plugin:window|inner_size': () => ({ width: 1280, height: 800 }),
     'plugin:window|outer_size': () => ({ width: 1280, height: 800 }),
-    'plugin:window|title': () => 'Synapse',
+    'plugin:window|title': () => 'Palexus',
 
     // @tauri-apps/api/event
     'plugin:event|listen': (args) => {

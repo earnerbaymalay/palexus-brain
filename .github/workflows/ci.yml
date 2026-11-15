@@ -37,7 +37,7 @@ jobs:
       - name: Install clippy
         run: rustup component add clippy
       - name: cargo clippy
-        run: cargo clippy -p synapse-core --all-targets -- -D warnings
+        run: cargo clippy -p palexus-core --all-targets -- -D warnings
 
   rust-test:
     name: Rust tests (workspace)
@@ -82,7 +82,7 @@ jobs:
       - name: Desktop tests
         run: pnpm --fail-if-no-match --filter desktop-app test
       - name: Schema tests
-        run: pnpm --fail-if-no-match --filter @synapse/schema test
+        run: pnpm --fail-if-no-match --filter @palexus/schema test
       - name: Desktop production build
         run: pnpm --fail-if-no-match --filter desktop-app build
 
@@ -102,9 +102,9 @@ jobs:
         run: pnpm install --frozen-lockfile
       - uses: Swatinem/rust-cache@v2
       - name: Build CLI for E2E
-        run: cargo build --package synapse
+        run: cargo build --package palexus
       - name: End-to-end tests
-        run: pnpm --fail-if-no-match --filter @synapse/e2e test
+        run: pnpm --fail-if-no-match --filter @palexus/e2e test
 
   shell:
     name: Shell lint

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Synapse-to-Obsidian Memory Bridge
-Exports distilled high-signal observations from Synapse Brain memory (~/.synapse/memory/observations.jsonl)
+Palexus-to-Obsidian Memory Bridge
+Exports distilled high-signal observations from Palexus Brain memory (~/.palexus/memory/observations.jsonl)
 into the Obsidian AI Knowledge Base vault (~/Obsidian/AI-Knowledge-Base/) with frontmatter, tags, and wikilinks.
 Idempotent and zero-telemetry.
 """
@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 
 VAULT_DIR = os.path.expanduser(os.environ.get("OBSIDIAN_AI_VAULT", "~/Obsidian/AI-Knowledge-Base"))
-MEMORY_LOG = os.path.expanduser("~/.synapse/memory/observations.jsonl")
+MEMORY_LOG = os.path.expanduser("~/.palexus/memory/observations.jsonl")
 
 KIND_MAP = {
     "decision": "Decisions",
@@ -35,7 +35,7 @@ def parse_ts(raw):
 
 def export_observations():
     if not os.path.isfile(MEMORY_LOG):
-        print(f"No Synapse memory log found at {MEMORY_LOG}", file=sys.stderr)
+        print(f"No Palexus memory log found at {MEMORY_LOG}", file=sys.stderr)
         return 0
 
     exported = 0
@@ -65,7 +65,7 @@ def export_observations():
             if folder_name == "Daily":
                 daily_file = os.path.join(target_dir, f"{dt_str}.md")
                 header_needed = not os.path.exists(daily_file)
-                marker = f"<!-- synapse-obs-{obs_id} -->"
+                marker = f"<!-- palexus-obs-{obs_id} -->"
                 if os.path.exists(daily_file):
                     with open(daily_file, "r", encoding="utf-8", errors="ignore") as df:
                         if marker in df.read():
@@ -73,7 +73,7 @@ def export_observations():
 
                 with open(daily_file, "a", encoding="utf-8") as df:
                     if header_needed:
-                        df.write(f"# Daily AI Log: {dt_str}\n\n- **Tags**: #daily #synapse\n- **Date**: {dt_str}\n\n### Synapse Memory Stream\n\n")
+                        df.write(f"# Daily AI Log: {dt_str}\n\n- **Tags**: #daily #palexus\n- **Date**: {dt_str}\n\n### Palexus Memory Stream\n\n")
                     tag_str = " ".join(f"#{t}" for t in tags)
                     df.write(f"\n#### [{hm_str}] {title} {marker}\n")
                     df.write(f"- **Topic**: [[{topic}]] | **Kind**: `{kind}` | **Model**: `{model}`\n")
@@ -105,7 +105,7 @@ def export_observations():
                         nf.write(f"## Detail\n\n{narrative}\n\n")
                 exported += 1
 
-    print(f"✔ Exported {exported} new Synapse observations into Obsidian vault at {VAULT_DIR}")
+    print(f"✔ Exported {exported} new Palexus observations into Obsidian vault at {VAULT_DIR}")
     return exported
 
 if __name__ == "__main__":

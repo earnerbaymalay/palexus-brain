@@ -1,5 +1,5 @@
 # Continue Adapter Specification
-### Synapse
+### Palexus
 
 [Docs Hub](../README.md) > [Adapters](README.md) > **Continue**
 
@@ -26,7 +26,7 @@
 
 ## 📤 Projection Output
 
-When `synapse project` executes, it projects rule files into `.continue/rules/` and stamps generated files.
+When `palexus project` executes, it projects rule files into `.continue/rules/` and stamps generated files.
 
 ---
 

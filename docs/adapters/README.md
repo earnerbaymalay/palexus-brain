@@ -1,9 +1,9 @@
 # 🔌 Tool Adapters Overview
-### Synapse — 15 Verified Adapters
+### Palexus — 15 Verified Adapters
 
 [Docs Hub](../README.md) > **Adapters**
 
-Synapse includes 15 verified tool adapters, each purpose-built for bi-directional configuration translation.
+Palexus includes 15 verified tool adapters, each purpose-built for bi-directional configuration translation.
 
 ---
 

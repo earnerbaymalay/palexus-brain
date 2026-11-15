@@ -19,9 +19,9 @@ pub enum MaskCategory {
 
 #[derive(Debug, Clone, Default)]
 pub struct FirewallSession {
-    /// Mapping: real sensitive string -> synthetic token (e.g. "b4:69:21:fa:71:d4" -> "[SYNAPSE_MAC_1]")
+    /// Mapping: real sensitive string -> synthetic token (e.g. "b4:69:21:fa:71:d4" -> "[PALEXUS_MAC_1]")
     outbound: BTreeMap<String, String>,
-    /// Mapping: synthetic token -> real sensitive string (e.g. "[SYNAPSE_MAC_1]" -> "b4:69:21:fa:71:d4")
+    /// Mapping: synthetic token -> real sensitive string (e.g. "[PALEXUS_MAC_1]" -> "b4:69:21:fa:71:d4")
     inbound: BTreeMap<String, String>,
     mac_counter: usize,
     ip_counter: usize,
@@ -59,19 +59,19 @@ impl FirewallSession {
         let placeholder = match category {
             MaskCategory::Mac => {
                 self.mac_counter += 1;
-                format!("[SYNAPSE_MAC_{}]", self.mac_counter)
+                format!("[PALEXUS_MAC_{}]", self.mac_counter)
             }
             MaskCategory::Ip => {
                 self.ip_counter += 1;
-                format!("[SYNAPSE_IP_{}]", self.ip_counter)
+                format!("[PALEXUS_IP_{}]", self.ip_counter)
             }
             MaskCategory::Secret => {
                 self.secret_counter += 1;
-                format!("[SYNAPSE_SECRET_{}]", self.secret_counter)
+                format!("[PALEXUS_SECRET_{}]", self.secret_counter)
             }
             MaskCategory::Path => {
                 self.path_counter += 1;
-                format!("[SYNAPSE_PATH_{}]", self.path_counter)
+                format!("[PALEXUS_PATH_{}]", self.path_counter)
             }
         };
 
@@ -82,7 +82,7 @@ impl FirewallSession {
 
     /// Replaces all synthetic tokens in `text` with their original real values.
     pub fn unmask_text(&self, text: &str) -> String {
-        if self.inbound.is_empty() || !text.contains("[SYNAPSE_") {
+        if self.inbound.is_empty() || !text.contains("[PALEXUS_") {
             return text.to_string();
         }
 
@@ -295,9 +295,9 @@ mod tests {
         assert!(!masked.contains("b4:69:21:fa:71:d4"));
         assert!(!masked.contains("192.168.1.150"));
         assert!(!masked.contains("10.0.0.5"));
-        assert!(masked.contains("[SYNAPSE_MAC_1]"));
-        assert!(masked.contains("[SYNAPSE_IP_1]"));
-        assert!(masked.contains("[SYNAPSE_IP_2]"));
+        assert!(masked.contains("[PALEXUS_MAC_1]"));
+        assert!(masked.contains("[PALEXUS_IP_1]"));
+        assert!(masked.contains("[PALEXUS_IP_2]"));
 
         let unmasked = session.unmask_text(&masked);
         assert_eq!(unmasked, prompt);
@@ -311,8 +311,8 @@ mod tests {
 
         assert!(!masked.contains("sk-ant-api03-abcdef123456789012345678"));
         assert!(!masked.contains("ghp_123456789012345678901234567890123456"));
-        assert!(masked.contains("[SYNAPSE_SECRET_1]"));
-        assert!(masked.contains("[SYNAPSE_SECRET_2]"));
+        assert!(masked.contains("[PALEXUS_SECRET_1]"));
+        assert!(masked.contains("[PALEXUS_SECRET_2]"));
 
         let unmasked = session.unmask_text(&masked);
         assert_eq!(unmasked, prompt);
@@ -343,9 +343,9 @@ mod tests {
 
         mask_chat_payload(&mut req, &mut session);
         let user_content = req["messages"][0]["content"].as_str().unwrap();
-        assert!(user_content.contains("[SYNAPSE_IP_1]"));
-        assert!(user_content.contains("[SYNAPSE_MAC_1]"));
-        assert!(user_content.contains("[SYNAPSE_SECRET_1]"));
+        assert!(user_content.contains("[PALEXUS_IP_1]"));
+        assert!(user_content.contains("[PALEXUS_MAC_1]"));
+        assert!(user_content.contains("[PALEXUS_SECRET_1]"));
 
         // Simulate upstream model output calling a tool with the masked tokens
         let mut model_response = json!({
@@ -353,14 +353,14 @@ mod tests {
                 {
                     "message": {
                         "role": "assistant",
-                        "content": "Executing ping for [SYNAPSE_IP_1]",
+                        "content": "Executing ping for [PALEXUS_IP_1]",
                         "tool_calls": [
                             {
                                 "id": "call_1",
                                 "type": "function",
                                 "function": {
                                     "name": "ping",
-                                    "arguments": "{\"target\": \"[SYNAPSE_IP_1]\", \"mac\": \"[SYNAPSE_MAC_1]\"}"
+                                    "arguments": "{\"target\": \"[PALEXUS_IP_1]\", \"mac\": \"[PALEXUS_MAC_1]\"}"
                                 }
                             }
                         ]
@@ -381,6 +381,6 @@ mod tests {
         assert_eq!(assistant_content, "Executing ping for 192.168.0.42");
         assert!(tool_args.contains("192.168.0.42"));
         assert!(tool_args.contains("b4:69:21:fa:71:d4"));
-        assert!(!tool_args.contains("[SYNAPSE_"));
+        assert!(!tool_args.contains("[PALEXUS_"));
     }
 }

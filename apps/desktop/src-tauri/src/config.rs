@@ -61,11 +61,11 @@ pub fn expand_tilde(path: &str) -> PathBuf {
 }
 
 /// Resolves the OS-appropriate config file path for the app, e.g.
-/// `~/.config/Synapse/settings.json` on Linux. This is distinct
+/// `~/.config/Palexus/settings.json` on Linux. This is distinct
 /// from the repo's own `.claude/` directory, which is Claude Code's config
 /// and must not be written to by this app (docs/CODE_REVIEW.md §2.1).
 pub fn config_file_path() -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let project_dirs = ProjectDirs::from("dev", "Synapse", "Synapse")
+    let project_dirs = ProjectDirs::from("dev", "Palexus", "Palexus")
         .ok_or("could not determine an OS config directory for this platform")?;
     Ok(project_dirs.config_dir().join("settings.json"))
 }

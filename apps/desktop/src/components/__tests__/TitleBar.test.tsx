@@ -48,7 +48,7 @@ afterEach(() => setTauri(false))
 describe('TitleBar', () => {
   it('renders the wordmark and three labelled controls in order', () => {
     render(<TitleBar />)
-    expect(screen.getByText('SYNAPSE')).toBeInTheDocument()
+    expect(screen.getByText('PALEXUS')).toBeInTheDocument()
     const buttons = screen.getAllByRole('button')
     expect(buttons.map((b) => b.getAttribute('aria-label'))).toEqual([
       'Minimise window',
@@ -146,7 +146,7 @@ describe('TitleBar', () => {
     const group = screen.getByRole('group', { name: 'Window controls' })
     expect(group).not.toHaveAttribute('data-tauri-drag-region')
     for (const el of group.querySelectorAll('*')) expect(el).not.toHaveAttribute('data-tauri-drag-region')
-    expect(screen.getByText('SYNAPSE')).toHaveAttribute('data-tauri-drag-region')
+    expect(screen.getByText('PALEXUS')).toHaveAttribute('data-tauri-drag-region')
   })
 
   it('reads the state back after a toggle even when no resize event arrives', async () => {

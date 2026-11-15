@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async function setup() {
-  console.log('Building synapse CLI...');
+  console.log('Building palexus CLI...');
   const projectRoot = path.resolve(__dirname, '../..');
   
   const homeDir = os.homedir();
@@ -17,10 +17,10 @@ export default async function setup() {
     PATH: `${cargoBin}${path.delimiter}${process.env.PATH || ''}`,
   };
 
-  await execa('cargo', ['build', '--bin', 'synapse'], {
+  await execa('cargo', ['build', '--bin', 'palexus'], {
     cwd: projectRoot,
     stdio: 'inherit',
     env,
   });
-  console.log('synapse CLI built successfully.');
+  console.log('palexus CLI built successfully.');
 }

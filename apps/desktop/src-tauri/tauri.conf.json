@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "SYNAPSE",
+  "productName": "Palexus Brain",
   "version": "1.0.0",
-  "identifier": "dev.synapse.desktop",
+  "identifier": "dev.palexus.desktop",
   "build": {
     "frontendDist": "../dist"
   },
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "SYNAPSE // Clinical Engine for AI Context",
+        "title": "Palexus Brain",
         "width": 1280,
         "height": 840,
         "resizable": true,
@@ -36,7 +36,7 @@
     ],
     "category": "DeveloperTool",
     "shortDescription": "Universal AI context engine — one Brain, all models in lockstep",
-    "longDescription": "Synapse unifies the configuration, memory, and governance of every AI coding tool on your machine into one canonical, git-backed Brain.",
+    "longDescription": "Palexus unifies the configuration, memory, and governance of every AI coding tool on your machine into one canonical, git-backed Brain.",
     "linux": {
       "deb": {
         "depends": [

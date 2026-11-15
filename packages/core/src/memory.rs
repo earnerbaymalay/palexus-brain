@@ -1,10 +1,10 @@
 //! Synaptic Memory — persistent cross-session memory for AI coding agents.
 //!
-//! Inspired by claude-mem (thedotmack/claude-mem), re-built to match Synapse's
+//! Inspired by claude-mem (thedotmack/claude-mem), re-built to match Palexus's
 //! local-first, zero-telemetry stance:
 //!
 //! * **Capture** — tool calls, prompts and session ends become *observations*
-//!   (via `synapse mem hook <event>` wired to agent lifecycle hooks).
+//!   (via `palexus mem hook <event>` wired to agent lifecycle hooks).
 //! * **Compression** — no remote LLM. Tool output is distilled with the
 //!   Sensory Gating engine ([`crate::compression`]) and truncated.
 //! * **Privacy** — `<private>…</private>` spans are dropped before storage and
@@ -167,9 +167,9 @@ impl MemoryStore {
         Self { dir }
     }
 
-    /// `$SYNAPSE_MEMORY_DIR`, else `~/.synapse/memory`.
+    /// `$PALEXUS_MEMORY_DIR`, else `~/.palexus/memory`.
     pub fn default_dir() -> PathBuf {
-        if let Ok(p) = std::env::var("SYNAPSE_MEMORY_DIR") {
+        if let Ok(p) = std::env::var("PALEXUS_MEMORY_DIR") {
             if !p.is_empty() {
                 return PathBuf::from(p);
             }
@@ -177,7 +177,7 @@ impl MemoryStore {
         let home = std::env::var("HOME")
             .or_else(|_| std::env::var("USERPROFILE"))
             .unwrap_or_else(|_| ".".into());
-        PathBuf::from(home).join(".synapse").join("memory")
+        crate::legacy::data_dir(&PathBuf::from(home)).join("memory")
     }
 
     fn log_path(&self) -> PathBuf {
@@ -537,7 +537,7 @@ impl MemoryStore {
         // Admit a semantic-only match (no keyword hit) at cosine ≥ this. nomic's
         // related query/document pairs land around 0.5–0.75 with task prefixes;
         // 0.5 recalls paraphrases without dragging in unrelated notes. Tunable.
-        let sem_floor: f64 = std::env::var("SYNAPSE_SEM_FLOOR")
+        let sem_floor: f64 = std::env::var("PALEXUS_SEM_FLOOR")
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(0.5);
@@ -671,7 +671,7 @@ impl MemoryStore {
             .sum();
 
         let mut out = format!(
-            "# Synapse memory — {}\n_{} remembered events; index below costs ~{} tokens, full detail ~{}._\n",
+            "# Palexus memory — {}\n_{} remembered events; index below costs ~{} tokens, full detail ~{}._\n",
             project,
             mine.len(),
             index_tokens,
@@ -695,7 +695,7 @@ impl MemoryStore {
             }
         }
         out.push_str(
-            "\nDrill down on demand: `synapse mem search <query>` → `synapse mem timeline <id>` → `synapse mem get <id>…`. \
+            "\nDrill down on demand: `palexus mem search <query>` → `palexus mem timeline <id>` → `palexus mem get <id>…`. \
              Wrap anything sensitive in <private>…</private> to keep it out of memory.\n",
         );
         Ok(out)
@@ -731,7 +731,7 @@ pub fn observation_from_tool(
         "Bash" => {
             let cmd = s("command");
             // Never memorise our own memory queries (feedback loop).
-            if cmd.contains("synapse mem") || cmd.contains("synapse mem") {
+            if cmd.contains("palexus mem") || cmd.contains("palexus mem") {
                 return None;
             }
             let (digest, ..) = compress_text(&out_text, CompressionLevel::Aggressive);
@@ -1112,7 +1112,7 @@ mod tests {
             "s",
             "p",
             "Bash",
-            &json!({"command": "synapse mem search x"}),
+            &json!({"command": "palexus mem search x"}),
             &Value::Null
         )
         .is_none());

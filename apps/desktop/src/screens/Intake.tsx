@@ -235,9 +235,9 @@ function next({
   present: number
   failed: number
 }): string {
-  if (total === 0 || failed > 0) return 'synapse doctor'
-  if (present === 0) return 'synapse onboard'
-  return 'synapse import --dry-run'
+  if (total === 0 || failed > 0) return 'palexus doctor'
+  if (present === 0) return 'palexus onboard'
+  return 'palexus import --dry-run'
 }
 
 /** Present first, then absent, alphabetical within each group (as the CLI). */

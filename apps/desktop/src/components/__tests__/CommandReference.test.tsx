@@ -94,8 +94,8 @@ describe('CommandReference', () => {
     const row = dialog.querySelector('[data-shortcut-id="help.reference.k"]')!
     expect([...row.querySelectorAll('kbd')].map((k) => k.textContent)).toEqual(['Ctrl', 'K'])
     expect(within(dialog).getByText('CLI')).toBeInTheDocument()
-    expect(within(dialog).getByText('synapse doctor [--fix]')).toBeInTheDocument()
-    expect(within(dialog).getByText('synapse serve [--host] [--port]')).toBeInTheDocument()
+    expect(within(dialog).getByText('palexus doctor [--fix]')).toBeInTheDocument()
+    expect(within(dialog).getByText('palexus serve [--host] [--port]')).toBeInTheDocument()
   })
 
   it('search filters both sections', async () => {
@@ -103,8 +103,8 @@ describe('CommandReference', () => {
     await user.keyboard('?')
     await user.type(screen.getByRole('searchbox'), 'rollback')
     const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByText('synapse rollback <hash>')).toBeInTheDocument()
-    expect(within(dialog).queryByText('synapse scan')).toBeNull()
+    expect(within(dialog).getByText('palexus rollback <hash>')).toBeInTheDocument()
+    expect(within(dialog).queryByText('palexus scan')).toBeNull()
     expect(within(dialog).queryByText('Open or close command reference')).toBeNull()
     await user.clear(screen.getByRole('searchbox'))
     await user.type(screen.getByRole('searchbox'), 'close command')
@@ -123,7 +123,7 @@ describe('CommandReference', () => {
     expect(sw).toHaveAttribute('aria-checked', 'true')
     await user.click(sw)
     expect(sw).toHaveAttribute('aria-checked', 'false')
-    expect(localStorage.getItem('synapse.hints.enabled')).toBe('false')
+    expect(localStorage.getItem('palexus.hints.enabled')).toBe('false')
     await user.click(sw)
     expect(sw).toHaveAttribute('aria-checked', 'true')
     expect(screen.getByText(/turned back on here/)).toBeInTheDocument()

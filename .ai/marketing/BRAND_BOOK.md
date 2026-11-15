@@ -1,10 +1,10 @@
-# SYNAPSE — Brand Book
+# PALEXUS — Brand Book
 
-Companion reference to `brands/synapse/SYNAPSE_Brand_System.dc.html` (the visual system). This is the plain-text version for docs, agents, and anyone who needs the tokens without opening a browser.
+Companion reference to `brands/palexus/PALEXUS_Brand_System.dc.html` (the visual system). This is the plain-text version for docs, agents, and anyone who needs the tokens without opening a browser.
 
 ## Identity
 
-- **Name:** SYNAPSE — always paired with the subtitle **Synapse** at first mention on any surface.
+- **Name:** PALEXUS — always paired with the subtitle **Palexus** at first mention on any surface.
 - **Tagline:** "One Brain. All Models."
 - **Tone anchor:** "Surgical precision. Zero friction."
 - **Concept:** structure meets organism. A hairline technical grid (blueprint corner marks, terminal chrome) wraps around living motifs (neurons, pulses, a stitched incision line). Precision on the outside, a brain at work inside.
@@ -13,7 +13,7 @@ Companion reference to `brands/synapse/SYNAPSE_Brand_System.dc.html` (the visual
 
 **Ink (interface):** `#06080b` `#0b0e13` `#12161d` `#171c25` `#1d2330` `#262c37` `#4b5361` `#8b949e` `#d4dae2`
 
-**Accent — Synapse Blue (the one working UI color):** base `#1d9bf0` · hover `#5cb2f5` · pressed `#0d5a96` · tint `#c7e6fd`
+**Accent — Palexus Blue (the one working UI color):** base `#1d9bf0` · hover `#5cb2f5` · pressed `#0d5a96` · tint `#c7e6fd`
 
 **Gold (signature hero device ONLY — never buttons, links, or status):** `#d4af37` (base), `#f0d580` (light), `#8a6d1f` (dark)
 
@@ -27,7 +27,7 @@ Companion reference to `brands/synapse/SYNAPSE_Brand_System.dc.html` (the visual
 
 ## Logo
 
-Wordmark "SYNAPSE" in Rubik Mono One + "Synapse" in JetBrains Mono beneath. Neural-mark icon (hub-and-spoke SVG) for app icon/favicon/avatar contexts where the full wordmark doesn't fit. Clear space: one cap-height on all sides. Never rotate, outline, or drop-shadow the wordmark.
+Wordmark "PALEXUS" in Rubik Mono One + "Palexus" in JetBrains Mono beneath. Neural-mark icon (hub-and-spoke SVG) for app icon/favicon/avatar contexts where the full wordmark doesn't fit. Clear space: one cap-height on all sides. Never rotate, outline, or drop-shadow the wordmark.
 
 ## Structural system
 

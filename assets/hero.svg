@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="banner-title banner-desc">
-  <title id="banner-title">SYNAPSE — One Brain. All Models. Permanent Lockstep.</title>
-  <desc id="banner-desc">Technical blueprint banner for SYNAPSE featuring the canonical AI Brain hub connected to 15 hexagonal IDE adapter monograms, a live EKG vitals waveform, and surgical corner registration marks.</desc>
+  <title id="banner-title">PALEXUS — One Brain. All Models. Permanent Lockstep.</title>
+  <desc id="banner-desc">Technical blueprint banner for PALEXUS featuring the canonical AI Brain hub connected to 15 hexagonal IDE adapter monograms, a live EKG vitals waveform, and surgical corner registration marks.</desc>
 
   <defs>
     <linearGradient id="inkBg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -80,7 +80,7 @@
   <!-- Top Telemetry Header Strip -->
   <line x1="16" y1="44" x2="1184" y2="44" stroke="#262c37" stroke-width="1"/>
   <text x="34" y="34" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="11" font-weight="bold" fill="#8b949e">
-    SYNAPSE // CLINICAL CONFIGURATION ENGINE &amp; RUNTIME GATEWAY
+    PALEXUS // CLINICAL CONFIGURATION ENGINE &amp; RUNTIME GATEWAY
   </text>
   <circle cx="998" cy="30" r="3.5" fill="#3fb950"/>
   <text x="1008" y="34" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="11" font-weight="bold" fill="#3fb950">
@@ -100,7 +100,7 @@
 
     <!-- Main Wordmark -->
     <text x="0" y="136" font-family="DejaVu Sans, Inter, Arial Black, sans-serif" font-size="56" font-weight="900" fill="#d4dae2">
-      SYNAPSE
+      PALEXUS
     </text>
 
     <!-- Signature Gold Suture Rule (Hero Device Only per Brand Book) -->
@@ -128,13 +128,13 @@
     <g transform="translate(0, 245)">
       <rect x="0" y="0" width="554" height="32" fill="#12161d" stroke="#262c37" stroke-width="1"/>
       <circle cx="18" cy="16" r="3.5" fill="#3fb950"/>
-      <text x="28" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">1. synapse scan</text>
+      <text x="28" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">1. palexus scan</text>
       <text x="155" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" fill="#4b5361">───►</text>
       <circle cx="204" cy="16" r="3.5" fill="#1d9bf0"/>
-      <text x="214" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">2. synapse import</text>
+      <text x="214" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">2. palexus import</text>
       <text x="355" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" fill="#4b5361">───►</text>
       <circle cx="404" cy="16" r="3.5" fill="#d4af37"/>
-      <text x="414" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">3. synapse project</text>
+      <text x="414" y="20" font-family="DejaVu Sans Mono, JetBrains Mono, monospace" font-size="12" font-weight="bold" fill="#d4dae2">3. palexus project</text>
     </g>
   </g>
 

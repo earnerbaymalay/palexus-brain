@@ -32,7 +32,7 @@ export const GATEWAY_MEASURED = false
 /** How often live telemetry is re-read. */
 export const POLL_MS = 5000
 
-/** brands/synapse/tokens.json `motion.ekgScroll`: one trace width per 3.4 s, linear. */
+/** brands/palexus/tokens.json `motion.ekgScroll`: one trace width per 3.4 s, linear. */
 const EKG_SCROLL_MS = 3400
 /** Width of one P-QRS-T complex on the trace, in CSS pixels. */
 const BEAT_PX = 200
@@ -142,10 +142,10 @@ function finding(r: Reading, gatewayMeasured: boolean): string {
 }
 
 function nextCommand(r: Reading, gatewayMeasured: boolean): string {
-  if ((r.doctor_fixable ?? 0) > 0) return 'synapse doctor --fix'
-  if ((r.doctor_criticals ?? 0) > 0) return 'synapse doctor'
-  if (gatewayMeasured && gatewayMark(r.gateway_status) !== 'present') return 'synapse serve'
-  return 'synapse hud --once'
+  if ((r.doctor_fixable ?? 0) > 0) return 'palexus doctor --fix'
+  if ((r.doctor_criticals ?? 0) > 0) return 'palexus doctor'
+  if (gatewayMeasured && gatewayMark(r.gateway_status) !== 'present') return 'palexus serve'
+  return 'palexus hud --once'
 }
 
 // ── screen ─────────────────────────────────────────────────────────────────
@@ -265,7 +265,7 @@ export function Cockpit({ gatewayMeasured = GATEWAY_MEASURED }: { gatewayMeasure
           </p>
           <p className="mt-1 pl-6 text-ink-soft">Nothing is shown in its place.</p>
         </div>
-        <ChartFoot finding="Vital signs are read by the desktop app." next="synapse hud --once" />
+        <ChartFoot finding="Vital signs are read by the desktop app." next="palexus hud --once" />
       </ChartFrame>
     )
   }
@@ -401,11 +401,11 @@ export function Cockpit({ gatewayMeasured = GATEWAY_MEASURED }: { gatewayMeasure
 
           <ChartFoot finding={finding(reading, gatewayMeasured)} next={nextCommand(reading, gatewayMeasured)} />
           <Hint id="cockpit.next">
-            The same readings are available in a terminal with synapse hud; press P here to pause live updates.
+            The same readings are available in a terminal with palexus hud; press P here to pause live updates.
           </Hint>
         </>
       ) : status === 'error' ? (
-        <ChartFoot finding="No reading yet." next="synapse doctor" />
+        <ChartFoot finding="No reading yet." next="palexus doctor" />
       ) : null}
     </ChartFrame>
   )

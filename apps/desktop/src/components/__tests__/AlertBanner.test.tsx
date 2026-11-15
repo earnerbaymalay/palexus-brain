@@ -111,12 +111,12 @@ describe('AlertBanner actions', () => {
 
   it('heal error shows the backend error and does not call onHealed', async () => {
     const user = userEvent.setup()
-    invokeMock.mockRejectedValue('permission denied: /home/mara/AIBrain/SYNAPSE.md')
+    invokeMock.mockRejectedValue('permission denied: /home/mara/AIBrain/PALEXUS.md')
     const onHealed = vi.fn()
     render(<AlertBanner exam={exam([finding()])} onHealed={onHealed} />)
     await user.click(screen.getByRole('button', { name: /heal 1 finding/i }))
     const alert = await screen.findByRole('alert')
-    expect(alert).toHaveTextContent('Heal failed: permission denied: /home/mara/AIBrain/SYNAPSE.md')
+    expect(alert).toHaveTextContent('Heal failed: permission denied: /home/mara/AIBrain/PALEXUS.md')
     expect(onHealed).not.toHaveBeenCalled()
 
     // the result can be dismissed from the keyboard
@@ -126,7 +126,7 @@ describe('AlertBanner actions', () => {
   })
 
   it('a missing master prompt is healed, not routed to a dead-end screen', () => {
-    // doctor marks master-prompt-missing auto_fixable and heal regenerates SYNAPSE.md,
+    // doctor marks master-prompt-missing auto_fixable and heal regenerates PALEXUS.md,
     // so the banner offers Heal and no separate "configure" button that went nowhere.
     const onOpenOnboard = vi.fn()
     render(

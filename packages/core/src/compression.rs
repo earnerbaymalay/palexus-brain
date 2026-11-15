@@ -176,7 +176,7 @@ pub fn compress_text(input: &str, level: CompressionLevel) -> (String, usize, us
                     in_summary = true;
                     if passed_count > 0 && !in_failure_block {
                         kept_lines.push(format!(
-                            "  ✔ {} tests passed (collapsed by SYNAPSE)",
+                            "  ✔ {} tests passed (collapsed by PALEXUS)",
                             passed_count
                         ));
                         passed_count = 0;
@@ -193,7 +193,7 @@ pub fn compress_text(input: &str, level: CompressionLevel) -> (String, usize, us
             }
             if passed_count > 0 && kept_lines.is_empty() {
                 kept_lines.push(format!(
-                    "  ✔ {} tests passed (collapsed by SYNAPSE)",
+                    "  ✔ {} tests passed (collapsed by PALEXUS)",
                     passed_count
                 ));
             }
@@ -218,7 +218,7 @@ pub fn compress_text(input: &str, level: CompressionLevel) -> (String, usize, us
                 {
                     if passed_count > 0 {
                         kept_lines.push(format!(
-                            "  ✔ {} unit tests passed (collapsed by SYNAPSE)",
+                            "  ✔ {} unit tests passed (collapsed by PALEXUS)",
                             passed_count
                         ));
                         passed_count = 0;
@@ -235,7 +235,7 @@ pub fn compress_text(input: &str, level: CompressionLevel) -> (String, usize, us
             }
             if passed_count > 0 && kept_lines.is_empty() {
                 kept_lines.push(format!(
-                    "  ✔ {} unit tests passed (collapsed by SYNAPSE)",
+                    "  ✔ {} unit tests passed (collapsed by PALEXUS)",
                     passed_count
                 ));
             }
@@ -301,7 +301,7 @@ pub fn compress_text(input: &str, level: CompressionLevel) -> (String, usize, us
         // Fallback: take head and tail if nothing matched specifically
         if input.lines().count() > 10 {
             let mut summary_lines: Vec<&str> = input.lines().take(3).collect();
-            summary_lines.push("  [... intermediate output collapsed by SYNAPSE ...]");
+            summary_lines.push("  [... intermediate output collapsed by PALEXUS ...]");
             for l in input
                 .lines()
                 .rev()
@@ -350,14 +350,14 @@ impl SpoolManager {
         &self.spool_dir
     }
 
-    /// Resolve default spool directory inside ~/.synapse/spool or $AIBRAIN/spool
+    /// Resolve default spool directory inside ~/.palexus/spool or $AIBRAIN/spool
     pub fn default_dir() -> PathBuf {
-        if let Ok(brain) = std::env::var("SYNAPSE_BRAIN") {
+        if let Ok(brain) = std::env::var("PALEXUS_BRAIN") {
             PathBuf::from(brain).join("spool")
         } else if let Ok(home) = std::env::var("HOME") {
-            PathBuf::from(home).join(".synapse").join("spool")
+            crate::legacy::data_dir(&PathBuf::from(home)).join("spool")
         } else {
-            PathBuf::from("/tmp/synapse/spool")
+            PathBuf::from("/tmp/palexus/spool")
         }
     }
 
@@ -397,7 +397,7 @@ impl SpoolManager {
 
         // Append lossless retrieval footer
         text.push_str(&format!(
-            "\n\n─── [SYNAPSE] Context: {} → {} tokens ({}% reduction) • Full log: synapse spool show {} ───",
+            "\n\n─── [PALEXUS] Context: {} → {} tokens ({}% reduction) • Full log: palexus spool show {} ───",
             raw_tokens, compressed_tokens, reduction_percent, short_id
         ));
 
@@ -630,7 +630,7 @@ tests/test_screensaver.py ..                                              [100%]
     #[test]
     fn test_spool_manager_record_and_retrieve() {
         let temp_dir =
-            std::env::temp_dir().join(format!("synapse_spool_test_{}", std::process::id()));
+            std::env::temp_dir().join(format!("palexus_spool_test_{}", std::process::id()));
         let manager = SpoolManager::new(temp_dir.clone());
 
         let raw_output =

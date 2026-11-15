@@ -81,7 +81,7 @@ export interface CockpitTelemetry {
 }
 
 /**
- * `check_for_update` result (synapse_core::updater::DryRunResult). The
+ * `check_for_update` result (palexus_core::updater::DryRunResult). The
  * decision is internally tagged on `status` (serde snake_case). No screen
  * calls this command yet; the shape is here so the first caller is typed.
  */

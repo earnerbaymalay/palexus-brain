@@ -1,8 +1,8 @@
-# Orchestrator Context — Synapse
+# Orchestrator Context — Palexus
 
 ## Current Status
 Phase 0 completed. Gate 0 decisions made:
-- Brand A: Cortex (HTML/HTML+CSS/JS), Brand B: Synapse (HTML/CSS/JS), Brand C: Cerebra (HTML/CSS/JS)
+- Brand A: Cortex (HTML/HTML+CSS/JS), Brand B: Palexus (HTML/CSS/JS), Brand C: Cerebra (HTML/CSS/JS)
 - Dark theme default
 - Stack: Tauri 2 + clap CLI
 - Brain: ~/AIBrain
@@ -38,4 +38,4 @@ Next action: implement T1.2 (RALPH_PROMPT.md + task breakdown).
 - Final goal: human approval via Gates 4.
 
 ## Memory
-This context is the source of truth for the ongoing Synapse project. Keep it in sync.
+This context is the source of truth for the ongoing Palexus project. Keep it in sync.

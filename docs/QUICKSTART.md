@@ -2,7 +2,7 @@
 
 [Docs Hub](README.md) > **Quickstart**
 
-Get up and running with **Synapse** in under 60 seconds.
+Get up and running with **Palexus** in under 60 seconds.
 
 ---
 
@@ -23,27 +23,27 @@ sudo apt-get update && sudo apt-get install -y \
 
 ### Step 1: Detect Active AI Tools
 ```bash
-cargo run -p synapse -- scan
+cargo run -p palexus -- scan
 ```
 *Output lists all discovered tools (Claude, Cursor, Gemini, Windsurf, Zed, etc.).*
 
 ### Step 2: Ingest Configurations
 ```bash
-cargo run -p synapse -- import --dry-run
-cargo run -p synapse -- import
+cargo run -p palexus -- import --dry-run
+cargo run -p palexus -- import
 ```
 *Creates `~/AIBrain` as a local Git repository and snapshots all existing prompt files.*
 
 ### Step 3: Run the Auto-Sync Watcher
 ```bash
-cargo run -p synapse -- sync --daemon
+cargo run -p palexus -- sync --daemon
 ```
 
 ### ⚡ Bonus: Synaptic Auto-Compression for Agent Commands
 ```bash
 # Save 95% tokens when running verbose test suites inside AI coding agents:
-synapse exec -- cargo test
-synapse exec -- pnpm test
+palexus exec -- cargo test
+palexus exec -- pnpm test
 ```
 
 ---

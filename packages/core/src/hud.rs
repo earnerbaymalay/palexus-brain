@@ -1,4 +1,4 @@
-//! SYNAPSE Live Terminal Cockpit / Vital Signs HUD
+//! PALEXUS Live Terminal Cockpit / Vital Signs HUD
 //!
 //! Provides a zero-telemetry, ultra-low-RAM terminal HUD for monitoring
 //! local AI coding agent telemetry, real-time Sensory Gating compression,
@@ -49,7 +49,7 @@ impl HudSnapshot {
             }
             Err(_) => (
                 false,
-                "Offline (Start with `synapse serve`)".to_string(),
+                "Offline (Start with `palexus serve`)".to_string(),
                 GatewayStats::default(),
             ),
         };
@@ -113,7 +113,7 @@ pub fn format_hud(snap: &HudSnapshot, use_color: bool) -> String {
 
     // Top Header Banner
     out.push_str(&format!(
-        "{cyan}┌─ CYBERDECK // SYNAPSE VITAL SIGNS HUD · RUNTIME COCKPIT ─────────────── v1.0.0 ─┐{reset}\n"
+        "{cyan}┌─ CYBERDECK // PALEXUS VITAL SIGNS HUD · RUNTIME COCKPIT ─────────────── v1.0.0 ─┐{reset}\n"
     ));
     out.push_str(&format!(
         "{cyan}│{reset}  {dim}Dual-Zone Architecture · 15-Tool Star-Topology · Zero-Drift Telemetry{reset}           {cyan}│{reset}\n"

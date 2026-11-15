@@ -179,7 +179,7 @@ export function Examination({ report }: { report: ExamReport }) {
         {t.fixable > 0 && (
           <Hint id="examination.fix">
             --fix applies only the rows marked fixable and leaves the rest for a human. It does not take a
-            snapshot first; run synapse snapshot beforehand to keep a rollback point.
+            snapshot first; run palexus snapshot beforehand to keep a rollback point.
           </Hint>
         )}
       </div>
@@ -272,7 +272,7 @@ function finding(t: Tally): string {
  * human can repair, re-examine once they are repaired. Otherwise, sync.
  */
 function next(t: Tally): string {
-  if (t.fixable > 0) return 'synapse doctor --fix'
-  if (t.critical > 0) return 'synapse doctor'
-  return 'synapse sync --once'
+  if (t.fixable > 0) return 'palexus doctor --fix'
+  if (t.critical > 0) return 'palexus doctor'
+  return 'palexus sync --once'
 }

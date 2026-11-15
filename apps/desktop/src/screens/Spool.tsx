@@ -234,7 +234,7 @@ export function Spool() {
         <Absent
           title="No backend attached."
           body="This window is running outside the desktop shell, so there is no spool to read. Nothing is shown in its place."
-          next="synapse spool list"
+          next="palexus spool list"
         />
       )}
 
@@ -248,7 +248,7 @@ export function Spool() {
         <Absent
           title="Spool not readable from the desktop yet."
           body={`This build has no spool reader (${list.message}). The CLI can read it.`}
-          next="synapse spool list"
+          next="palexus spool list"
         />
       )}
 
@@ -267,7 +267,7 @@ export function Spool() {
           <Absent
             title="Spool is empty."
             body="No command output has been spooled yet. Output is spooled when a command runs through sensory gating."
-            next="synapse squash <command>"
+            next="palexus squash <command>"
           />
           <RetryLine onRetry={reread} busy={reloading} />
         </div>
@@ -423,10 +423,10 @@ function Inspector({
         </button>
         <button
           type="button"
-          onClick={() => void onCopy('command', `synapse spool show ${entry.id}`)}
+          onClick={() => void onCopy('command', `palexus spool show ${entry.id}`)}
           className={`border border-rule px-2.5 py-1 text-ink-soft hover:text-ink ${FOCUS}`}
         >
-          Copy <span className="text-drape">synapse spool show {entry.id}</span>
+          Copy <span className="text-drape">palexus spool show {entry.id}</span>
         </button>
         {/* Kept mounted so a polite confirmation is actually announced. */}
         <span role="status" className="text-ink-soft">
@@ -503,7 +503,7 @@ function Inspector({
               </p>
               <p className="mt-2">
                 <span className="text-ink-soft">Next </span>
-                <span className="text-drape">synapse squash &lt;command&gt;</span>
+                <span className="text-drape">palexus squash &lt;command&gt;</span>
               </p>
             </div>
           </div>
@@ -571,7 +571,7 @@ function RetryLine({ onRetry, busy }: { onRetry: () => void; busy: boolean }) {
     <p className="mt-3 font-mono text-xs">
       <ReloadButton onReload={onRetry} busy={busy} label="Re-read the spool" />
       <span className="text-ink-soft"> · or run </span>
-      <span className="text-drape">synapse spool list</span>
+      <span className="text-drape">palexus spool list</span>
     </p>
   )
 }

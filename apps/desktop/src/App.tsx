@@ -218,7 +218,7 @@ function Shell() {
         {/* Sidebar */}
         <aside className="flex w-60 shrink-0 flex-col overflow-y-auto border-r border-rule">
           <div className="border-b border-rule px-4 py-4">
-            <p className="font-display text-sm uppercase tracking-[0.04em] text-drape">Synapse</p>
+            <p className="font-display text-sm uppercase tracking-[0.04em] text-drape">Palexus</p>
             <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-soft">
               Clinical Engine for AI Context
             </p>
@@ -328,7 +328,7 @@ function Shell() {
                     <Halted
                       screen="intake"
                       error={intakeError}
-                      next="synapse doctor"
+                      next="palexus doctor"
                       busy={intakeBusy}
                       onRetry={() => void readIntake()}
                     />
@@ -373,7 +373,7 @@ function Disconnected() {
       </p>
       <p className="mt-3 font-mono text-xs">
         <span className="text-ink-soft">Next </span>
-        <span className="text-drape">synapse scan</span>
+        <span className="text-drape">palexus scan</span>
       </p>
     </div>
   )

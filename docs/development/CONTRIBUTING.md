@@ -1,9 +1,9 @@
-# 🤝 Contributing to Synapse
-### Synapse
+# 🤝 Contributing to Palexus
+### Palexus
 
 [Docs Hub](../README.md) > **Contributing**
 
-Thank you for contributing to **Synapse**!
+Thank you for contributing to **Palexus**!
 
 ---
 
@@ -11,8 +11,8 @@ Thank you for contributing to **Synapse**!
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/earnerbaymalay/synapse.git
-cd Synapse
+git clone https://github.com/earnerbaymalay/palexus-brain.git
+cd Palexus
 
 # 2. Run Rust unit and integration tests
 export PATH="$HOME/.cargo/bin:$PATH"

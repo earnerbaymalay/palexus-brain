@@ -1,4 +1,4 @@
-//! The desktop's bridge to `synapse-core`.
+//! The desktop's bridge to `palexus-core`.
 //!
 //! Per IDENTITY.md: nothing is displayed that isn't measured. Every command
 //! here reads real state off disk through core and returns it verbatim — no
@@ -11,8 +11,8 @@
 use std::path::{Component, Path, PathBuf};
 
 use serde::Serialize;
-use synapse_core::adapters::all_adapters;
-use synapse_core::doctor::{diagnose, DoctorContext, Severity};
+use palexus_core::adapters::all_adapters;
+use palexus_core::doctor::{diagnose, DoctorContext, Severity};
 
 // ── path resolution ─────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ fn absolute_user_path(raw: &str, what: &str) -> Result<Option<PathBuf>, String> 
         None => Ok(None),
         Some(p) if p.is_absolute() => Ok(Some(p)),
         Some(p) => Err(format!(
-            "{what} \"{}\" is not a full path, so it would depend on where Synapse \
+            "{what} \"{}\" is not a full path, so it would depend on where Palexus \
              was started. Use a full path such as ~/AIBrain.",
             p.display()
         )),
@@ -75,38 +75,38 @@ fn env_path(vars: &[&str]) -> Result<Option<PathBuf>, String> {
 
 /// Resolves the Brain directory, mirroring the CLI's precedence so both
 /// surfaces examine the same Brain: an explicit path, then
-/// `$SYNAPSE_BRAIN_PATH` / `$SYNAPSE_BRAIN`, then `~/AIBrain`.
+/// `$PALEXUS_BRAIN_PATH` / `$PALEXUS_BRAIN`, then `~/AIBrain`.
 fn resolve_brain_root(explicit: Option<String>) -> Result<PathBuf, String> {
     if let Some(p) = explicit_path(explicit.as_deref(), "The Brain folder")? {
         return Ok(p);
     }
-    if let Some(p) = env_path(&["SYNAPSE_BRAIN_PATH", "SYNAPSE_BRAIN"])? {
+    if let Some(p) = env_path(&["PALEXUS_BRAIN_PATH", "PALEXUS_BRAIN"])? {
         return Ok(p);
     }
     directories::UserDirs::new()
         .map(|d| d.home_dir().join("AIBrain"))
         .ok_or_else(|| {
             "Couldn't find your home folder, so the Brain location is unknown. \
-             Set SYNAPSE_BRAIN_PATH to your Brain folder and try again."
+             Set PALEXUS_BRAIN_PATH to your Brain folder and try again."
                 .to_string()
         })
 }
 
 /// Resolves the tool config root that projections are relative to, mirroring
-/// the CLI: an explicit path, then `$SYNAPSE_WORKSPACE_PATH` /
-/// `$SYNAPSE_TOOL_ROOT`, then the home directory.
+/// the CLI: an explicit path, then `$PALEXUS_WORKSPACE_PATH` /
+/// `$PALEXUS_TOOL_ROOT`, then the home directory.
 fn resolve_tool_root(explicit: Option<String>) -> Result<PathBuf, String> {
     if let Some(p) = explicit_path(explicit.as_deref(), "The tools folder")? {
         return Ok(p);
     }
-    if let Some(p) = env_path(&["SYNAPSE_WORKSPACE_PATH", "SYNAPSE_TOOL_ROOT"])? {
+    if let Some(p) = env_path(&["PALEXUS_WORKSPACE_PATH", "PALEXUS_TOOL_ROOT"])? {
         return Ok(p);
     }
     directories::UserDirs::new()
         .map(|d| d.home_dir().to_path_buf())
         .ok_or_else(|| {
             "Couldn't find your home folder, so there is nowhere to look for AI tool \
-             configs. Set SYNAPSE_WORKSPACE_PATH and try again."
+             configs. Set PALEXUS_WORKSPACE_PATH and try again."
                 .to_string()
         })
 }
@@ -299,9 +299,9 @@ pub fn get_version() -> String {
 pub fn check_for_update(
     manifest_json: String,
     channel: String,
-) -> Result<synapse_core::updater::DryRunResult, String> {
+) -> Result<palexus_core::updater::DryRunResult, String> {
     let current = env!("CARGO_PKG_VERSION");
-    synapse_core::updater::dry_run_from_json(current, &manifest_json, &channel)
+    palexus_core::updater::dry_run_from_json(current, &manifest_json, &channel)
         .map_err(|e| format!("Couldn't check for updates: {e}"))
 }
 
@@ -338,21 +338,21 @@ pub async fn get_memory_graph(brain: Option<String>) -> Result<MemoryGraphPayloa
 }
 
 pub fn run_get_memory_graph(brain: Option<String>) -> Result<MemoryGraphPayload, String> {
-    // The CLI (`synapse mem`) records observations to
-    // `MemoryStore::default_dir()` ($SYNAPSE_MEMORY_DIR, else
-    // ~/.synapse/memory). Reading `<brain>/memory` instead meant the graph
+    // The CLI (`palexus mem`) records observations to
+    // `MemoryStore::default_dir()` ($PALEXUS_MEMORY_DIR, else
+    // ~/.palexus/memory). Reading `<brain>/memory` instead meant the graph
     // never saw anything the CLI recorded. An explicit Brain still scopes
     // the store to that Brain's own `memory/` folder.
     let explicit_brain = explicit_path(brain.as_deref(), "The Brain folder")?;
     let memory_dir = match &explicit_brain {
         Some(b) => b.join("memory"),
-        None => synapse_core::memory::MemoryStore::default_dir(),
+        None => palexus_core::memory::MemoryStore::default_dir(),
     };
     let brain_root = match explicit_brain {
         Some(b) => b,
         None => resolve_brain_root(None)?,
     };
-    let store = synapse_core::memory::MemoryStore::new(memory_dir.clone());
+    let store = palexus_core::memory::MemoryStore::new(memory_dir.clone());
     // A missing log is "nothing recorded" (core returns Ok(empty)); any other
     // read failure is reported, not disguised as an empty graph.
     let observations = store.all().map_err(|e| {
@@ -550,7 +550,7 @@ pub fn run_heal_vitals(brain: Option<String>, tools: Option<String>) -> Result<u
     // folder that does not exist yet has nothing to lose, so it is skipped.
     // If the snapshot cannot be taken, nothing is changed.
     if brain_root.is_dir() {
-        synapse_core::snapshot::snapshot(&brain_root, "pre-heal snapshot (desktop)").map_err(
+        palexus_core::snapshot::snapshot(&brain_root, "pre-heal snapshot (desktop)").map_err(
             |e| {
                 format!(
                     "Couldn't take a snapshot of the Brain at {} before healing, so nothing was \
@@ -561,10 +561,10 @@ pub fn run_heal_vitals(brain: Option<String>, tools: Option<String>) -> Result<u
         )?;
     }
 
-    synapse_core::doctor::apply_fixes(&ctx).map_err(|e| {
+    palexus_core::doctor::apply_fixes(&ctx).map_err(|e| {
         format!(
             "Couldn't finish repairing the Brain at {}. Check that the folder exists and \
-             that Synapse can write to it. ({e})",
+             that Palexus can write to it. ({e})",
             brain_root.display()
         )
     })
@@ -582,7 +582,7 @@ fn check_heal_target(brain_root: &Path, home: Option<&Path>) -> Result<(), Strin
         .any(|c| matches!(c, Component::ParentDir))
     {
         return Err(format!(
-            "Synapse won't repair a Brain at {} because the path contains \"..\". \
+            "Palexus won't repair a Brain at {} because the path contains \"..\". \
              Use the folder's full path.",
             brain_root.display()
         ));
@@ -595,9 +595,9 @@ fn check_heal_target(brain_root: &Path, home: Option<&Path>) -> Result<(), Strin
     let covers_home = home.as_deref().is_some_and(|h| h.starts_with(&resolved));
     if is_fs_root || covers_home {
         return Err(format!(
-            "Synapse won't repair a Brain at {}: that is your home folder or one of its \
+            "Palexus won't repair a Brain at {}: that is your home folder or one of its \
              parents, and a repair would turn it into a git repository. Point \
-             SYNAPSE_BRAIN_PATH at a dedicated folder such as ~/AIBrain.",
+             PALEXUS_BRAIN_PATH at a dedicated folder such as ~/AIBrain.",
             brain_root.display()
         ));
     }
@@ -627,12 +627,12 @@ pub async fn spool_list() -> Result<Vec<SpoolEntryDto>, String> {
 }
 
 pub fn run_spool_list() -> Result<Vec<SpoolEntryDto>, String> {
-    let dir = synapse_core::compression::SpoolManager::default_dir();
+    let dir = palexus_core::compression::SpoolManager::default_dir();
     spool_list_in(dir)
 }
 
 fn spool_list_in(dir: PathBuf) -> Result<Vec<SpoolEntryDto>, String> {
-    let manager = synapse_core::compression::SpoolManager::new(dir.clone());
+    let manager = palexus_core::compression::SpoolManager::new(dir.clone());
     let entries = manager
         .list()
         .map_err(|e| format!("Couldn't read the spool folder at {}. ({e})", dir.display()))?;
@@ -670,7 +670,7 @@ pub async fn spool_show(id: String) -> Result<String, String> {
 }
 
 pub fn run_spool_show(id: String) -> Result<String, String> {
-    spool_show_in(synapse_core::compression::SpoolManager::default_dir(), &id)
+    spool_show_in(palexus_core::compression::SpoolManager::default_dir(), &id)
 }
 
 /// Largest log `spool_show` returns whole. A spooled build or test run can
@@ -683,20 +683,20 @@ fn spool_show_in(dir: PathBuf, id: &str) -> Result<String, String> {
     validate_spool_id(id)?;
     let path = dir.join(format!("{id}.log"));
     // `symlink_metadata` so a `<id>.log` that is a link is seen as one: the
-    // spool only ever holds regular files Synapse wrote, and following a
+    // spool only ever holds regular files Palexus wrote, and following a
     // link would read whatever it points at.
     let meta = std::fs::symlink_metadata(&path).map_err(|e| spool_read_error(id, &e))?;
     if !meta.is_file() {
         return Err(format!(
             "The spool log \"{id}\" isn't a regular file (it may be a link to somewhere \
-             else), so Synapse won't open it."
+             else), so Palexus won't open it."
         ));
     }
     if meta.len() > SPOOL_SHOW_MAX_BYTES {
         return read_spool_tail(&path, meta.len(), SPOOL_SHOW_MAX_BYTES)
             .map_err(|e| spool_read_error(id, &e));
     }
-    let manager = synapse_core::compression::SpoolManager::new(dir);
+    let manager = palexus_core::compression::SpoolManager::new(dir);
     manager
         .read_log(id, None, None)
         .map_err(|e| spool_read_error(id, &e))
@@ -738,7 +738,7 @@ fn read_spool_tail(path: &Path, len: u64, max: u64) -> std::io::Result<String> {
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
     let body = text.lines().collect::<Vec<_>>().join("\n");
     Ok(format!(
-        "[synapse] This log is {len} bytes; only its last {} bytes are shown. Full log: {}\n{body}",
+        "[palexus] This log is {len} bytes; only its last {} bytes are shown. Full log: {}\n{body}",
         buf.len() - start,
         path.display()
     ))
@@ -759,7 +759,7 @@ mod tests {
     // an "empty site" test would see zed as present and fail for reasons
     // that have nothing to do with the code under test.
     //
-    // `synapse-core` has an identical guard (`test_home`) for its own
+    // `palexus-core` has an identical guard (`test_home`) for its own
     // adapter tests, but it is `pub(crate)` there and this is a different
     // crate, so the ~15 lines are duplicated rather than shared.
     static HOME_LOCK: Mutex<()> = Mutex::new(());
@@ -1040,7 +1040,7 @@ mod tests {
         let text = read_spool_tail(&path, len, 40).unwrap();
         let mut lines = text.lines();
         let header = lines.next().unwrap();
-        assert!(header.starts_with("[synapse] This log is"), "{header}");
+        assert!(header.starts_with("[palexus] This log is"), "{header}");
         assert!(header.contains(&len.to_string()));
         let rest: Vec<&str> = lines.collect();
         assert!(!rest.is_empty());

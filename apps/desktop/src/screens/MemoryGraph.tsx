@@ -219,7 +219,7 @@ function inTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
 
-// Kind colours, drawn from the SYNAPSE tokens. The accent (drape) is kept for
+// Kind colours, drawn from the PALEXUS tokens. The accent (drape) is kept for
 // interaction only: the selection marker and focus rings.
 const KIND_COLORS: Record<string, string> = {
   core: '#d4dae2', // ink

@@ -1,5 +1,5 @@
 //! Security hardening, CWE boundary enforcement, atomic file I/O, and
-//! Indirect Prompt Injection detection/sanitization for Synapse (`synapse-core`).
+//! Indirect Prompt Injection detection/sanitization for Palexus (`palexus-core`).
 //!
 //! Mitigates:
 //! - **CWE-22**: Path traversal via `..`, prefix, backslash, or null-byte injection.
@@ -346,13 +346,13 @@ pub fn write_atomic(path: &Path, content: impl AsRef<[u8]>) -> io::Result<()> {
     let file_name = path
         .file_name()
         .and_then(|n| n.to_str())
-        .unwrap_or("synapse");
+        .unwrap_or("palexus");
 
     let mut tmp_path = PathBuf::new();
     let mut tmp_file = None;
 
     for attempt in 0..16u32 {
-        let candidate = parent.join(format!(".{file_name}.synapse-tmp-{pid}-{seq}-{attempt}"));
+        let candidate = parent.join(format!(".{file_name}.palexus-tmp-{pid}-{seq}-{attempt}"));
         let mut opts = fs::OpenOptions::new();
         opts.write(true).create_new(true);
         #[cfg(unix)]

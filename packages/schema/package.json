@@ -1,5 +1,5 @@
 {
-  "name": "@synapse/schema",
+  "name": "@palexus/schema",
   "version": "1.0.0",
   "private": true,
   "description": "JSON Schemas for skill.yaml/agent/mcp Brain files; generated TS types land in Phase 3",

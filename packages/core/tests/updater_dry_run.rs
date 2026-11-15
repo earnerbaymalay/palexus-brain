@@ -6,7 +6,7 @@
 
 use std::path::PathBuf;
 
-use synapse_core::updater::{
+use palexus_core::updater::{
     check_for_update, dry_run_report, verification_status, Channel, ReleaseManifest, SigningStatus,
     UpdateDecision,
 };

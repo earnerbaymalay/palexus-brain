@@ -6,8 +6,8 @@ import type { Sandbox } from './sandbox.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Binary will be at workspace_root/target/debug/synapse
-const BINARY_PATH = path.resolve(__dirname, '../../../../target/debug/synapse');
+// Binary will be at workspace_root/target/debug/palexus
+const BINARY_PATH = path.resolve(__dirname, '../../../../target/debug/palexus');
 
 export interface RunCLIOptions extends Options {
   sandbox?: Sandbox;

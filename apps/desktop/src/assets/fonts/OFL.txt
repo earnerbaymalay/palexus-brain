@@ -1,5 +1,5 @@
 SIL Open Font License, Version 1.1 — governs Inter, JetBrains Mono, and
-Rubik Mono One, vendored here for offline use (see synapse-tokens.json).
+Rubik Mono One, vendored here for offline use (see palexus-tokens.json).
 
 Full license text: https://scripts.sil.org/OFL
 

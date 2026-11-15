@@ -42,7 +42,7 @@ function currentWindow(): TauriWindow | null {
 }
 
 function warn(what: string, e: unknown) {
-  console.warn(`synapse: window ${what} failed`, e)
+  console.warn(`palexus: window ${what} failed`, e)
 }
 
 type Glyph = 'minimise' | 'maximise' | 'close'
@@ -179,7 +179,7 @@ export function TitleBar(): JSX.Element {
     >
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-baseline gap-3 self-stretch pl-4 pt-[11px]">
         <span data-tauri-drag-region className="font-display text-[11px] leading-none tracking-wider text-ink">
-          SYNAPSE
+          PALEXUS
         </span>
         <span data-tauri-drag-region className="truncate font-mono text-[10px] leading-none text-ink-soft">
           clinical engine for ai context

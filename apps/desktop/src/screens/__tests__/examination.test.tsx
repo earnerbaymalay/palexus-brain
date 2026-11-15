@@ -57,7 +57,7 @@ describe('Examination — zero findings', () => {
     expect(screen.getByTestId('exam-tally')).toHaveTextContent('0 critical · 0 warning · 0 info · 0 fixable')
     expect(screen.getByText('no drift, no faults')).toBeInTheDocument()
     expect(screen.getByText('Clean bill of health.')).toBeInTheDocument()
-    expect(screen.getByText('synapse sync --once')).toBeInTheDocument()
+    expect(screen.getByText('palexus sync --once')).toBeInTheDocument()
     expect(screen.queryByRole('list', { name: /findings/i })).not.toBeInTheDocument()
   })
 
@@ -96,7 +96,7 @@ describe('Examination — mixed severities', () => {
 
   it('names --fix when anything is fixable, per row and in the footer', () => {
     render(<Examination report={mixed} />)
-    expect(screen.getByText('synapse doctor --fix')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor --fix')).toBeInTheDocument()
     expect(screen.getAllByText('fixable with --fix')).toHaveLength(2)
     expect(screen.getAllByText('fix by hand')).toHaveLength(1)
     expect(screen.getByText('rule canonical-source-missing')).toBeInTheDocument()
@@ -105,13 +105,13 @@ describe('Examination — mixed severities', () => {
   it('still names a next command when criticals are not fixable', () => {
     render(<Examination report={report({ criticals: 2, findings: [f({ severity: 'critical' }), f({ severity: 'critical' })] })} />)
     expect(screen.getByText('2 critical findings need a human.')).toBeInTheDocument()
-    expect(screen.getByText('synapse doctor')).toBeInTheDocument()
+    expect(screen.getByText('palexus doctor')).toBeInTheDocument()
   })
 
   it('reports warnings-only as observations and points at sync', () => {
     render(<Examination report={report({ findings: [f({ severity: 'warning' })] })} />)
     expect(screen.getByText('No critical findings. 1 observation noted.')).toBeInTheDocument()
-    expect(screen.getByText('synapse sync --once')).toBeInTheDocument()
+    expect(screen.getByText('palexus sync --once')).toBeInTheDocument()
   })
 })
 
@@ -130,8 +130,8 @@ describe('Examination — interactions', () => {
   it('copy button writes the next command to the clipboard and confirms', async () => {
     const user = userEvent.setup()
     render(<Examination report={mixed} />)
-    await user.click(screen.getByRole('button', { name: 'Copy synapse doctor --fix' }))
-    expect(await navigator.clipboard.readText()).toBe('synapse doctor --fix')
+    await user.click(screen.getByRole('button', { name: 'Copy palexus doctor --fix' }))
+    expect(await navigator.clipboard.readText()).toBe('palexus doctor --fix')
     expect(screen.getByRole('status')).toHaveTextContent('copied')
   })
 
@@ -141,7 +141,7 @@ describe('Examination — interactions', () => {
     const original = navigator.clipboard.writeText
     navigator.clipboard.writeText = () => Promise.reject(new Error('denied'))
     try {
-      await user.click(screen.getByRole('button', { name: 'Copy synapse sync --once' }))
+      await user.click(screen.getByRole('button', { name: 'Copy palexus sync --once' }))
       expect(await screen.findByRole('alert')).toHaveTextContent('clipboard unavailable')
       expect(screen.getByRole('status')).toHaveTextContent('')
     } finally {
@@ -154,7 +154,7 @@ describe('Examination — interactions', () => {
     const { unmount } = render(<Examination report={mixed} />)
     expect(listShortcuts().find((s) => s.id === 'examination.copy-next')).toMatchObject({ keys: 'c', group: 'Actions' })
     await user.keyboard('c')
-    expect(await navigator.clipboard.readText()).toBe('synapse doctor --fix')
+    expect(await navigator.clipboard.readText()).toBe('palexus doctor --fix')
     unmount()
     expect(listShortcuts().some((s) => s.id === 'examination.copy-next')).toBe(false)
   })
@@ -165,7 +165,7 @@ describe('Examination — interactions', () => {
     await user.tab()
     expect(document.activeElement).toHaveAccessibleName('Dismiss this hint')
     await user.tab()
-    expect(document.activeElement).toHaveAccessibleName('Copy synapse doctor --fix')
+    expect(document.activeElement).toHaveAccessibleName('Copy palexus doctor --fix')
     await user.tab()
     expect(document.activeElement).toHaveAccessibleName('Dismiss this hint')
   })

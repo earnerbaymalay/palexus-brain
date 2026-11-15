@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Synapse desktop e2e click-through (plain Node + `playwright`, no test runner).
+ * Palexus desktop e2e click-through (plain Node + `playwright`, no test runner).
  *
  * Loads the Vite dev server in Chromium with the Tauri backend mocked
  * (src/test/tauri-mock.ts, injected via page.addInitScript), then for every

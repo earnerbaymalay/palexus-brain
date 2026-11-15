@@ -1,4 +1,4 @@
-//! SYNAPSE Runtime Gateway & Tool-Calling Stabilizer
+//! PALEXUS Runtime Gateway & Tool-Calling Stabilizer
 //!
 //! Provides a local-first, zero-telemetry HTTP reverse proxy on localhost
 //! that intercepts OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible
@@ -49,7 +49,7 @@ impl UpstreamKind {
     }
 }
 
-/// Configuration for the SYNAPSE Gateway
+/// Configuration for the PALEXUS Gateway
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GatewayConfig {
     pub bind_addr: String,
@@ -269,7 +269,7 @@ pub fn handle_request(
     let required_token = config
         .api_key
         .clone()
-        .or_else(|| std::env::var("SYNAPSE_GATEWAY_TOKEN").ok());
+        .or_else(|| std::env::var("PALEXUS_GATEWAY_TOKEN").ok());
 
     if let Some(ref token) = required_token {
         if !(url == "/health" || method == "OPTIONS") {
@@ -349,7 +349,7 @@ pub fn handle_request(
         let current_stats = stats.read().unwrap().clone();
         let payload = json!({
             "status": "healthy",
-            "service": "SYNAPSE Runtime Gateway",
+            "service": "PALEXUS Runtime Gateway",
             "version": "1.0.0",
             "upstream": config.upstream_url,
             "bind_addr": config.bind_addr,
@@ -380,7 +380,7 @@ pub fn handle_request(
                     "id": config.default_model.clone().unwrap_or_else(|| "default".to_string()),
                     "object": "model",
                     "created": created_ts,
-                    "owned_by": "synapse-local"
+                    "owned_by": "palexus-local"
                 }
             ]
         });
@@ -590,7 +590,7 @@ pub fn process_chat_request(
 fn inject_tool_calling_instructions(payload: &mut Value) {
     if let Some(tools) = payload.get("tools").cloned() {
         let tool_instruction = format!(
-            "\n[SYNAPSE TOOL PROTOCOL]\nYou have access to the following tools: {}\nIf invoking a tool, respond ONLY with a JSON object in this exact format:\n{{\"name\": \"<function_name>\", \"arguments\": {{...}}}}",
+            "\n[PALEXUS TOOL PROTOCOL]\nYou have access to the following tools: {}\nIf invoking a tool, respond ONLY with a JSON object in this exact format:\n{{\"name\": \"<function_name>\", \"arguments\": {{...}}}}",
             tools
         );
 

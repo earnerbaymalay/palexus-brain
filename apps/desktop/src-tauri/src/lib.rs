@@ -31,7 +31,7 @@ pub fn run() {
                 log::warn!("could not load settings, using defaults: {e}");
             }
 
-            log::info!("Synapse Desktop v{} initialized", env!("CARGO_PKG_VERSION"));
+            log::info!("Palexus Desktop v{} initialized", env!("CARGO_PKG_VERSION"));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

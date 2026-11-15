@@ -8,7 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::env;
-use synapse_core::adapters::all_adapters;
+use palexus_core::adapters::all_adapters;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetectedTool {

@@ -1,4 +1,4 @@
-//! Canonical engine for Synapse: scanner, Brain model, adapter
+//! Canonical engine for Palexus: scanner, Brain model, adapter
 //! trait, projection policy, and sync outcomes. Consumed by `apps/cli`
 //! directly and by `apps/desktop` via Tauri commands.
 //!
@@ -23,6 +23,7 @@ pub mod gateway;
 pub mod hud;
 pub mod mappings;
 pub mod marketplace;
+pub mod legacy;
 pub mod master_prompt;
 pub mod mcp_registry;
 pub mod memory;
