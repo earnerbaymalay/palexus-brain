@@ -52,7 +52,7 @@ enum Command {
         /// Brain directory to examine (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root that projections are relative to (defaults to $SYNAPSE_TOOL_ROOT, else your home directory)
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -158,7 +158,7 @@ enum Command {
         /// Brain directory to examine
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -179,7 +179,7 @@ enum Command {
         /// Brain directory (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -1476,20 +1476,28 @@ fn resolve_brain_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
 
 /// Resolves the tool config root that projection paths are relative to.
 /// Precedence: `--tool-root`, then `$SYNAPSE_WORKSPACE_PATH` / `$SYNAPSE_TOOL_ROOT`, then home.
+///
+/// The folder you happen to be in is never used: the desktop app always
+/// looks in the home folder, and the two must agree on which tool configs
+/// they read and write.
 fn resolve_tool_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
+    pick_tool_root(explicit, std::env::var_os, dirs::home_dir())
+}
+
+fn pick_tool_root(
+    explicit: Option<PathBuf>,
+    env: impl Fn(&str) -> Option<std::ffi::OsString>,
+    home: Option<PathBuf>,
+) -> Result<PathBuf, String> {
     if let Some(p) = explicit {
         return Ok(p);
     }
-    if let Some(env) =
-        std::env::var_os("SYNAPSE_WORKSPACE_PATH").or_else(|| std::env::var_os("SYNAPSE_TOOL_ROOT"))
-    {
-        return Ok(PathBuf::from(env));
+    for key in ["SYNAPSE_WORKSPACE_PATH", "SYNAPSE_TOOL_ROOT"] {
+        if let Some(value) = env(key).filter(|v| !v.is_empty()) {
+            return Ok(PathBuf::from(value));
+        }
     }
-    if let Ok(cur) = std::env::current_dir() {
-        return Ok(cur);
-    }
-    dirs::home_dir()
-        .ok_or_else(|| "cannot locate a home directory; pass --tool-root <PATH>".to_string())
+    home.ok_or_else(|| "cannot locate a home directory; pass --tool-root <PATH>".to_string())
 }
 
 /// Runs the Doctor rule library and charts the result as a clinical record.
@@ -1712,6 +1720,42 @@ mod tests {
                 assert_eq!(resolve_brain_root(None).unwrap(), expected);
             }
         }
+    }
+
+    #[test]
+    fn tool_root_defaults_to_home_never_the_current_folder() {
+        let home = PathBuf::from("/home/mara");
+        let no_env = |_: &str| None;
+        assert_eq!(pick_tool_root(None, no_env, Some(home.clone())).unwrap(), home);
+        assert_ne!(
+            pick_tool_root(None, no_env, Some(home.clone())).unwrap(),
+            std::env::current_dir().unwrap()
+        );
+        // An empty variable counts as unset.
+        let empty = |_: &str| Some(std::ffi::OsString::new());
+        assert_eq!(pick_tool_root(None, empty, Some(home.clone())).unwrap(), home);
+        // No home and no override is an error, not a silent guess.
+        assert!(pick_tool_root(None, no_env, None).is_err());
+    }
+
+    #[test]
+    fn tool_root_prefers_flag_then_workspace_then_tool_root_env() {
+        let home = Some(PathBuf::from("/home/mara"));
+        let both = |key: &str| match key {
+            "SYNAPSE_WORKSPACE_PATH" => Some("/ws".into()),
+            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            _ => None,
+        };
+        let only_tr = |key: &str| match key {
+            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            _ => None,
+        };
+        assert_eq!(
+            pick_tool_root(Some(PathBuf::from("/flag")), both, home.clone()).unwrap(),
+            PathBuf::from("/flag")
+        );
+        assert_eq!(pick_tool_root(None, both, home.clone()).unwrap(), PathBuf::from("/ws"));
+        assert_eq!(pick_tool_root(None, only_tr, home).unwrap(), PathBuf::from("/tr"));
     }
 
     #[test]
