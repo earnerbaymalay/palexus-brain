@@ -5,6 +5,7 @@ use crate::conflict_queue::{ConflictQueue, QueuedConflict};
 use crate::mappings::{Mapping, MappingsFile};
 use crate::model::{Agent, McpServer, Skill};
 use crate::snapshot;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -360,6 +361,11 @@ pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String
     let _ = ensure_default_skills(brain_root);
 
     let mut projected_paths = Vec::new();
+    // Skills and servers that name no tool of their own (and the built-in
+    // synapse-memory skill) go only to tools that are installed. One that
+    // names a tool explicitly is still written for that tool.
+    let mut defaulted_skills: HashSet<String> = HashSet::new();
+    let mut defaulted_mcp: HashSet<String> = HashSet::new();
 
     let mut skills = Vec::new();
     let skills_dir = brain_root.join("skills");
@@ -374,6 +380,9 @@ pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String
                     if skill_yaml.exists() {
                         if let Ok(raw) = fs::read_to_string(&skill_yaml) {
                             if let Ok(mut skill) = serde_json::from_str::<Skill>(&raw) {
+                                if skill.targets.is_empty() || skill.id == SYNAPSE_MEMORY_SKILL_ID {
+                                    defaulted_skills.insert(skill.id.clone());
+                                }
                                 if skill.targets.is_empty() {
                                     skill.targets =
                                         all_adapters().iter().map(|a| a.id().to_string()).collect();
@@ -387,6 +396,7 @@ pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String
                     if skill_md.exists() {
                         if let Ok(raw) = fs::read_to_string(&skill_md) {
                             let id = path.file_name().unwrap().to_string_lossy().to_string();
+                            defaulted_skills.insert(id.clone());
                             let sha256 = crate::adapters::compute_sha256(&raw);
                             skills.push(Skill {
                                 id,
@@ -435,6 +445,7 @@ pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String
                     if let Ok(raw) = fs::read_to_string(&path) {
                         if let Ok(mut server) = serde_json::from_str::<McpServer>(&raw) {
                             if server.targets.is_empty() {
+                                defaulted_mcp.insert(server.id.clone());
                                 server.targets =
                                     all_adapters().iter().map(|a| a.id().to_string()).collect();
                             }
@@ -450,7 +461,26 @@ pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String
     let mut last_err = String::new();
 
     for adapter in all_adapters() {
-        match adapter.project(tool_root, &skills, &agents, &mcp_servers) {
+        let result = if adapter.detect(tool_root) {
+            adapter.project(tool_root, &skills, &agents, &mcp_servers)
+        } else {
+            let id = adapter.id().to_string();
+            let named: Vec<Skill> = skills
+                .iter()
+                .filter(|s| !defaulted_skills.contains(&s.id) && s.targets.contains(&id))
+                .cloned()
+                .collect();
+            let named_mcp: Vec<McpServer> = mcp_servers
+                .iter()
+                .filter(|s| !defaulted_mcp.contains(&s.id) && s.targets.contains(&id))
+                .cloned()
+                .collect();
+            if named.is_empty() && named_mcp.is_empty() {
+                continue;
+            }
+            adapter.project(tool_root, &named, &[], &named_mcp)
+        };
+        match result {
             Ok(res) => {
                 projected_paths.extend(res.written);
             }
@@ -668,6 +698,10 @@ mod tests {
         let _home = crate::test_home::HomeGuard::set(home.path());
         let brain = tempfile::tempdir().unwrap();
         let tool_root = tempfile::tempdir().unwrap();
+        // The four tools the built-in skill targets are installed.
+        for marker in [".claude", ".cursor/rules", ".agents", ".continue/rules"] {
+            fs::create_dir_all(tool_root.path().join(marker)).unwrap();
+        }
 
         // Projecting from an empty brain should auto-provision the synapse-memory skill
         let projected = perform_project(brain.path(), tool_root.path()).unwrap();
@@ -714,5 +748,93 @@ mod tests {
             continue_rule.exists(),
             "Continue must have synapse-memory rule projected"
         );
+    }
+
+    #[test]
+    fn tools_that_are_not_installed_get_no_default_skills() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        // Only Claude Code is installed.
+        fs::create_dir_all(tool_root.path().join(".claude")).unwrap();
+        // A skill with no targets of its own.
+        let skill_dir = brain.path().join("skills/house-style");
+        fs::create_dir_all(&skill_dir).unwrap();
+        fs::write(skill_dir.join("SKILL.md"), "Use tabs.").unwrap();
+
+        perform_project(brain.path(), tool_root.path()).unwrap();
+
+        assert!(tool_root
+            .path()
+            .join(".claude/skills/house-style/SKILL.md")
+            .exists());
+        for absent in [".cursor", ".continue", ".agents", ".windsurfrules", "CONVENTIONS.md"] {
+            assert!(
+                !tool_root.path().join(absent).exists(),
+                "{absent} was written for a tool that is not installed"
+            );
+        }
+        assert!(
+            !home.path().join(".config/zed").exists(),
+            "nothing may be written into the home folder for an absent tool"
+        );
+    }
+
+    #[test]
+    fn a_skill_that_names_a_tool_is_written_even_if_the_tool_is_absent() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        let skill = Skill {
+            id: "conventions".to_string(),
+            version: "1.0.0".to_string(),
+            triggers: vec!["*".to_string()],
+            targets: vec!["aider".to_string()],
+            source: "Always double-check.".to_string(),
+            sha256: String::new(),
+        };
+        let skill_dir = brain.path().join("skills/conventions");
+        fs::create_dir_all(&skill_dir).unwrap();
+        fs::write(skill_dir.join("skill.yaml"), serde_json::to_string(&skill).unwrap()).unwrap();
+
+        perform_project(brain.path(), tool_root.path()).unwrap();
+
+        assert!(tool_root.path().join("CONVENTIONS.md").exists());
+        assert!(!tool_root.path().join(".claude").exists());
+    }
+
+    #[test]
+    fn undo_after_project_restores_the_users_own_file() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        let rules = tool_root.path().join(".cursor/rules/synapse-memory.mdc");
+        fs::create_dir_all(rules.parent().unwrap()).unwrap();
+        fs::write(&rules, "my hand-written rule").unwrap();
+
+        let (res, backup) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        res.unwrap();
+        assert!(backup.is_some());
+        assert_ne!(fs::read_to_string(&rules).unwrap(), "my hand-written rule");
+
+        crate::backup::restore(brain.path(), None).unwrap();
+        assert_eq!(fs::read_to_string(&rules).unwrap(), "my hand-written rule");
+
+        // Running it again over an unchanged result leaves no new backup.
+        let before = crate::backup::list(brain.path()).unwrap().len();
+        let (_, first) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        assert!(first.is_some());
+        let (_, second) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        assert!(second.is_none(), "an unchanged projection must not leave a backup");
+        assert_eq!(crate::backup::list(brain.path()).unwrap().len(), before + 1);
     }
 }
