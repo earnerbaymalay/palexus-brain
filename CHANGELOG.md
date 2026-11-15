@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Backups and undo for tool files** — `project`, `sync`, `doctor --fix` and `onboard` save the original of every file they change under `<brain>/.brain/backups/<id>/` first, and refuse to write if they can't. `synapse backups` lists them; `synapse undo [id]` puts the files back.
+- **`synapse project --dry-run` shows the plan** — which tools would get which skills and MCP servers, without writing anything.
 - **Context Firewall (`packages/core/src/firewall.rs`)** — zero-leak egress pseudonymization and response rehydration for runtime gateway traffic (`synapse serve`):
   - Masks physical hardware MAC addresses, RFC 1918 private IPv4/IPv6 ranges, and API keys/tokens before forwarding prompts to upstream models.
   - Automatically rehydrates synthetic placeholder tokens upon response return and inside tool-call JSON arguments so local execution operates without breaking.
@@ -18,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No LLM in the loop: tool output is distilled with the Sensory Gating engine; `<private>…</private>` spans are dropped and credential-looking tokens redacted before anything touches disk.
   - Storage is an append-only JSONL at `~/.synapse/memory/` (override: `SYNAPSE_MEMORY_DIR`); `mem forget`, `mem stats`, `mem observe` for management.
 - **Reversible context folding (`synapse serve --fold-keep N`)** — inspired by billion-context, but deterministic and model-free: tool results older than the newest N messages (OpenAI `tool` and Anthropic `tool_result` shapes) collapse into a short digest stub; the original is spooled under a content-addressed id and restored with `synapse spool show <id>`. Stubs are byte-stable across requests so prefix caching is preserved. Off by default.
+
+### Fixed
+- The CLI looked for tool configs in the current folder while the desktop app used the home folder, so the two could disagree. Both now use the home folder unless `--tool-root`, `SYNAPSE_WORKSPACE_PATH` or `SYNAPSE_TOOL_ROOT` says otherwise.
+- `synapse project` no longer writes configs for tools that are not installed. Only skills and servers that name such a tool explicitly are written for it.
 
 ## [1.0.0] - 2026-08-19
 
