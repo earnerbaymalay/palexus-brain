@@ -1,9 +1,9 @@
-use serde_json::json;
 use palexus_core::compression::CompressionLevel;
 use palexus_core::gateway::{
     sanitize_tool_calling_response, GatewayConfig, GatewayServer, UpstreamKind,
 };
 use palexus_core::hud::{format_hud, HudSnapshot};
+use serde_json::json;
 
 #[test]
 fn test_upstream_kind_detection() {

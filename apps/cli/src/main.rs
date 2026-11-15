@@ -227,12 +227,12 @@ enum SpoolAction {
     },
 }
 
-use std::io::{Read, Write};
 use palexus_core::compression::{execute_with_compression, CompressionLevel, SpoolManager};
 use palexus_core::gateway::{GatewayConfig, GatewayServer, UpstreamKind};
 use palexus_core::hud::{format_hud, HudSnapshot};
 use palexus_core::snapshot::{rollback, snapshot};
 use palexus_core::sync::{perform_import, perform_project, perform_sync, SyncLock, SyncOutcome};
+use std::io::{Read, Write};
 
 fn main() -> ExitCode {
     let cli = Cli::parse();

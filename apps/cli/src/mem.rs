@@ -8,8 +8,8 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Subcommand;
-use serde_json::Value;
 use palexus_core::memory::{observation_from_tool, summarize_session, MemoryStore, NewObservation};
+use serde_json::Value;
 
 use crate::chart;
 

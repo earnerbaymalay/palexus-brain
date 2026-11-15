@@ -46,7 +46,11 @@ mod tests {
     fn moves_the_old_data_folder_and_keeps_its_contents() {
         let home = tempfile::tempdir().unwrap();
         fs::create_dir_all(home.path().join(".synapse/memory")).unwrap();
-        fs::write(home.path().join(".synapse/memory/observations.jsonl"), "{}\n").unwrap();
+        fs::write(
+            home.path().join(".synapse/memory/observations.jsonl"),
+            "{}\n",
+        )
+        .unwrap();
 
         let dir = data_dir(home.path());
         assert_eq!(dir, home.path().join(".palexus"));

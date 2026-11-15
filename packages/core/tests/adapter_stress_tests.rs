@@ -1,11 +1,11 @@
-use std::fs;
-use std::sync::Mutex;
 use palexus_core::adapter::{Adapter, AdapterError};
 use palexus_core::adapters::{
     cline::ClineAdapter, github_copilot::GitHubCopilotAdapter, opencode::OpenCodeAdapter,
     windsurf::WindsurfAdapter, zed::ZedAdapter,
 };
 use palexus_core::model::Skill;
+use std::fs;
+use std::sync::Mutex;
 use tempfile::tempdir;
 
 /// `cargo test` runs tests in this file concurrently by default, but

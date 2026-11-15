@@ -10,9 +10,9 @@
 
 use std::path::{Component, Path, PathBuf};
 
-use serde::Serialize;
 use palexus_core::adapters::all_adapters;
 use palexus_core::doctor::{diagnose, DoctorContext, Severity};
+use serde::Serialize;
 
 // ── path resolution ─────────────────────────────────────────────────────
 
