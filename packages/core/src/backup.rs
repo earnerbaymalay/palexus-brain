@@ -437,7 +437,8 @@ mod tests {
         let (_, second) = with_backup(brain.path(), "project", || guarded_write(&file, "three"));
         let second = second.unwrap();
         assert_ne!(first.id, second.id);
-        assert_eq!(list(brain.path()).unwrap()[0].id, second.id, "newest first");
+        let all = list(brain.path()).unwrap();
+        assert_eq!(all[0].id, second.id, "newest first");
 
         restore(brain.path(), Some(&first.id)).unwrap();
         assert_eq!(fs::read_to_string(&file).unwrap(), "one");
@@ -464,7 +465,8 @@ mod tests {
         });
         res.unwrap();
         restore(brain.path(), None).unwrap();
-        assert!(fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
+        let meta = fs::symlink_metadata(&link).unwrap();
+        assert!(meta.file_type().is_symlink());
         assert_eq!(fs::read_link(&link).unwrap(), target);
         assert_eq!(fs::read_to_string(&target).unwrap(), "real");
     }
