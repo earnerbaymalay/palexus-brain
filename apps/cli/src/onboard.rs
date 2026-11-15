@@ -9,6 +9,7 @@ use std::io::{self, IsTerminal, Write};
 use std::path::Path;
 use std::process::ExitCode;
 
+use synapse_core::backup::{before_write, with_backup};
 use synapse_core::master_prompt::{
     render_master_prompt, CANONICAL_ZONE1_CONTENT, MASTER_PROMPT_FILENAME,
 };
@@ -134,14 +135,25 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
     }
 
     let prompt_file = brain_root.join(MASTER_PROMPT_FILENAME);
-    if let Err(e) = fs::write(&prompt_file, full_master_prompt) {
-        chart::fault(
-            "onboard",
-            &format!("Failed to write {}: {}", MASTER_PROMPT_FILENAME, e),
-            None,
-        );
-        return ExitCode::FAILURE;
-    }
+    // The old SYNAPSE.md and every tool file the projection changes are
+    // saved first, so `synapse undo` can put them back.
+    let (outcome, saved) = with_backup(brain_root, "onboard", || {
+        before_write(&prompt_file)?;
+        fs::write(&prompt_file, &full_master_prompt)?;
+        // Immediately project to all installed tool adapters.
+        Ok::<_, io::Error>(perform_project(brain_root, tool_root))
+    });
+    let projection = match outcome {
+        Ok(p) => p,
+        Err(e) => {
+            chart::fault(
+                "onboard",
+                &format!("Failed to write {}: {}", MASTER_PROMPT_FILENAME, e),
+                None,
+            );
+            return ExitCode::FAILURE;
+        }
+    };
 
     chart::row(
         chart::Mark::Present,
@@ -153,8 +165,7 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
     chart::detail(&format!("testing      {}", testing));
     chart::detail(&format!("demeanor     {}", demeanor));
 
-    // Immediately project to all active tool adapters
-    match perform_project(brain_root, tool_root) {
+    match projection {
         Ok(paths) => {
             chart::row(
                 chart::Mark::Present,
@@ -169,6 +180,13 @@ pub fn run_onboard(brain_root: &Path, tool_root: &Path, args: OnboardArgs) -> Ex
                 &format!("failed to project: {}", e),
             );
         }
+    }
+    if let Some(b) = &saved {
+        chart::row(
+            chart::Mark::Present,
+            "backup",
+            &format!("previous files saved · undo with: synapse undo {}", b.id),
+        );
     }
 
     chart::close(

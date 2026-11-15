@@ -11,6 +11,7 @@ pub(crate) mod test_home;
 
 pub mod adapter;
 pub mod adapters;
+pub mod backup;
 pub mod compression;
 pub mod conflict_queue;
 pub mod doctor;

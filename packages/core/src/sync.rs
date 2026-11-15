@@ -5,6 +5,7 @@ use crate::conflict_queue::{ConflictQueue, QueuedConflict};
 use crate::mappings::{Mapping, MappingsFile};
 use crate::model::{Agent, McpServer, Skill};
 use crate::snapshot;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -355,101 +356,195 @@ pub fn perform_import(root: &Path, brain_root: &Path) -> Result<Vec<String>, Str
     Ok(imported_paths)
 }
 
-/// Projects Brain content from `brain_root` out to `tool_root`.
-pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String>, String> {
-    let _ = ensure_default_skills(brain_root);
+/// The Brain's skills, agents and MCP servers, ready to project.
+struct Canonical {
+    skills: Vec<Skill>,
+    agents: Vec<Agent>,
+    mcp_servers: Vec<McpServer>,
+    /// Skills and servers that name no tool of their own, plus the built-in
+    /// synapse-memory skill. These go only to tools that are installed; one
+    /// that names a tool explicitly is still written for that tool.
+    defaulted_skills: HashSet<String>,
+    defaulted_mcp: HashSet<String>,
+}
 
-    let mut projected_paths = Vec::new();
+impl Canonical {
+    /// What `adapter_id` receives, or `None` when it gets nothing.
+    fn inputs_for(
+        &self,
+        adapter_id: &str,
+        installed: bool,
+    ) -> Option<(Vec<Skill>, Vec<Agent>, Vec<McpServer>)> {
+        let id = adapter_id.to_string();
+        let skills: Vec<Skill> = self
+            .skills
+            .iter()
+            .filter(|s| s.targets.contains(&id))
+            .filter(|s| installed || !self.defaulted_skills.contains(&s.id))
+            .cloned()
+            .collect();
+        let mcp_servers: Vec<McpServer> = self
+            .mcp_servers
+            .iter()
+            .filter(|s| s.targets.contains(&id))
+            .filter(|s| installed || !self.defaulted_mcp.contains(&s.id))
+            .cloned()
+            .collect();
+        // Agents always default to every tool, so absent tools get none.
+        let agents: Vec<Agent> = if installed {
+            self.agents.clone()
+        } else {
+            Vec::new()
+        };
+        if !installed && skills.is_empty() && mcp_servers.is_empty() {
+            return None;
+        }
+        Some((skills, agents, mcp_servers))
+    }
+}
+
+fn all_adapter_ids() -> Vec<String> {
+    all_adapters().iter().map(|a| a.id().to_string()).collect()
+}
+
+fn load_canonical(brain_root: &Path) -> Canonical {
+    let mut defaulted_skills: HashSet<String> = HashSet::new();
+    let mut defaulted_mcp: HashSet<String> = HashSet::new();
 
     let mut skills = Vec::new();
     let skills_dir = brain_root.join("skills");
-    if skills_dir.is_dir() {
-        if let Ok(entries) = fs::read_dir(&skills_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_dir() {
-                    let skill_yaml = path.join("skill.yaml");
-                    let skill_md = path.join("SKILL.md");
+    if let Ok(entries) = fs::read_dir(&skills_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if !path.is_dir() {
+                continue;
+            }
+            let skill_yaml = path.join("skill.yaml");
+            let skill_md = path.join("SKILL.md");
 
-                    if skill_yaml.exists() {
-                        if let Ok(raw) = fs::read_to_string(&skill_yaml) {
-                            if let Ok(mut skill) = serde_json::from_str::<Skill>(&raw) {
-                                if skill.targets.is_empty() {
-                                    skill.targets =
-                                        all_adapters().iter().map(|a| a.id().to_string()).collect();
-                                }
-                                skills.push(skill);
-                                continue;
-                            }
-                        }
+            if let Ok(raw) = fs::read_to_string(&skill_yaml) {
+                if let Ok(mut skill) = serde_json::from_str::<Skill>(&raw) {
+                    if skill.targets.is_empty() || skill.id == SYNAPSE_MEMORY_SKILL_ID {
+                        defaulted_skills.insert(skill.id.clone());
                     }
-
-                    if skill_md.exists() {
-                        if let Ok(raw) = fs::read_to_string(&skill_md) {
-                            let id = path.file_name().unwrap().to_string_lossy().to_string();
-                            let sha256 = crate::adapters::compute_sha256(&raw);
-                            skills.push(Skill {
-                                id,
-                                version: "1.0.0".to_string(),
-                                triggers: vec!["*".to_string()],
-                                targets: all_adapters()
-                                    .iter()
-                                    .map(|a| a.id().to_string())
-                                    .collect(),
-                                source: raw,
-                                sha256,
-                            });
-                        }
+                    if skill.targets.is_empty() {
+                        skill.targets = all_adapter_ids();
                     }
+                    skills.push(skill);
+                    continue;
                 }
+            }
+
+            if let Ok(raw) = fs::read_to_string(&skill_md) {
+                let id = path.file_name().unwrap().to_string_lossy().to_string();
+                defaulted_skills.insert(id.clone());
+                let sha256 = crate::adapters::compute_sha256(&raw);
+                skills.push(Skill {
+                    id,
+                    version: "1.0.0".to_string(),
+                    triggers: vec!["*".to_string()],
+                    targets: all_adapter_ids(),
+                    source: raw,
+                    sha256,
+                });
             }
         }
     }
 
     let mut agents = Vec::new();
-    let agents_dir = brain_root.join("agents");
-    if agents_dir.is_dir() {
-        if let Ok(entries) = fs::read_dir(&agents_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_file() && path.extension().is_some_and(|ext| ext == "md") {
-                    let slug = path.file_stem().unwrap().to_string_lossy().to_string();
-                    agents.push(Agent {
-                        slug,
-                        tools: vec!["*".to_string()],
-                        model_hints: vec!["auto".to_string()],
-                        targets: all_adapters().iter().map(|a| a.id().to_string()).collect(),
-                    });
-                }
+    if let Ok(entries) = fs::read_dir(brain_root.join("agents")) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file() && path.extension().is_some_and(|ext| ext == "md") {
+                let slug = path.file_stem().unwrap().to_string_lossy().to_string();
+                agents.push(Agent {
+                    slug,
+                    tools: vec!["*".to_string()],
+                    model_hints: vec!["auto".to_string()],
+                    targets: all_adapter_ids(),
+                });
             }
         }
     }
 
     let mut mcp_servers = Vec::new();
-    let mcp_dir = brain_root.join("mcp_servers");
-    if mcp_dir.is_dir() {
-        if let Ok(entries) = fs::read_dir(&mcp_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_file() && path.extension().is_some_and(|ext| ext == "json") {
-                    if let Ok(raw) = fs::read_to_string(&path) {
-                        if let Ok(mut server) = serde_json::from_str::<McpServer>(&raw) {
-                            if server.targets.is_empty() {
-                                server.targets =
-                                    all_adapters().iter().map(|a| a.id().to_string()).collect();
-                            }
-                            mcp_servers.push(server);
+    if let Ok(entries) = fs::read_dir(brain_root.join("mcp_servers")) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file() && path.extension().is_some_and(|ext| ext == "json") {
+                if let Ok(raw) = fs::read_to_string(&path) {
+                    if let Ok(mut server) = serde_json::from_str::<McpServer>(&raw) {
+                        if server.targets.is_empty() {
+                            defaulted_mcp.insert(server.id.clone());
+                            server.targets = all_adapter_ids();
                         }
+                        mcp_servers.push(server);
                     }
                 }
             }
         }
     }
 
+    Canonical {
+        skills,
+        agents,
+        mcp_servers,
+        defaulted_skills,
+        defaulted_mcp,
+    }
+}
+
+/// What `perform_project` would send to one tool.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectPlan {
+    pub tool_id: &'static str,
+    /// Whether the tool's config was found under the tools folder.
+    pub installed: bool,
+    pub skills: Vec<String>,
+    pub mcp_servers: Vec<String>,
+}
+
+/// Lists, per tool, what `perform_project` would write, without writing
+/// anything. Tools that would get nothing are left out.
+pub fn plan_project(brain_root: &Path, tool_root: &Path) -> Vec<ProjectPlan> {
+    let canonical = load_canonical(brain_root);
+    all_adapters()
+        .iter()
+        .filter_map(|adapter| {
+            let installed = adapter.detect(tool_root);
+            let (skills, _, mcp_servers) = canonical.inputs_for(adapter.id(), installed)?;
+            if skills.is_empty() && mcp_servers.is_empty() {
+                return None;
+            }
+            Some(ProjectPlan {
+                tool_id: adapter.id(),
+                installed,
+                skills: skills.into_iter().map(|s| s.id).collect(),
+                mcp_servers: mcp_servers.into_iter().map(|s| s.id).collect(),
+            })
+        })
+        .collect()
+}
+
+/// Projects Brain content from `brain_root` out to `tool_root`.
+///
+/// Tools that are not installed only get skills and MCP servers that name
+/// them explicitly. Wrap the call in [`crate::backup::with_backup`] to be
+/// able to undo it.
+pub fn perform_project(brain_root: &Path, tool_root: &Path) -> Result<Vec<String>, String> {
+    let _ = ensure_default_skills(brain_root);
+    let canonical = load_canonical(brain_root);
+
+    let mut projected_paths = Vec::new();
     let mut had_error = false;
     let mut last_err = String::new();
 
     for adapter in all_adapters() {
+        let installed = adapter.detect(tool_root);
+        let Some((skills, agents, mcp_servers)) = canonical.inputs_for(adapter.id(), installed)
+        else {
+            continue;
+        };
         match adapter.project(tool_root, &skills, &agents, &mcp_servers) {
             Ok(res) => {
                 projected_paths.extend(res.written);
@@ -668,6 +763,10 @@ mod tests {
         let _home = crate::test_home::HomeGuard::set(home.path());
         let brain = tempfile::tempdir().unwrap();
         let tool_root = tempfile::tempdir().unwrap();
+        // The four tools the built-in skill targets are installed.
+        for marker in [".claude", ".cursor/rules", ".agents", ".continue/rules"] {
+            fs::create_dir_all(tool_root.path().join(marker)).unwrap();
+        }
 
         // Projecting from an empty brain should auto-provision the synapse-memory skill
         let projected = perform_project(brain.path(), tool_root.path()).unwrap();
@@ -714,5 +813,114 @@ mod tests {
             continue_rule.exists(),
             "Continue must have synapse-memory rule projected"
         );
+    }
+
+    #[test]
+    fn tools_that_are_not_installed_get_no_default_skills() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        // Only Claude Code is installed.
+        fs::create_dir_all(tool_root.path().join(".claude")).unwrap();
+        // A skill with no targets of its own.
+        let skill_dir = brain.path().join("skills/house-style");
+        fs::create_dir_all(&skill_dir).unwrap();
+        fs::write(skill_dir.join("SKILL.md"), "Use tabs.").unwrap();
+
+        // The dry-run plan names only the installed tool and writes nothing.
+        let plan = plan_project(brain.path(), tool_root.path());
+        assert_eq!(plan.len(), 1, "{plan:?}");
+        assert_eq!(plan[0].tool_id, "claude-code");
+        assert!(plan[0].installed);
+        assert_eq!(plan[0].skills, vec!["house-style".to_string()]);
+        assert!(!tool_root.path().join(".claude/skills").exists());
+
+        perform_project(brain.path(), tool_root.path()).unwrap();
+
+        // A plain skill lands in Claude Code's CLAUDE.md.
+        let claude_md = fs::read_to_string(tool_root.path().join("CLAUDE.md")).unwrap();
+        assert!(claude_md.contains("Use tabs."));
+        for absent in [
+            ".cursor",
+            ".continue",
+            ".agents",
+            ".windsurfrules",
+            "CONVENTIONS.md",
+        ] {
+            assert!(
+                !tool_root.path().join(absent).exists(),
+                "{absent} was written for a tool that is not installed"
+            );
+        }
+        assert!(
+            !home.path().join(".config/zed").exists(),
+            "nothing may be written into the home folder for an absent tool"
+        );
+    }
+
+    #[test]
+    fn a_skill_that_names_a_tool_is_written_even_if_the_tool_is_absent() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        let skill = Skill {
+            id: "conventions".to_string(),
+            version: "1.0.0".to_string(),
+            triggers: vec!["*".to_string()],
+            targets: vec!["aider".to_string()],
+            source: "Always double-check.".to_string(),
+            sha256: String::new(),
+        };
+        let skill_dir = brain.path().join("skills/conventions");
+        fs::create_dir_all(&skill_dir).unwrap();
+        fs::write(
+            skill_dir.join("skill.yaml"),
+            serde_json::to_string(&skill).unwrap(),
+        )
+        .unwrap();
+
+        perform_project(brain.path(), tool_root.path()).unwrap();
+
+        assert!(tool_root.path().join("CONVENTIONS.md").exists());
+        assert!(!tool_root.path().join(".claude").exists());
+    }
+
+    #[test]
+    fn undo_after_project_restores_the_users_own_file() {
+        let home = tempfile::tempdir().unwrap();
+        let _home = crate::test_home::HomeGuard::set(home.path());
+        let brain = tempfile::tempdir().unwrap();
+        let tool_root = tempfile::tempdir().unwrap();
+        let rules = tool_root.path().join(".cursor/rules/synapse-memory.mdc");
+        fs::create_dir_all(rules.parent().unwrap()).unwrap();
+        fs::write(&rules, "mine").unwrap();
+
+        let (res, backup) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        res.unwrap();
+        assert!(backup.is_some());
+        assert_ne!(fs::read_to_string(&rules).unwrap(), "mine");
+
+        crate::backup::restore(brain.path(), None).unwrap();
+        assert_eq!(fs::read_to_string(&rules).unwrap(), "mine");
+
+        // Running it again over an unchanged result leaves no new backup.
+        let before = crate::backup::list(brain.path()).unwrap().len();
+        let (_, first) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        assert!(first.is_some());
+        let (_, second) = crate::backup::with_backup(brain.path(), "project", || {
+            perform_project(brain.path(), tool_root.path())
+        });
+        assert!(
+            second.is_none(),
+            "an unchanged projection must not leave a backup"
+        );
+        let after = crate::backup::list(brain.path()).unwrap().len();
+        assert_eq!(after, before + 1);
     }
 }

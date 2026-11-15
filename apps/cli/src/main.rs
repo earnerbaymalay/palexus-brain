@@ -7,7 +7,8 @@ use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
 use synapse_core::adapters::all_adapters;
-use synapse_core::doctor::{apply_fixes, diagnose, DoctorContext, Severity};
+use synapse_core::backup::{self, Manifest};
+use synapse_core::doctor::{apply_fixes, diagnose, DoctorContext, DoctorError, Severity};
 
 /// Synapse — scan, import, project, and sync AI tool configs
 /// through one canonical Brain.
@@ -52,7 +53,7 @@ enum Command {
         /// Brain directory to examine (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root that projections are relative to (defaults to $SYNAPSE_TOOL_ROOT, else your home directory)
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -65,6 +66,13 @@ enum Command {
     Rollback {
         /// Snapshot id or git ref to restore
         snapshot: String,
+    },
+    /// List the copies saved before Synapse changed your tool files
+    Backups,
+    /// Put tool files back the way they were before a Synapse command
+    Undo {
+        /// Backup id from `synapse backups` (defaults to the newest not yet undone)
+        id: Option<String>,
     },
     /// Execute a command and compress its terminal output for AI agents
     Exec {
@@ -158,7 +166,7 @@ enum Command {
         /// Brain directory to examine
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -179,7 +187,7 @@ enum Command {
         /// Brain directory (defaults to $SYNAPSE_BRAIN, else ~/AIBrain)
         #[arg(long, value_name = "PATH")]
         brain: Option<PathBuf>,
-        /// Tool config root
+        /// Tool config root (defaults to $SYNAPSE_WORKSPACE_PATH, then $SYNAPSE_TOOL_ROOT, else your home folder)
         #[arg(long, value_name = "PATH")]
         tool_root: Option<PathBuf>,
     },
@@ -296,20 +304,17 @@ fn main() -> ExitCode {
                 }
             };
             if dry_run {
-                chart::open("graft · dry run", "nothing will be written");
-                chart::field("Brain", &brain_root.display().to_string());
-                chart::field("Tools", &tool_root.display().to_string());
-                chart::close(
-                    "Dry run only — no file was touched.",
-                    Some("synapse project"),
-                );
-                ExitCode::SUCCESS
+                report_project_plan(&brain_root, &tool_root)
             } else {
-                match perform_project(&brain_root, &tool_root) {
+                let (result, backup) = project_backed_up(&brain_root, &tool_root);
+                match result {
                     Ok(paths) => {
                         chart::open("graft", &chart::plural(paths.len(), "file"));
                         chart::field("Brain", &brain_root.display().to_string());
                         chart::field("Tools", &tool_root.display().to_string());
+                        if let Some(b) = &backup {
+                            chart::field("Backup", &backup_summary(b));
+                        }
                         println!();
                         for path in &paths {
                             chart::row(chart::Mark::Present, "written", path);
@@ -324,7 +329,10 @@ fn main() -> ExitCode {
                         ExitCode::SUCCESS
                     }
                     Err(e) => {
-                        chart::fault("graft", &e.to_string(), Some("synapse doctor"));
+                        // Some tools may already have been written; offer the way back.
+                        let next = backup.as_ref().map(undo_command);
+                        let next = next.as_deref().unwrap_or("synapse doctor");
+                        chart::fault("graft", &e.to_string(), Some(next));
                         ExitCode::FAILURE
                     }
                 }
@@ -361,11 +369,15 @@ fn main() -> ExitCode {
             // Hold lock briefly to ensure concurrent processes collide deterministically
             std::thread::sleep(std::time::Duration::from_millis(50));
 
-            match perform_sync(&brain_root, &tool_root) {
+            let (result, backup) = sync_backed_up(&brain_root, &tool_root);
+            match result {
                 Ok(SyncOutcome::NoChanges) => {
                     chart::open("circulation", "no drift");
                     chart::field("Brain", &brain_root.display().to_string());
                     chart::field("Tools", &tool_root.display().to_string());
+                    if let Some(b) = &backup {
+                        chart::field("Backup", &backup_summary(b));
+                    }
                     println!();
                     chart::row(
                         chart::Mark::Present,
@@ -379,6 +391,9 @@ fn main() -> ExitCode {
                     chart::open("circulation", &chart::plural(changed_paths.len(), "change"));
                     chart::field("Brain", &brain_root.display().to_string());
                     chart::field("Tools", &tool_root.display().to_string());
+                    if let Some(b) = &backup {
+                        chart::field("Backup", &backup_summary(b));
+                    }
                     println!();
                     for path in &changed_paths {
                         chart::row(chart::Mark::Present, "updated", path);
@@ -422,7 +437,9 @@ fn main() -> ExitCode {
                     ExitCode::FAILURE
                 }
                 Err(e) => {
-                    chart::fault("circulation", &e.to_string(), Some("synapse doctor"));
+                    let next = backup.as_ref().map(undo_command);
+                    let next = next.as_deref().unwrap_or("synapse doctor");
+                    chart::fault("circulation", &e.to_string(), Some(next));
                     ExitCode::FAILURE
                 }
             }
@@ -505,6 +522,20 @@ fn main() -> ExitCode {
                 }
             }
         }
+        Command::Backups => match resolve_brain_root(None) {
+            Ok(brain_root) => report_backups(&brain_root),
+            Err(e) => {
+                chart::fault("backups", &e.to_string(), None);
+                ExitCode::FAILURE
+            }
+        },
+        Command::Undo { id } => match resolve_brain_root(None) {
+            Ok(brain_root) => run_undo(&brain_root, id.as_deref()),
+            Err(e) => {
+                chart::fault("undo", &e.to_string(), None);
+                ExitCode::FAILURE
+            }
+        },
         Command::Exec {
             level,
             spool_dir,
@@ -1027,7 +1058,8 @@ fn run_interactive_hud(
                                         );
                                     }
                                 } else if cmd == "s" || cmd == "sync" {
-                                    match perform_sync(brain_root, tool_root) {
+                                    let (result, backup) = sync_backed_up(brain_root, tool_root);
+                                    match result {
                                         Ok(SyncOutcome::Applied { changed_paths }) => {
                                             status_msg = Some(format!(
                                                 "Sync: {} applied.",
@@ -1050,6 +1082,7 @@ fn run_interactive_hud(
                                             status_msg = Some(format!("Sync failed: {}", e));
                                         }
                                     }
+                                    add_undo_hint(&mut status_msg, backup.as_ref());
                                 } else if cmd == "d" || cmd == "doctor" {
                                     let mappings_path =
                                         if brain_root.join(".brain/mappings.json").exists() {
@@ -1098,7 +1131,8 @@ fn run_interactive_hud(
                                         tool_root: tool_root.to_path_buf(),
                                         mappings_path,
                                     };
-                                    match synapse_core::doctor::apply_fixes(&ctx) {
+                                    let (result, backup) = fix_backed_up(&ctx);
+                                    match result {
                                         Ok(n) => {
                                             status_msg =
                                                 Some(format!("Doctor: Fixed {} issues.", n));
@@ -1107,8 +1141,10 @@ fn run_interactive_hud(
                                             status_msg = Some(format!("Doctor fix error: {}", e));
                                         }
                                     }
+                                    add_undo_hint(&mut status_msg, backup.as_ref());
                                 } else if cmd == "p" || cmd == "project" {
-                                    match perform_project(brain_root, tool_root) {
+                                    let (result, backup) = project_backed_up(brain_root, tool_root);
+                                    match result {
                                         Ok(paths) => {
                                             status_msg = Some(format!(
                                                 "Project: {} projected out of the Brain.",
@@ -1119,6 +1155,7 @@ fn run_interactive_hud(
                                             status_msg = Some(format!("Project failed: {}", e));
                                         }
                                     }
+                                    add_undo_hint(&mut status_msg, backup.as_ref());
                                 } else if let Some(rest) = cmd.strip_prefix("snapshot ") {
                                     match snapshot(brain_root, rest.trim()) {
                                         Ok(sha) => {
@@ -1210,7 +1247,8 @@ fn run_interactive_hud(
                                 last_render = Instant::now() - Duration::from_secs(interval + 1);
                             }
                             KeyCode::Char('s') => {
-                                match perform_sync(brain_root, tool_root) {
+                                let (result, backup) = sync_backed_up(brain_root, tool_root);
+                                match result {
                                     Ok(SyncOutcome::Applied { changed_paths }) => {
                                         status_msg = Some(format!(
                                             "Sync: {} applied.",
@@ -1233,6 +1271,7 @@ fn run_interactive_hud(
                                         status_msg = Some(format!("Sync failed: {}", e));
                                     }
                                 }
+                                add_undo_hint(&mut status_msg, backup.as_ref());
                                 last_render = Instant::now() - Duration::from_secs(interval + 1);
                             }
                             KeyCode::Char('d') => {
@@ -1274,7 +1313,8 @@ fn run_interactive_hud(
                                 last_render = Instant::now() - Duration::from_secs(interval + 1);
                             }
                             KeyCode::Char('p') => {
-                                match perform_project(brain_root, tool_root) {
+                                let (result, backup) = project_backed_up(brain_root, tool_root);
+                                match result {
                                     Ok(paths) => {
                                         status_msg = Some(format!(
                                             "Project: {} projected out of the Brain.",
@@ -1285,6 +1325,7 @@ fn run_interactive_hud(
                                         status_msg = Some(format!("Project failed: {}", e));
                                     }
                                 }
+                                add_undo_hint(&mut status_msg, backup.as_ref());
                                 last_render = Instant::now() - Duration::from_secs(interval + 1);
                             }
                             _ => {}
@@ -1476,20 +1517,202 @@ fn resolve_brain_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
 
 /// Resolves the tool config root that projection paths are relative to.
 /// Precedence: `--tool-root`, then `$SYNAPSE_WORKSPACE_PATH` / `$SYNAPSE_TOOL_ROOT`, then home.
+///
+/// The folder you happen to be in is never used: the desktop app always
+/// looks in the home folder, and the two must agree on which tool configs
+/// they read and write.
 fn resolve_tool_root(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
+    pick_tool_root(explicit, std::env::var_os, dirs::home_dir())
+}
+
+fn pick_tool_root(
+    explicit: Option<PathBuf>,
+    env: impl Fn(&'static str) -> Option<std::ffi::OsString>,
+    home: Option<PathBuf>,
+) -> Result<PathBuf, String> {
     if let Some(p) = explicit {
         return Ok(p);
     }
-    if let Some(env) =
-        std::env::var_os("SYNAPSE_WORKSPACE_PATH").or_else(|| std::env::var_os("SYNAPSE_TOOL_ROOT"))
-    {
-        return Ok(PathBuf::from(env));
+    for key in ["SYNAPSE_WORKSPACE_PATH", "SYNAPSE_TOOL_ROOT"] {
+        if let Some(value) = env(key).filter(|v| !v.is_empty()) {
+            return Ok(PathBuf::from(value));
+        }
     }
-    if let Ok(cur) = std::env::current_dir() {
-        return Ok(cur);
+    home.ok_or_else(|| "cannot locate a home directory; pass --tool-root <PATH>".to_string())
+}
+
+// Every command that writes into tool configs runs through one of these, so
+// the files it changes are saved first and `synapse undo` can put them back.
+
+fn project_backed_up(
+    brain_root: &Path,
+    tool_root: &Path,
+) -> (Result<Vec<String>, String>, Option<Manifest>) {
+    backup::with_backup(brain_root, "project", || {
+        perform_project(brain_root, tool_root)
+    })
+}
+
+fn sync_backed_up(
+    brain_root: &Path,
+    tool_root: &Path,
+) -> (Result<SyncOutcome, String>, Option<Manifest>) {
+    backup::with_backup(brain_root, "sync", || perform_sync(brain_root, tool_root))
+}
+
+fn fix_backed_up(ctx: &DoctorContext) -> (Result<usize, DoctorError>, Option<Manifest>) {
+    backup::with_backup(&ctx.brain_root, "doctor --fix", || apply_fixes(ctx))
+}
+
+fn undo_command(b: &Manifest) -> String {
+    format!("synapse undo {}", b.id)
+}
+
+fn backup_summary(b: &Manifest) -> String {
+    format!(
+        "{} saved · undo with: {}",
+        chart::plural(b.entries.len(), "file"),
+        undo_command(b)
+    )
+}
+
+/// Adds the undo command to a HUD status line when something was changed.
+fn add_undo_hint(status: &mut Option<String>, backup: Option<&Manifest>) {
+    if let (Some(msg), Some(b)) = (status.as_mut(), backup) {
+        msg.push_str(&format!(" Undo: {}.", undo_command(b)));
     }
-    dirs::home_dir()
-        .ok_or_else(|| "cannot locate a home directory; pass --tool-root <PATH>".to_string())
+}
+
+fn now_ms() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0)
+}
+
+fn ago(now_ms: u64, then_ms: u64) -> String {
+    let secs = now_ms.saturating_sub(then_ms) / 1000;
+    match secs {
+        0..=59 => "just now".to_string(),
+        60..=3_599 => format!("{} min ago", secs / 60),
+        3_600..=86_399 => format!("{} h ago", secs / 3_600),
+        _ => chart::plural((secs / 86_400) as usize, "day") + " ago",
+    }
+}
+
+/// `synapse project --dry-run`: what each tool would get, writing nothing.
+fn report_project_plan(brain_root: &Path, tool_root: &Path) -> ExitCode {
+    let plan = synapse_core::sync::plan_project(brain_root, tool_root);
+    chart::open("graft · dry run", "nothing will be written");
+    chart::field("Brain", &brain_root.display().to_string());
+    chart::field("Tools", &tool_root.display().to_string());
+    println!();
+    if plan.is_empty() {
+        chart::row(
+            chart::Mark::Absent,
+            "tools",
+            "no installed tool would get anything",
+        );
+    }
+    for p in &plan {
+        let mut detail = chart::plural(p.skills.len(), "skill");
+        if !p.mcp_servers.is_empty() {
+            let servers = chart::plural(p.mcp_servers.len(), "MCP server");
+            detail.push_str(&format!(", {servers}"));
+        }
+        let mark = if p.installed {
+            chart::Mark::Present
+        } else {
+            detail.push_str(" · not installed, but named by the skill");
+            chart::Mark::Partial
+        };
+        chart::row(mark, p.tool_id, &detail);
+        for s in &p.skills {
+            chart::detail(&format!("skill  {s}"));
+        }
+        for m in &p.mcp_servers {
+            chart::detail(&format!("mcp    {m}"));
+        }
+    }
+    chart::close(
+        "Dry run only — no file was touched.",
+        Some("synapse project"),
+    );
+    ExitCode::SUCCESS
+}
+
+/// `synapse backups`: every saved copy, newest first.
+fn report_backups(brain_root: &Path) -> ExitCode {
+    let list = match backup::list(brain_root) {
+        Ok(l) => l,
+        Err(e) => {
+            chart::fault("backups", &e.to_string(), None);
+            return ExitCode::FAILURE;
+        }
+    };
+    chart::open("backups", &chart::plural(list.len(), "backup"));
+    let folder = brain_root.join(backup::BACKUPS_DIR);
+    chart::field("Folder", &folder.display().to_string());
+    println!();
+    if list.is_empty() {
+        chart::row(
+            chart::Mark::Absent,
+            "none",
+            "no Synapse command has changed a tool file yet",
+        );
+        chart::close("Nothing to undo.", None);
+        return ExitCode::SUCCESS;
+    }
+    let now = now_ms();
+    for b in &list {
+        let (mark, state) = if b.restored {
+            (chart::Mark::NotApplicable, "undone")
+        } else {
+            (chart::Mark::Present, "can undo")
+        };
+        let detail = format!(
+            "{} · {} · {} · {}",
+            b.label,
+            chart::plural(b.entries.len(), "file"),
+            ago(now, b.created_ms),
+            state
+        );
+        chart::row(mark, &b.id, &detail);
+    }
+    chart::close(
+        "synapse undo puts back the newest; synapse undo <id> a given one.",
+        Some("synapse undo"),
+    );
+    ExitCode::SUCCESS
+}
+
+/// `synapse undo [id]`: puts back the files a backup saved.
+fn run_undo(brain_root: &Path, id: Option<&str>) -> ExitCode {
+    match backup::restore(brain_root, id) {
+        Ok(m) => {
+            chart::open("undo", &chart::plural(m.entries.len(), "file"));
+            chart::field("Backup", &m.id);
+            chart::field("Undid", &m.label);
+            println!();
+            for e in &m.entries {
+                let what = match e.original {
+                    backup::Original::Absent => "removed",
+                    backup::Original::File { .. } => "restored",
+                    backup::Original::Symlink { .. } => "relinked",
+                };
+                chart::row(chart::Mark::Present, what, &e.path.display().to_string());
+            }
+            chart::close(
+                "Files are back to how they were before that command.",
+                Some("synapse doctor"),
+            );
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            chart::fault("undo", &e.to_string(), Some("synapse backups"));
+            ExitCode::FAILURE
+        }
+    }
 }
 
 /// Runs the Doctor rule library and charts the result as a clinical record.
@@ -1507,11 +1730,18 @@ fn run_doctor(brain_root: &Path, tool_root: &Path, fix: bool) -> ExitCode {
     };
 
     let mut applied = None;
+    let mut backup = None;
     if fix {
-        match apply_fixes(&ctx) {
-            Ok(n) => applied = Some(n),
+        let (result, saved) = fix_backed_up(&ctx);
+        match result {
+            Ok(n) => {
+                applied = Some(n);
+                backup = saved;
+            }
             Err(e) => {
-                chart::fault("examination", &format!("fix failed: {e}"), None);
+                let next = saved.as_ref().map(undo_command);
+                let msg = format!("fix failed: {e}");
+                chart::fault("examination", &msg, next.as_deref());
                 return ExitCode::FAILURE;
             }
         }
@@ -1542,6 +1772,9 @@ fn run_doctor(brain_root: &Path, tool_root: &Path, fix: bool) -> ExitCode {
             "Fixed",
             &chart::plural(n, "diagnosis").replace("diagnosiss", "diagnoses"),
         );
+    }
+    if let Some(b) = &backup {
+        chart::field("Backup", &backup_summary(b));
     }
     println!();
 
@@ -1712,6 +1945,54 @@ mod tests {
                 assert_eq!(resolve_brain_root(None).unwrap(), expected);
             }
         }
+    }
+
+    #[test]
+    fn tool_root_defaults_to_home_never_the_current_folder() {
+        let home = PathBuf::from("/home/mara");
+        let no_env = |_: &str| None;
+        assert_eq!(
+            pick_tool_root(None, no_env, Some(home.clone())).unwrap(),
+            home
+        );
+        assert_ne!(
+            pick_tool_root(None, no_env, Some(home.clone())).unwrap(),
+            std::env::current_dir().unwrap()
+        );
+        // An empty variable counts as unset.
+        let empty = |_: &str| Some(std::ffi::OsString::new());
+        assert_eq!(
+            pick_tool_root(None, empty, Some(home.clone())).unwrap(),
+            home
+        );
+        // No home and no override is an error, not a silent guess.
+        assert!(pick_tool_root(None, no_env, None).is_err());
+    }
+
+    #[test]
+    fn tool_root_prefers_flag_then_workspace_then_tool_root_env() {
+        let home = Some(PathBuf::from("/home/mara"));
+        let both = |key: &str| match key {
+            "SYNAPSE_WORKSPACE_PATH" => Some("/ws".into()),
+            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            _ => None,
+        };
+        let only_tr = |key: &str| match key {
+            "SYNAPSE_TOOL_ROOT" => Some("/tr".into()),
+            _ => None,
+        };
+        assert_eq!(
+            pick_tool_root(Some(PathBuf::from("/flag")), both, home.clone()).unwrap(),
+            PathBuf::from("/flag")
+        );
+        assert_eq!(
+            pick_tool_root(None, both, home.clone()).unwrap(),
+            PathBuf::from("/ws")
+        );
+        assert_eq!(
+            pick_tool_root(None, only_tr, home).unwrap(),
+            PathBuf::from("/tr")
+        );
     }
 
     #[test]

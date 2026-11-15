@@ -393,6 +393,9 @@ fn reproject(ctx: &DoctorContext, subject: &str) -> Result<(), DoctorError> {
 
     let full_projection = ctx.tool_root.join(&mapping.projection_path);
     let canonical_full = ctx.brain_root.join(&mapping.canonical_path);
+    // Save what is there now (inside a `backup::with_backup`) before
+    // removing or replacing it.
+    crate::backup::before_write(&full_projection).map_err(|e| DoctorError::Io(e.to_string()))?;
     if let Some(parent) = full_projection.parent() {
         fs::create_dir_all(parent).map_err(|e| DoctorError::Io(e.to_string()))?;
     }
