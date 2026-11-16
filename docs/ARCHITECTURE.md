@@ -12,7 +12,7 @@ This document describes the architectural layout, core Rust engine components, 3
 ```text
 Palexus/
 ├── apps/
-│   ├── cli/             # Rust CLI entry point (`palexus` / `palexus`)
+│   ├── cli/             # Rust CLI entry point (`palexus`)
 │   └── desktop/         # Tauri 2 + React TS Dark Precision GUI
 ├── packages/
 │   ├── core/            # Core engine: scanner, 13 adapters, projector, sync, doctor

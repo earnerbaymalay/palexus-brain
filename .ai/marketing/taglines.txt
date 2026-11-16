@@ -38,3 +38,12 @@ Dry-run first. Always.
 
 Not another AI tool. The config layer underneath all of them.
 It doesn't talk to a model. It makes every model you already use smarter about you.
+
+## The Plexus (name story — see IDENTITY.md "The name")
+
+One Brain. Every nerve.
+One trunk. Thirteen nerves. Zero copy-paste.
+Every edit routed through the Plexus.
+Your AI tools, wired like a nervous system.
+Palexus: a plexus that works for you.
+Change it in the Brain. Every limb feels it.

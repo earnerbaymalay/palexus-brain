@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **PALEXUS / Palexus** will be documented in this file.
+All notable changes to **Palexus** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **PALEXUS Rebrand Package & Visual Identity**:
-  - Integrated complete PALEXUS brand identity (`PALEXUS / Palexus: One Brain. All Models.`).
+  - Integrated complete PALEXUS brand identity (`Palexus: One Brain. All Models.`).
   - Applied design tokens: Palexus Blue accent (`#1d9bf0`), dark ink interface (`#06080b`), Inter, JetBrains Mono, and Rubik Mono One typography, and "Surgical precision. Zero friction." tone anchor.
 - **Clinical Record React Desktop UI (`chart.tsx`, `Intake.tsx`, `Examination.tsx`)**:
   - Implemented the clinical operating theatre record identity per `IDENTITY.md` backed by live `palexus-core` calls with zero fabricated sample data.

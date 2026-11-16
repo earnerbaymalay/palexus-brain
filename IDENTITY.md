@@ -13,11 +13,43 @@ the real, fully-specified brand system in `brands/palexus/`.
 
 ## The idea
 
-The tool is named Palexus; the product is PALEXUS. Take the metaphor
-seriously. A developer's AI tooling is not a "dashboard" — it is a patient.
-One organ (the Brain at `~/AIBrain`), thirteen grafts onto it (the tool
-adapters), a surgeon accountable for what they cut. `doctor` diagnoses.
-`snapshot` is pre-op imaging. `rollback` reverses the operation.
+The product is **Palexus** (wordmark: PALEXUS; command: `palexus`). Take
+the metaphor seriously. A developer's AI tooling is not a "dashboard" — it
+is a patient. One organ (the Brain at `~/AIBrain`), thirteen grafts onto it
+(the tool adapters), a surgeon accountable for what they cut. `doctor`
+diagnoses. `snapshot` is pre-op imaging. `rollback` reverses the operation.
+
+## The name: Palexus and the Plexus
+
+Two names, one anatomy. They are not competing brands; one is the product,
+the other is the part of it that does the work.
+
+- **Palexus** — the product. Read it as *pal + plexus*: a plexus that works
+  for you. It is the only name on the wordmark, the app, and the command.
+- **the Plexus** — the network inside Palexus. In anatomy a plexus is where
+  one trunk of nerves splits, crosses, and recombines so a single source can
+  reach many limbs (the brachial plexus wires one spinal column to an entire
+  arm). Palexus does exactly that: one Brain, branching out to every tool.
+
+How the anatomy maps onto the system, so copy never invents a new metaphor:
+
+| Anatomy | Palexus | Where it lives |
+|---|---|---|
+| Brain | the canonical store | `~/AIBrain` |
+| Trunk | a projection run | `palexus project` |
+| Nerve | an adapter | `packages/core/src/adapters/` |
+| Limb | an installed tool | `CLAUDE.md`, `.cursorrules`, ... |
+| Reflex | a foreign edit synced back | `palexus sync` (3-way merge) |
+| The Plexus | all of the above, together | the whole routing layer |
+
+Rules for using it:
+
+1. "the Plexus" is lowercase-*the*, capital-*P*, and always refers to the
+   routing network — never to the product, the company, or the app.
+2. Lead with mechanism, then the image: "One Brain. Thirteen tools. Every
+   edit routed through the Plexus." — not "harness the power of the Plexus".
+3. No new code names. The command stays `palexus`; there is no `plexus`
+   binary, crate, or env var. The Plexus is a story, not a namespace.
 
 So the product reads like a **clinical record**, not a SaaS console — now
 rendered in PALEXUS's actual palette (ink/accent-blue/gold-rare) instead of
@@ -54,9 +86,10 @@ current:
   `apps/desktop/src/assets/fonts/` rather than fetched from a CDN — the
   brand's own claim is "local-first, zero telemetry," so a font fetch on
   every launch would contradict the product it's branding.
-- CLI binary renamed `palexus` → `palexus` (the internal
-  `palexus-core` library crate and `PALEXUS_*` env vars are
-  unchanged — that's implementation detail, not brand surface).
+- Renamed from Synapse to Palexus (Nov 2026): CLI `synapse` → `palexus`,
+  crate `synapse-core` → `palexus-core`, env vars `SYNAPSE_*` →
+  `PALEXUS_*`, data folder `~/.synapse` → `~/.palexus`. Existing data is
+  moved on first run by `core::legacy`.
 
 ## What this still rules out
 

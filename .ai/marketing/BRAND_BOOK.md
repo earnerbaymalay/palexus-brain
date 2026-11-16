@@ -4,10 +4,11 @@ Companion reference to `brands/palexus/PALEXUS_Brand_System.dc.html` (the visual
 
 ## Identity
 
-- **Name:** PALEXUS — always paired with the subtitle **Palexus** at first mention on any surface.
+- **Name:** Palexus (wordmark set as PALEXUS). Read as *pal + plexus*.
+- **The Plexus:** the routing network inside Palexus — one Brain, branching to every tool. A story term, never a product name. Full mapping and usage rules in `IDENTITY.md` → "The name".
 - **Tagline:** "One Brain. All Models."
 - **Tone anchor:** "Surgical precision. Zero friction."
-- **Concept:** structure meets organism. A hairline technical grid (blueprint corner marks, terminal chrome) wraps around living motifs (neurons, pulses, a stitched incision line). Precision on the outside, a brain at work inside.
+- **Concept:** structure meets organism. A hairline technical grid (blueprint corner marks, terminal chrome) wraps around living motifs (neurons, pulses, a stitched incision line, and now the plexus — one trunk splitting into many nerves). Precision on the outside, a brain at work inside.
 
 ## Color
 
@@ -43,6 +44,7 @@ No emoji, anywhere — product, docs, or marketing. Thin-stroke (1.6–1.8px) li
 - **Suture divider** — a stitched line between major marketing sections.
 - **Vitals monitor** — an EKG readout standing in for system health/status.
 - **Neuron pulse field** — faint traveling pulses across a dark ground, ambient background only.
+- **Plexus diagram** — one trunk line (accent blue, 1.6px) leaving the Brain, splitting at hairline junctions into one branch per tool adapter, each ending in its hexagon monogram badge. Branch count is always the real adapter count (13 today), never decorative. A pulse travelling trunk-to-badge is the only permitted motion and means "a projection ran". Use for: hero diagrams, the `project` explainer, onboarding step 3, social cards. Never gold, never curved into organic blobs — junctions are right angles or 45°, like a wiring diagram drawn by a surgeon.
 
 ## Voice
 
