@@ -1,10 +1,10 @@
 <p align="center">
   <picture>
-    <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/plexus-neon-hero.png">
-    <img src="docs/assets/plexus-neon-hero.gif" width="640" alt="A blue neon sign reading PLEXUS strikes up, flickers and settles, lighting a dark brick wall.">
+    <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/palexus-neon-hero.png">
+    <img src="docs/assets/palexus-neon-hero.gif" width="640" alt="A blue neon sign reading PALEXUS strikes up, flickers and settles, lighting a dark brick wall.">
   </picture>
   <br>
-  <sub><a href="docs/assets/plexus-neon-hero.mp4">Watch the full-quality reveal (MP4, with sound)</a></sub>
+  <sub><a href="docs/assets/palexus-neon-hero.mp4">Watch the full-quality reveal (MP4, with sound)</a></sub>
 </p>
 
 ```text

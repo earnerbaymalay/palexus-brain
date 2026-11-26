@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Usage: scripts/make_readme_hero.sh <input.mp4>
-# Builds the README hero assets from the PLEXUS neon logo reveal:
-#   docs/assets/plexus-neon-hero.gif  (640px wide, 15fps, 2-pass palette, loops forever, <6 MB)
-#   docs/assets/plexus-neon-hero.mp4  (copy of the source, linked from the GIF)
-#   docs/assets/plexus-neon-hero.png  (final lit frame: shown instead of the GIF to readers
+# Builds the README hero assets from the PALEXUS neon logo reveal:
+#   docs/assets/palexus-neon-hero.gif  (640px wide, 15fps, 2-pass palette, loops forever, <6 MB)
+#   docs/assets/palexus-neon-hero.mp4  (copy of the source, linked from the GIF)
+#   docs/assets/palexus-neon-hero.png  (final lit frame: shown instead of the GIF to readers
 #                                      who have reduced motion turned on)
 set -euo pipefail
 
@@ -12,9 +12,9 @@ IN="${1:-}"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT_DIR="$ROOT/docs/assets"
-GIF="$OUT_DIR/plexus-neon-hero.gif"
-MP4="$OUT_DIR/plexus-neon-hero.mp4"
-STILL="$OUT_DIR/plexus-neon-hero.png"
+GIF="$OUT_DIR/palexus-neon-hero.gif"
+MP4="$OUT_DIR/palexus-neon-hero.mp4"
+STILL="$OUT_DIR/palexus-neon-hero.png"
 MAX_BYTES=$((6 * 1024 * 1024))
 mkdir -p "$OUT_DIR"
 
