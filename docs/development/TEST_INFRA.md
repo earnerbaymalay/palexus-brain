@@ -10,21 +10,33 @@ The E2E tests are written in TypeScript using **Vitest** and are integrated into
 
 ```
 packages/e2e/
-├── package.json               # Package configuration & dependencies
-├── tsconfig.json              # TypeScript compilation rules
-├── vitest.config.ts           # Vitest configuration (setup/teardown files)
-├── globalSetup.ts             # Global setup hook (builds the Rust CLI binary)
+├── package.json
+├── tsconfig.json
+├── vitest.config.ts
+├── globalSetup.ts
 ├── src/
 │   ├── helpers/
-│   │   ├── sandbox.ts         # Sandbox manager (temp dirs, env variables, fixtures)
-│   │   ├── cli.ts             # Spawn and execute the Rust CLI binary
-│   │   └── schema.ts          # Validates files against packages/schema
+│   │   ├── sandbox.ts
+│   │   ├── cli.ts
+│   │   └── schema.ts
 │   └── suites/
-│       ├── tier1_feature.test.ts      # Tier 1: Happy-path feature coverage
-│       ├── tier2_boundary.test.ts     # Tier 2: Boundary and corner cases
-│       ├── tier3_combination.test.ts  # Tier 3: Multi-tool sync and transitions
-│       └── tier4_workload.test.ts     # Tier 4: Real-world workloads and migrations
+│       ├── tier1_feature.test.ts
+│       ├── tier2_boundary.test.ts
+│       ├── tier3_combination.test.ts
+│       └── tier4_workload.test.ts
 ```
+
+- `package.json` — Package configuration & dependencies
+- `tsconfig.json` — TypeScript compilation rules
+- `vitest.config.ts` — Vitest configuration (setup/teardown files)
+- `globalSetup.ts` — Global setup hook (builds the Rust CLI binary)
+- `src/helpers/sandbox.ts` — Sandbox manager (temp dirs, env variables, fixtures)
+- `src/helpers/cli.ts` — Spawn and execute the Rust CLI binary
+- `src/helpers/schema.ts` — Validates files against packages/schema
+- `src/suites/tier1_feature.test.ts` — Tier 1: Happy-path feature coverage
+- `src/suites/tier2_boundary.test.ts` — Tier 2: Boundary and corner cases
+- `src/suites/tier3_combination.test.ts` — Tier 3: Multi-tool sync and transitions
+- `src/suites/tier4_workload.test.ts` — Tier 4: Real-world workloads and migrations
 
 ---
 

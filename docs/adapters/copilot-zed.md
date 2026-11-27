@@ -7,13 +7,21 @@
 
 ## 📋 Overview
 
-| Property | GitHub Copilot | Zed |
-|---|---|---|
-| **Adapter ID** | `github-copilot` | `zed` |
-| **Native Configs** | `.github/copilot-instructions.md` | `.rules`, `.zed/settings.json`, `AGENTS.md` |
-| **Parsing Engine** | Markdown instruction parser | Markdown + JSON settings parser |
-| **Projection Target** | `.github/copilot-instructions.md` | `.rules` + `AGENTS.md` |
-| **Symlink Support** | Direct symlink supported | Direct symlink for `.rules` |
+- **Adapter ID**
+  - GitHub Copilot: `github-copilot`
+  - Zed: `zed`
+- **Native Configs**
+  - GitHub Copilot: `.github/copilot-instructions.md`
+  - Zed: `.rules`, `.zed/settings.json`, `AGENTS.md`
+- **Parsing Engine**
+  - GitHub Copilot: Markdown instruction parser
+  - Zed: Markdown + JSON settings parser
+- **Projection Target**
+  - GitHub Copilot: `.github/copilot-instructions.md`
+  - Zed: `.rules` + `AGENTS.md`
+- **Symlink Support**
+  - GitHub Copilot: Direct symlink supported
+  - Zed: Direct symlink for `.rules`
 
 ---
 

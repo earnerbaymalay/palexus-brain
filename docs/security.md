@@ -40,13 +40,21 @@ flowchart TD
 
 ## 2. Core Security Controls
 
-| Control | Mechanism | Implementation |
-|---|---|---|
-| 🛡️ **Path Traversal Protection** | `safe_join()` | Normalizes all paths; rejects `..` components or escape attempts before writing. |
-| 🔗 **Symlink Escape Defense** | `DirEntry::file_type()` | Uses `symlink_metadata()` without following symlinks during directory walks. |
-| 🔑 **API Key Isolation** | OS Keychain | Raw keys live in OS Keychain (macOS Keychain / Secret Service / Credential Manager); configs use `${VAR}` placeholders. |
-| 📜 **Marketplace Provenance** | SHA-256 Checksums | Every imported skill/agent contains SHA-256 content hashes and upstream Git commit metadata. |
-| 🚫 **Zero Telemetry** | Local-First | Zero external analytics, phone-home, or remote tracking code. |
+- **🛡️ **Path Traversal Protection****
+  - Mechanism: `safe_join()`
+  - Implementation: Normalizes all paths; rejects `..` components or escape attempts before writing.
+- **🔗 **Symlink Escape Defense****
+  - Mechanism: `DirEntry::file_type()`
+  - Implementation: Uses `symlink_metadata()` without following symlinks during directory walks.
+- **🔑 **API Key Isolation****
+  - Mechanism: OS Keychain
+  - Implementation: Raw keys live in OS Keychain (macOS Keychain / Secret Service / Credential Manager); configs use `${VAR}` placeholders.
+- **📜 **Marketplace Provenance****
+  - Mechanism: SHA-256 Checksums
+  - Implementation: Every imported skill/agent contains SHA-256 content hashes and upstream Git commit metadata.
+- **🚫 **Zero Telemetry****
+  - Mechanism: Local-First
+  - Implementation: Zero external analytics, phone-home, or remote tracking code.
 
 ---
 
@@ -89,7 +97,8 @@ if entry.file_type().is_symlink() {
 All security mechanisms are verified by automated tests in `packages/core/tests/adapter_stress_tests.rs`:
 
 ```bash
-cargo test -p palexus-core --test adapter_stress_tests
+cargo test -p palexus-core \
+  --test adapter_stress_tests
 ```
 
 - `test_windsurf_adapter_path_traversal_and_missing`: **PASSED**

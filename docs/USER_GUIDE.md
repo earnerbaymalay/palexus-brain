@@ -168,7 +168,8 @@ palexus exec -- pnpm test:e2e
 palexus exec -- pytest tests/
 
 # Pipe standard input through the compression filter
-cargo test 2>&1 | palexus filter --level aggressive
+cargo test 2>&1 | palexus filter \
+  --level aggressive
 ```
 
 ### `palexus spool`
@@ -189,7 +190,9 @@ Starts a local HTTP reverse proxy (`< 15MB RAM`) that intercepts OpenAI `/v1/cha
 
 ```bash
 # Start gateway proxying to local Ollama instance on port 8088
-palexus serve --port 8088 --upstream http://localhost:11434 --model qwen2.5-coder:7b
+palexus serve --port 8088 \
+  --upstream http://localhost:11434 \
+  --model qwen2.5-coder:7b
 
 # Run with aggressive Sensory Gating compression level
 palexus serve --gate-level aggressive
@@ -214,7 +217,8 @@ palexus mem timeline 42 --before 3 --after 3
 palexus mem get 42 43
 
 # Record manual observation
-palexus mem observe "Migrated to 15 adapters" --file packages/core/src/adapters/mod.rs
+palexus mem observe "Migrated to 15 adapters" \
+  --file packages/core/src/adapters/mod.rs
 ```
 
 ### `palexus hud` (Vital Signs Cockpit)
@@ -232,23 +236,66 @@ palexus hud --once
 
 ## 3. Supported Tool Adapters (15/15)
 
-| Adapter | Native Config Locations | Import Strategy | Projection Output |
-|---|---|---|---|
-| **Claude Code / Desktop** | `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.mcp.json` | Full skills & agents parsing | Dedicated `.claude/` structure |
-| **Gemini CLI** | `GEMINI.md`, `.gemini/settings.json` | Rules & settings | Stamped `GEMINI.md` |
-| **OpenAI Codex CLI** | `.codex/config.toml`, `.codex/instructions.md` | Multi-agent rules | `AGENTS.md` + `.codex/` |
-| **Cursor** | `.cursorrules`, `.cursor/rules/*.mdc` | MDC frontmatter globs | `.cursor/rules/` MDC files |
-| **Windsurf** | `.windsurfrules`, `mcp_config.json` | Rules & MCP servers | `.windsurfrules` |
-| **Cline** | `.clinerules`, `cline_mcp_settings.json` | Custom rules & servers | `.clinerules` |
-| **Roo Code** | `.roomodes`, `.clinerules` | Mode rules | `.roomodes` |
-| **Aider** | `CONVENTIONS.md`, `.aider.conf.yml` | Conventions & YAML | `CONVENTIONS.md` |
-| **Continue** | `.continue/rules/*.md`, `.continue/config.json` | MDC rules & JSON | `.continue/rules/` |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | Scoped instructions | `.github/copilot-instructions.md` |
-| **Zed** | `.rules`, `.zed/settings.json`, `AGENTS.md` | Settings & rules | `.rules` + `AGENTS.md` |
-| **OpenCode** | `AGENTS.md` | Multi-agent rules | `AGENTS.md` |
-| **Antigravity CLI** | `AGENTS.md`, `.agy/skills/`, `.gemini/settings.json` | Skills & settings | `AGENTS.md` + `.agy/skills/` |
-| **AWS Kiro IDE** | `.kiro/steering/*.md`, `.kiro/settings/mcp.json` | Steering rules & MCP | `.kiro/steering/` + `.kiro/settings/` |
-| **Trae IDE** | `.trae/rules/*.md`, `.trae/mcp.json` | Scoped rules & MCP | `.trae/rules/` + `.trae/mcp.json` |
+- **Claude Code / Desktop**
+  - Native Config Locations: `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.mcp.json`
+  - Import Strategy: Full skills & agents parsing
+  - Projection Output: Dedicated `.claude/` structure
+- **Gemini CLI**
+  - Native Config Locations: `GEMINI.md`, `.gemini/settings.json`
+  - Import Strategy: Rules & settings
+  - Projection Output: Stamped `GEMINI.md`
+- **OpenAI Codex CLI**
+  - Native Config Locations: `.codex/config.toml`, `.codex/instructions.md`
+  - Import Strategy: Multi-agent rules
+  - Projection Output: `AGENTS.md` + `.codex/`
+- **Cursor**
+  - Native Config Locations: `.cursorrules`, `.cursor/rules/*.mdc`
+  - Import Strategy: MDC frontmatter globs
+  - Projection Output: `.cursor/rules/` MDC files
+- **Windsurf**
+  - Native Config Locations: `.windsurfrules`, `mcp_config.json`
+  - Import Strategy: Rules & MCP servers
+  - Projection Output: `.windsurfrules`
+- **Cline**
+  - Native Config Locations: `.clinerules`, `cline_mcp_settings.json`
+  - Import Strategy: Custom rules & servers
+  - Projection Output: `.clinerules`
+- **Roo Code**
+  - Native Config Locations: `.roomodes`, `.clinerules`
+  - Import Strategy: Mode rules
+  - Projection Output: `.roomodes`
+- **Aider**
+  - Native Config Locations: `CONVENTIONS.md`, `.aider.conf.yml`
+  - Import Strategy: Conventions & YAML
+  - Projection Output: `CONVENTIONS.md`
+- **Continue**
+  - Native Config Locations: `.continue/rules/*.md`, `.continue/config.json`
+  - Import Strategy: MDC rules & JSON
+  - Projection Output: `.continue/rules/`
+- **GitHub Copilot**
+  - Native Config Locations: `.github/copilot-instructions.md`
+  - Import Strategy: Scoped instructions
+  - Projection Output: `.github/copilot-instructions.md`
+- **Zed**
+  - Native Config Locations: `.rules`, `.zed/settings.json`, `AGENTS.md`
+  - Import Strategy: Settings & rules
+  - Projection Output: `.rules` + `AGENTS.md`
+- **OpenCode**
+  - Native Config Locations: `AGENTS.md`
+  - Import Strategy: Multi-agent rules
+  - Projection Output: `AGENTS.md`
+- **Antigravity CLI**
+  - Native Config Locations: `AGENTS.md`, `.agy/skills/`, `.gemini/settings.json`
+  - Import Strategy: Skills & settings
+  - Projection Output: `AGENTS.md` + `.agy/skills/`
+- **AWS Kiro IDE**
+  - Native Config Locations: `.kiro/steering/*.md`, `.kiro/settings/mcp.json`
+  - Import Strategy: Steering rules & MCP
+  - Projection Output: `.kiro/steering/` + `.kiro/settings/`
+- **Trae IDE**
+  - Native Config Locations: `.trae/rules/*.md`, `.trae/mcp.json`
+  - Import Strategy: Scoped rules & MCP
+  - Projection Output: `.trae/rules/` + `.trae/mcp.json`
 
 ---
 
@@ -260,16 +307,13 @@ The desktop app implements two measured screens backed directly by `palexus-core
 - **Intake**: Live inspection of discovered AI tools, installed rules, active skills, and canonical Brain status.
 - **Examination**: Clinical examination identifying configuration drift, broken projection symlinks, and fault diagnosis.
 
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│  PALEXUS // CLINICAL ENGINE FOR AI CONTEXT                     v1.0.0  │
-├───────────────┬────────────────────────────────────────────────────────┤
-│ Intake        │  INTAKE REPORT                                         │
-│ Examination   │  Canonical Brain: ~/Desktop/AI BRAIN                   │
-│               │  Adapters Discovered: 15 active targets                │
-│ [re-read]     │  Lockstep Health:     ● SYNCHRONIZED (0 faults)        │
-└───────────────┴────────────────────────────────────────────────────────┘
-```
+**PALEXUS // Clinical Engine for AI Context** `v1.0.0`
+
+- **Sidebar:** Intake · Examination · [re-read]
+- **Intake report**
+  - Canonical Brain: `~/Desktop/AI BRAIN`
+  - Adapters discovered: 15 active targets
+  - Lockstep health: ● synchronized (0 faults)
 
 ---
 

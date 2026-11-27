@@ -33,12 +33,18 @@ pnpm tauri build
 ```
 
 ## Platform Installers
-| Platform | Format | Location |
-|---|---|---|
-| Linux | .deb | `.../bundle/deb/palexus_0.7.4_amd64.deb` |
-| Linux | .AppImage | `.../bundle/appimage/palexus_0.7.4_amd64.AppImage` |
-| macOS | .dmg | `.../bundle/dmg/palexus_0.7.4_x64.dmg` (requires Apple Developer ID) |
-| Windows | .msi | `.../bundle/msi/palexus_0.7.4_x64_en-US.msi` (requires code signing cert) |
+- **Linux**
+  - Format: .deb
+  - Location: `.../bundle/deb/palexus_0.7.4_amd64.deb`
+- **Linux**
+  - Format: .AppImage
+  - Location: `.../bundle/appimage/palexus_0.7.4_amd64.AppImage`
+- **macOS**
+  - Format: .dmg
+  - Location: `.../bundle/dmg/palexus_0.7.4_x64.dmg` (requires Apple Developer ID)
+- **Windows**
+  - Format: .msi
+  - Location: `.../bundle/msi/palexus_0.7.4_x64_en-US.msi` (requires code signing cert)
 
 ## CLI Only (no desktop)
 If you only need the CLI, you can skip the Tauri build entirely:
@@ -258,11 +264,15 @@ fetch_release() {
   trap 'rm -rf "$TMP_DIR"' EXIT
 
   echo "Downloading $DOWNLOAD_URL..."
-  curl -sSL "$DOWNLOAD_URL" -o "$TMP_DIR/palexus.tar.gz"
-  curl -sSL "$CHECKSUM_URL" -o "$TMP_DIR/SHA256SUMS"
+  curl -sSL "$DOWNLOAD_URL" \
+    -o "$TMP_DIR/palexus.tar.gz"
+  curl -sSL "$CHECKSUM_URL" \
+    -o "$TMP_DIR/SHA256SUMS"
 
   echo "Verifying SHA-256 checksum..."
-  (cd "$TMP_DIR" && grep "palexus-${TARGET}.tar.gz" SHA256SUMS | sha256sum -c -)
+  (cd "$TMP_DIR" && \
+    grep "palexus-${TARGET}.tar.gz" SHA256SUMS | \
+    sha256sum -c -)
 
   echo "Extracting binary..."
   tar -xzf "$TMP_DIR/palexus.tar.gz" -C "$TMP_DIR"

@@ -7,23 +7,23 @@
   <sub><a href="docs/assets/palexus-neon-hero.mp4">Watch the full-quality reveal (MP4, with sound)</a></sub>
 </p>
 
-```text
-┌─ PALEXUS BRAIN // CLINICAL ENGINE · RUNTIME GATEWAY ───────────── v1.0.0 ─ 100% LOCAL ─┐
-│                                                                                        │
-│       ●       ●      ██████╗  █████╗ ██╗     ███████╗██╗  ██╗██╗   ██╗███████╗         │
-│        \     /       ██╔══██╗██╔══██╗██║     ██╔════╝╚██╗██╔╝██║   ██║██╔════╝         │
-│   ● ─── (●) ─── ●    ██████╔╝███████║██║     █████╗   ╚███╔╝ ██║   ██║███████╗         │
-│        / │ \         ██╔═══╝ ██╔══██║██║     ██╔══╝   ██╔██╗ ██║   ██║╚════██║         │
-│       ●  ●  ●        ██║     ██║  ██║███████╗███████╗██╔╝ ██╗╚██████╔╝███████║         │
-│                      ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝         │
-│                                                                                        │
-│   Dual-Zone Architecture · 15-Tool Star Topology · 100% Local · Zero Telemetry · MIT   │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│  SYSTEM PARITY: [██ ██████] 15/15 (100%)     │  TOKEN GATING:   [████████·] 93% (-139k)│
-│  GATEWAY PROXY: ● 127.0.0.1:8088 (Ollama)   │  ZERO TELEMETRY: ● 0 Packets (Audited)   │
-│  STAR ADAPTERS: 15 Active Grafts (0 Drift)  │  SELF-HEALING:   ● Lockstep (0 Faults)   │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
+<div align="center">
+
+<h1>PALEXUS BRAIN</h1>
+
+<b>Clinical Engine · Runtime Gateway</b><br/>
+<sub><code>v1.0.0 · 100% LOCAL · MIT</code></sub>
+
+<sub>Dual-Zone Architecture · 15-Tool Star Topology · Zero Telemetry</sub>
+
+</div>
+
+- **System parity:** `[██████████]` 15/15 (100%)
+- **Token gating:** `[█████████·]` 93% (-139k)
+- **Gateway proxy:** ● `127.0.0.1:8088` (Ollama)
+- **Zero telemetry:** ● 0 packets (audited)
+- **Star adapters:** 15 active grafts (0 drift)
+- **Self-healing:** ● lockstep (0 faults)
 
 <div align="center">
 
@@ -100,15 +100,27 @@ Full detail in the **[Security & Threat Model Audit](docs/security.md)**.
 
 A developer's AI tooling environment is treated like a vital clinical system:
 
-| Role | Entity | Description |
-|---|---|---|
-| **The Organ** | `~/AIBrain` | The single, Git-backed canonical source of truth holding every skill, rule, agent, and MCP server. |
-| **The Grafts** | **15 Adapters** | Lossless bi-directional translators projecting canonical rules into each tool's native dialect. |
-| **The Surgeon** | `palexus` | Accountable for every modification — with dry-run verification, pre-op snapshots, and instant rollbacks. |
-| **The Doctor** | `palexus doctor` | Continuous diagnostic self-healing to detect configuration drift and heal broken symlinks. |
-| **The Gate** | `palexus serve` | Local runtime reverse proxy stabilizing tool-calls and executing live Sensory Gating token compression. |
-| **The Memory** | `palexus mem` | 3-layer progressive retrieval engine (search index, timeline context, full detail) and agent hooks. |
-| **The Cockpit** | `palexus hud` | Zero-RAM terminal cockpit monitoring live token burn, latency, and Brain lockstep. |
+- **The Organ**
+  - Entity: `~/AIBrain`
+  - Description: The single, Git-backed canonical source of truth holding every skill, rule, agent, and MCP server.
+- **The Grafts**
+  - Entity: **15 Adapters**
+  - Description: Lossless bi-directional translators projecting canonical rules into each tool's native dialect.
+- **The Surgeon**
+  - Entity: `palexus`
+  - Description: Accountable for every modification — with dry-run verification, pre-op snapshots, and instant rollbacks.
+- **The Doctor**
+  - Entity: `palexus doctor`
+  - Description: Continuous diagnostic self-healing to detect configuration drift and heal broken symlinks.
+- **The Gate**
+  - Entity: `palexus serve`
+  - Description: Local runtime reverse proxy stabilizing tool-calls and executing live Sensory Gating token compression.
+- **The Memory**
+  - Entity: `palexus mem`
+  - Description: 3-layer progressive retrieval engine (search index, timeline context, full detail) and agent hooks.
+- **The Cockpit**
+  - Entity: `palexus hud`
+  - Description: Zero-RAM terminal cockpit monitoring live token burn, latency, and Brain lockstep.
 
 ---
 
@@ -145,7 +157,7 @@ PALEXUS provisions a unified **Master Governance** prompt stamped with cryptogra
 $ palexus scan
 
   PALEXUS · INTAKE                                           7 of 15 present
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   Site   ~
 
   ●  agy-cli               config detected
@@ -163,28 +175,28 @@ $ palexus scan
   ○  roo-code              not present
   ○  trae                  not present
   ○  windsurf              not present
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   7 of 15 supported tools present.
   Next  palexus import --dry-run
 
 $ palexus import --dry-run
 
   PALEXUS · INTAKE · DRY RUN                         nothing will be written
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   Site   ~
 
   ●  agy-cli               11 skills  0 agents  0 mcp servers
   ●  claude-code           1 skill   0 agents  0 mcp servers
   ●  gemini-cli            1 skill   0 agents  0 mcp servers
   ●  cursor                0 skills  0 agents  0 mcp servers
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   16 skills, 1 agent, 0 mcp servers would enter the Brain from 7 tools. Nothing was written.
   Next  palexus import
 
 $ palexus project
 
   PALEXUS · GRAFT                                                   15 grafts
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   Brain  ~/AIBrain
   Tools  ~
 
@@ -193,7 +205,7 @@ $ palexus project
   ●  gemini-cli            GEMINI.md stamped
   ●  zed                   .rules stamped · AGENTS.md projected
   ●  agy-cli               AGENTS.md stamped · .agents/skills/ projected
-  ──────────────────────────────────────────────────────────────────────────
+  ──────────────────────────────────────
   All tools synchronized in 14ms.
   Next  palexus doctor
 ```
@@ -271,7 +283,9 @@ When coding agents (Claude Code, Antigravity CLI, Cursor, Aider) are pointed dir
 
 ```bash
 # Start the local gateway pointing to Ollama (default port 8088)
-palexus serve --upstream http://localhost:11434 --model qwen2.5-coder:7b
+palexus serve \
+  --upstream http://localhost:11434 \
+  --model qwen2.5-coder:7b
 
 # Point your coding agent to: http://localhost:8088/v1
 ```
@@ -289,19 +303,34 @@ palexus exec -- pnpm test:e2e
 palexus exec -- npm run build
 
 # Stream stdin through the compression filter
-cargo test 2>&1 | palexus filter --level aggressive
+cargo test 2>&1 | palexus filter \
+  --level aggressive
 
 # Inspect spooled raw execution logs anytime
 palexus spool list
 palexus spool show <id> --grep "error"
 ```
 
-| Execution Type | Raw Context | Palexus Context | Token Reduction | Preserved Information |
-|---|---|---|---|---|
-| `cargo test --workspace` (237 tests) | ~8,400 tokens | **~240 tokens** | **97.1%** | All failure assertions, panic traces, summary line |
-| `vitest run` (160 tests) | ~6,800 tokens | **~210 tokens** | **96.9%** | Failed test names, code frame diffs, runtime stats |
-| `npm install / build` | ~4,500 tokens | **~140 tokens** | **96.8%** | Audit warnings, build errors, asset sizes |
-| `docker build` | ~12,000 tokens | **~420 tokens** | **96.5%** | Step statuses, layer caching flags, compilation errors |
+- `cargo test --workspace` (237 tests)
+  - Raw Context: ~8,400 tokens
+  - Palexus Context: **~240 tokens**
+  - Token Reduction: **97.1%**
+  - Preserved Information: All failure assertions, panic traces, summary line
+- `vitest run` (160 tests)
+  - Raw Context: ~6,800 tokens
+  - Palexus Context: **~210 tokens**
+  - Token Reduction: **96.9%**
+  - Preserved Information: Failed test names, code frame diffs, runtime stats
+- `npm install / build`
+  - Raw Context: ~4,500 tokens
+  - Palexus Context: **~140 tokens**
+  - Token Reduction: **96.8%**
+  - Preserved Information: Audit warnings, build errors, asset sizes
+- `docker build`
+  - Raw Context: ~12,000 tokens
+  - Palexus Context: **~420 tokens**
+  - Token Reduction: **96.5%**
+  - Preserved Information: Step statuses, layer caching flags, compilation errors
 
 ### Synaptic Memory (`palexus mem`)
 
@@ -323,7 +352,8 @@ palexus mem timeline 42 --before 3 --after 3
 palexus mem get 42 43
 
 # Record manual observation
-palexus mem observe "Migrated to 15 adapters" --file packages/core/src/adapters/mod.rs
+palexus mem observe "Migrated to 15 adapters" \
+  --file packages/core/src/adapters/mod.rs
 ```
 
 ### Vital Signs HUD (`palexus hud`)
@@ -331,31 +361,33 @@ palexus mem observe "Migrated to 15 adapters" --file packages/core/src/adapters/
 The **Vital Signs HUD** is a zero-RAM, clinical terminal dashboard for monitoring your active AI workstation in real time:
 
 ```text
-┌─ PALEXUS VITAL SIGNS HUD · RUNTIME COCKPIT ───────────────────────────── v1.0.0 ─┐
-│  Dual-Zone Architecture · 15-Tool Star-Topology · Zero-Drift Telemetry           │
-└──────────────────────────────────────────────────────────────────────────────────┘
+PALEXUS VITAL SIGNS HUD         v1.0.0
+Dual-Zone · 15-Tool Star · Zero-Drift
 
-╭── RUNTIME GATEWAY (LOCAL PROXY)
-│  Status:   ● ONLINE (Listening on 127.0.0.1:8088) [Press 'g' to halt]
-│  Upstream: http://127.0.0.1:11434
-│  Model:    qwen2.5-coder:7b (12ms latency)
-╰──────────────────────────────────────────────────────────────────────────────────
+╭─ RUNTIME GATEWAY (LOCAL PROXY)
+│ Status:   ● ONLINE 127.0.0.1:8088
+│           [g] halt
+│ Upstream: http://127.0.0.1:11434
+│ Model:    qwen2.5-coder:7b (12ms)
+╰──────────────────────────────
 
-╭── SYNAPTIC SENSORY GATING & TOKEN METRICS
-│  Requests Handled:     14
-│  Raw Prompt Tokens:    148,200
-│  Gated Prompt Tokens:  8,940
-│  Compression Ratio:    [▰▰▰▰▰▰▰▰▰▰▰▱] 93% reduction (139,260 saved)
-╰──────────────────────────────────────────────────────────────────────────────────
+╭─ SENSORY GATING & TOKEN METRICS
+│ Requests:       14
+│ Raw tokens:     148,200
+│ Gated tokens:   8,940
+│ Compression:    [▰▰▰▰▰▰▰▰▰▰▰▱]
+│                 93% (139,260 saved)
+╰──────────────────────────────
 
-╭── CANONICAL BRAIN (THE ORGAN)
-│  Path:      ~/AIBrain
-│  Adapters:  15 verified tools
-│  Doctor:    [▰▰▰▰▰▰▰▰▰▰▰▰] ✔ LOCKSTEP SYNCED (0 faults)
-╰──────────────────────────────────────────────────────────────────────────────────
+╭─ CANONICAL BRAIN (THE ORGAN)
+│ Path:     ~/AIBrain
+│ Adapters: 15 verified tools
+│ Doctor:   [▰▰▰▰▰▰▰▰▰▰▰▰]
+│           ✔ LOCKSTEP (0 faults)
+╰──────────────────────────────
 
-──────────────────────────────────────────────────────────────────────────────────
-  Shortcuts: [s] Sync  [d] Doctor  [p] Project  [g] Gateway  [:] Console  [q] Quit
+[s] Sync   [d] Doctor   [p] Project
+[g] Gateway   [:] Console   [q] Quit
 ```
 
 ```bash
@@ -372,23 +404,96 @@ palexus hud --once
 
 Every adapter is verified with boundary, stress, and roundtrip tests in our CI matrix:
 
-| Tool | Specification | Config Location | Format | Import Capabilities | Projection Dialect |
-|---|---|---|---|---|---|
-| **Claude Code / Desktop** | [Spec](docs/adapters/claude.md) | `CLAUDE.md`, `.claude/skills/`, `.mcp.json` | Markdown, JSON | Skills, Agents, MCP Servers | Stamped `CLAUDE.md` + `.claude/` |
-| **Cursor** | [Spec](docs/adapters/cursor.md) | `.cursorrules`, `.cursor/rules/*.mdc` | MDC Frontmatter | MDC Rules & Globs | `.cursor/rules/*.mdc` |
-| **Gemini CLI** | [Spec](docs/adapters/gemini.md) | `GEMINI.md`, `.gemini/settings.json` | Markdown, JSON | Rules, Settings | Stamped `GEMINI.md` |
-| **Windsurf** | [Spec](docs/adapters/windsurf.md) | `.windsurfrules`, `.codeium/windsurf/mcp.json` | Text, JSON | Rules & MCP Servers | Stamped `.windsurfrules` |
-| **Cline** | [Spec](docs/adapters/cline.md) | `.clinerules`, `cline_mcp_settings.json` | Text, JSON | Custom Rules & MCP | Stamped `.clinerules` |
-| **Roo Code** | [Spec](docs/adapters/roo-code.md) | `.roomodes`, `.clinerules` | JSON, Text | Mode Rules | Stamped `.roomodes` |
-| **Aider** | [Spec](docs/adapters/aider.md) | `CONVENTIONS.md`, `.aider.conf.yml` | Markdown, YAML | Conventions & Config | Stamped `CONVENTIONS.md` |
-| **Continue** | [Spec](docs/adapters/continue.md) | `.continue/rules/*.md`, `.continue/config.json` | MDC, JSON | MDC Rules & Config | `.continue/rules/*.md` |
-| **GitHub Copilot** | [Spec](docs/adapters/github-copilot.md) | `.github/copilot-instructions.md` | Markdown | Scoped Instructions | Stamped Instructions |
-| **Zed** | [Spec](docs/adapters/zed.md) | `.rules`, `.zed/settings.json`, `AGENTS.md` | Text, JSON, MD | Settings & Rules | `.rules` + `AGENTS.md` |
-| **OpenAI Codex CLI** | [Spec](docs/adapters/openai-codex.md) | `.codex/config.toml`, `.codex/instructions.md` | TOML, Markdown | Rules, Config | `AGENTS.md` + `.codex/` |
-| **OpenCode** | [Spec](docs/adapters/opencode.md) | `AGENTS.md` | Markdown | Multi-Agent Rules | Stamped `AGENTS.md` |
-| **Antigravity CLI (AGY)** | [Spec](docs/adapters/antigravity.md) | `AGENTS.md`, `.agents/skills/`, `.agents/` | Markdown, YAML | Skills & Settings | `AGENTS.md` + `.agents/skills/` |
-| **AWS Kiro IDE** | [Spec](docs/adapters/kiro.md) | `.kiro/steering/*.md`, `.kiro/settings/mcp.json` | Frontmatter, JSONC | Steering Rules & MCP | `.kiro/steering/` + `.kiro/settings/` |
-| **Trae IDE** | [Spec](docs/adapters/trae.md) | `.trae/rules/*.md`, `.trae/mcp.json` | MDC Frontmatter, JSONC | Scoped Rules & MCP | `.trae/rules/` + `.trae/mcp.json` |
+- **Claude Code / Desktop**
+  - Specification: [Spec](docs/adapters/claude.md)
+  - Config Location: `CLAUDE.md`, `.claude/skills/`, `.mcp.json`
+  - Format: Markdown, JSON
+  - Import Capabilities: Skills, Agents, MCP Servers
+  - Projection Dialect: Stamped `CLAUDE.md` + `.claude/`
+- **Cursor**
+  - Specification: [Spec](docs/adapters/cursor.md)
+  - Config Location: `.cursorrules`, `.cursor/rules/*.mdc`
+  - Format: MDC Frontmatter
+  - Import Capabilities: MDC Rules & Globs
+  - Projection Dialect: `.cursor/rules/*.mdc`
+- **Gemini CLI**
+  - Specification: [Spec](docs/adapters/gemini.md)
+  - Config Location: `GEMINI.md`, `.gemini/settings.json`
+  - Format: Markdown, JSON
+  - Import Capabilities: Rules, Settings
+  - Projection Dialect: Stamped `GEMINI.md`
+- **Windsurf**
+  - Specification: [Spec](docs/adapters/windsurf.md)
+  - Config Location: `.windsurfrules`, `.codeium/windsurf/mcp.json`
+  - Format: Text, JSON
+  - Import Capabilities: Rules & MCP Servers
+  - Projection Dialect: Stamped `.windsurfrules`
+- **Cline**
+  - Specification: [Spec](docs/adapters/cline.md)
+  - Config Location: `.clinerules`, `cline_mcp_settings.json`
+  - Format: Text, JSON
+  - Import Capabilities: Custom Rules & MCP
+  - Projection Dialect: Stamped `.clinerules`
+- **Roo Code**
+  - Specification: [Spec](docs/adapters/roo-code.md)
+  - Config Location: `.roomodes`, `.clinerules`
+  - Format: JSON, Text
+  - Import Capabilities: Mode Rules
+  - Projection Dialect: Stamped `.roomodes`
+- **Aider**
+  - Specification: [Spec](docs/adapters/aider.md)
+  - Config Location: `CONVENTIONS.md`, `.aider.conf.yml`
+  - Format: Markdown, YAML
+  - Import Capabilities: Conventions & Config
+  - Projection Dialect: Stamped `CONVENTIONS.md`
+- **Continue**
+  - Specification: [Spec](docs/adapters/continue.md)
+  - Config Location: `.continue/rules/*.md`, `.continue/config.json`
+  - Format: MDC, JSON
+  - Import Capabilities: MDC Rules & Config
+  - Projection Dialect: `.continue/rules/*.md`
+- **GitHub Copilot**
+  - Specification: [Spec](docs/adapters/github-copilot.md)
+  - Config Location: `.github/copilot-instructions.md`
+  - Format: Markdown
+  - Import Capabilities: Scoped Instructions
+  - Projection Dialect: Stamped Instructions
+- **Zed**
+  - Specification: [Spec](docs/adapters/zed.md)
+  - Config Location: `.rules`, `.zed/settings.json`, `AGENTS.md`
+  - Format: Text, JSON, MD
+  - Import Capabilities: Settings & Rules
+  - Projection Dialect: `.rules` + `AGENTS.md`
+- **OpenAI Codex CLI**
+  - Specification: [Spec](docs/adapters/openai-codex.md)
+  - Config Location: `.codex/config.toml`, `.codex/instructions.md`
+  - Format: TOML, Markdown
+  - Import Capabilities: Rules, Config
+  - Projection Dialect: `AGENTS.md` + `.codex/`
+- **OpenCode**
+  - Specification: [Spec](docs/adapters/opencode.md)
+  - Config Location: `AGENTS.md`
+  - Format: Markdown
+  - Import Capabilities: Multi-Agent Rules
+  - Projection Dialect: Stamped `AGENTS.md`
+- **Antigravity CLI (AGY)**
+  - Specification: [Spec](docs/adapters/antigravity.md)
+  - Config Location: `AGENTS.md`, `.agents/skills/`, `.agents/`
+  - Format: Markdown, YAML
+  - Import Capabilities: Skills & Settings
+  - Projection Dialect: `AGENTS.md` + `.agents/skills/`
+- **AWS Kiro IDE**
+  - Specification: [Spec](docs/adapters/kiro.md)
+  - Config Location: `.kiro/steering/*.md`, `.kiro/settings/mcp.json`
+  - Format: Frontmatter, JSONC
+  - Import Capabilities: Steering Rules & MCP
+  - Projection Dialect: `.kiro/steering/` + `.kiro/settings/`
+- **Trae IDE**
+  - Specification: [Spec](docs/adapters/trae.md)
+  - Config Location: `.trae/rules/*.md`, `.trae/mcp.json`
+  - Format: MDC Frontmatter, JSONC
+  - Import Capabilities: Scoped Rules & MCP
+  - Projection Dialect: `.trae/rules/` + `.trae/mcp.json`
 
 ---
 
@@ -457,18 +562,14 @@ The desktop app implements a 5-screen clinical studio backed directly by `palexu
 
 It is crowned by the **Global Clinical Alert & Action Center**, providing real-time tamper warnings, doctor findings, and one-click `[Heal Vitals (Doctor --fix)]` restoration.
 
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│  PALEXUS // 3D NEURAL CINEMA & CLINICAL STUDIO                 v1.0.0  │
-├───────────────┬────────────────────────────────────────────────────────┤
-│ Intake        │  ● SYSTEM PARITY: 100% · ADAPTERS: 15/15 ONLINE        │
-│ Examination   │  ● ZONE 1 INTEGRITY: VERIFIED (SHA-256: d84f...9c)     │
-│ Cockpit       │  ● SENSORY GATING: 42% TOKEN COMPRESSION (ACTIVE)      │
-│ Memory (3D)   │  ● 3D CINEMA: 14 CLUSTERS · 22 AXONS · 60 FPS WEBGL   │
-│ Sensory Spool │                                                        │
-│ [Heal Vitals] │  [Interactive 3D WebGL Neural Matrix Running]          │
-└───────────────┴────────────────────────────────────────────────────────┘
-```
+**PALEXUS // 3D Neural Cinema & Clinical Studio** `v1.0.0`
+
+- **Panels:** Intake · Examination · Cockpit · Memory (3D) · Sensory Spool · Heal Vitals
+- ● System parity: 100% · adapters 15/15 online
+- ● Zone 1 integrity: verified (SHA-256 `d84f…9c`)
+- ● Sensory gating: 42% token compression (active)
+- ● 3D cinema: 14 clusters · 22 axons · 60 FPS WebGL
+- Interactive 3D WebGL neural matrix running
 
 To run the Desktop GUI in development:
 ```bash
@@ -496,17 +597,22 @@ Read the full **[Security & Threat Model Audit](docs/security.md)** for details.
 
 Download verified release binaries for your operating system from the **[GitHub Releases](https://github.com/earnerbaymalay/palexus-brain/releases)** page:
 
-| Operating System | Package Format | Installation |
-|---|---|---|
-| **Linux (Ubuntu/Debian)** | `.deb` / Binary | `sudo dpkg -i palexus_1.0.0_amd64.deb` |
-| **macOS (Apple Silicon & Intel)** | `.dmg` / Binary | Open `.dmg` and drag `Palexus` to Applications |
-| **Windows** | `.msi` / `.exe` | Run `Palexus_1.0.0_x64_en-US.msi` installer |
+- **Linux (Ubuntu/Debian)**
+  - Package Format: `.deb` / Binary
+  - Installation: `sudo dpkg -i palexus_1.0.0_amd64.deb`
+- **macOS (Apple Silicon & Intel)**
+  - Package Format: `.dmg` / Binary
+  - Installation: Open `.dmg` and drag `Palexus` to Applications
+- **Windows**
+  - Package Format: `.msi` / `.exe`
+  - Installation: Run `Palexus_1.0.0_x64_en-US.msi` installer
 
 ### 2. Building From Source (Cargo)
 
 ```bash
 # Install Rust toolchain (1.75+)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 \
+  -sSf https://sh.rustup.rs | sh
 
 # Clone repository & build
 git clone https://github.com/earnerbaymalay/palexus-brain.git
@@ -523,38 +629,53 @@ cargo build --release -p palexus
 
 PALEXUS enforces a 100% test pass requirement across all CI tiers:
 
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│  TEST SUITE EXECUTION SUMMARY                                          │
-├───────────────────────────────────────────────────┬────────────────────┤
-│  Rust Workspace Unit, Security & Stress (Cargo)   │  237/237 PASSED    │
-│  Sanity Vitest Suite                              │    4/4   PASSED    │
-│  Tier 1: Happy-Path Feature Coverage Vitest Suite │   60/60  PASSED    │
-│  Tier 2: Boundary & Corner Cases Vitest Suite     │   60/60  PASSED    │
-│  Tier 3: Combinations & State Transitions Suite   │   24/24  PASSED    │
-│  Tier 4: Real-World Workloads & E2E Scenarios     │   12/12  PASSED    │
-├───────────────────────────────────────────────────┼────────────────────┤
-│  TOTAL COMBINED PASS RATE                         │  397/397 (100%)    │
-│  Clippy Warnings & Lints                          │  0 Warnings        │
-└───────────────────────────────────────────────────┴────────────────────┘
-```
+**Test suite summary**
+
+| Suite | Result |
+| :--- | :--- |
+| Rust workspace: unit, security & stress (Cargo) | 237/237 passed |
+| Sanity Vitest suite | 4/4 passed |
+| Tier 1: happy-path feature coverage | 60/60 passed |
+| Tier 2: boundary & corner cases | 60/60 passed |
+| Tier 3: combinations & state transitions | 24/24 passed |
+| Tier 4: real-world workloads & E2E | 12/12 passed |
+| **Total combined pass rate** | **397/397 (100%)** |
+| Clippy warnings & lints | 0 warnings |
 
 ---
 
 ## Documentation Index
 
-| Guide | Description | Target Audience |
-|---|---|---|
-| **[Docs Hub](docs/README.md)** | Centralized documentation navigation & command index | All users & contributors |
-| **[Quickstart Guide](docs/QUICKSTART.md)** | Step-by-step setup in under 60 seconds | First-time evaluators |
-| **[User Guide](docs/USER_GUIDE.md)** | Day-to-day workflow, daemon sync, memory, and doctor | Daily development |
-| **[Onboarding Journey](docs/ONBOARDING.md)** | 4-phase journey from fragmented configs to permanent lockstep | Getting started |
-| **[Architecture Blueprint](docs/ARCHITECTURE.md)** | 3-way merge engine, file system watcher & monorepo layout | Core engine developers |
-| **[Adapters Hub](docs/adapters/README.md)** | Complete 15-tool matrix and individual adapter specifications | Tool dialect reference |
-| **[Adapter Authoring Guide](docs/ADAPTER_AUTHORING_GUIDE.md)** | Step-by-step guide to authoring a new Rust tool adapter | Tool integrators |
-| **[Security & Threat Model](docs/security.md)** | Threat model, path traversal defense, and OS Keychain audit | Security & compliance |
-| **[Contributing Guide](docs/development/CONTRIBUTING.md)** | PR lifecycle, test requirements & coding standards | Open source contributors |
-| **[Release Packaging](docs/packaging/RELEASE_PACKAGING.md)** | Tauri v2 desktop installers (.deb, .dmg, .msi) & scripts | Release engineering |
+- **[Docs Hub](docs/README.md)**
+  - Description: Centralized documentation navigation & command index
+  - Target Audience: All users & contributors
+- **[Quickstart Guide](docs/QUICKSTART.md)**
+  - Description: Step-by-step setup in under 60 seconds
+  - Target Audience: First-time evaluators
+- **[User Guide](docs/USER_GUIDE.md)**
+  - Description: Day-to-day workflow, daemon sync, memory, and doctor
+  - Target Audience: Daily development
+- **[Onboarding Journey](docs/ONBOARDING.md)**
+  - Description: 4-phase journey from fragmented configs to permanent lockstep
+  - Target Audience: Getting started
+- **[Architecture Blueprint](docs/ARCHITECTURE.md)**
+  - Description: 3-way merge engine, file system watcher & monorepo layout
+  - Target Audience: Core engine developers
+- **[Adapters Hub](docs/adapters/README.md)**
+  - Description: Complete 15-tool matrix and individual adapter specifications
+  - Target Audience: Tool dialect reference
+- **[Adapter Authoring Guide](docs/ADAPTER_AUTHORING_GUIDE.md)**
+  - Description: Step-by-step guide to authoring a new Rust tool adapter
+  - Target Audience: Tool integrators
+- **[Security & Threat Model](docs/security.md)**
+  - Description: Threat model, path traversal defense, and OS Keychain audit
+  - Target Audience: Security & compliance
+- **[Contributing Guide](docs/development/CONTRIBUTING.md)**
+  - Description: PR lifecycle, test requirements & coding standards
+  - Target Audience: Open source contributors
+- **[Release Packaging](docs/packaging/RELEASE_PACKAGING.md)**
+  - Description: Tauri v2 desktop installers (.deb, .dmg, .msi) & scripts
+  - Target Audience: Release engineering
 
 ---
 

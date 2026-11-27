@@ -93,7 +93,8 @@ Release pipelines verify that debug symbols have been fully stripped:
 file target/release/palexus | grep "stripped"
 
 # Alternatively verify using llvm-strip or nm
-nm -a target/release/palexus 2>&1 | grep "no symbols"
+nm -a target/release/palexus 2>&1 | \
+  grep "no symbols"
 ```
 
 ---

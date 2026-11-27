@@ -9,23 +9,96 @@ Palexus includes 15 verified tool adapters, each purpose-built for bi-directiona
 
 ## 📊 Supported Ecosystem Matrix
 
-| Tool | Specification | Config Location | Format | Import Capabilities | Projection Target |
-|---|---|---|---|---|---|
-| **Claude Code / Desktop** | [Spec](claude.md) | `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.mcp.json` | Markdown, JSON | Skills, Agents, MCP Servers | `.claude/` structure |
-| **Gemini CLI** | [Spec](gemini.md) | `GEMINI.md`, `.gemini/settings.json` | Markdown, JSON | Rules, Settings | Stamped `GEMINI.md` |
-| **OpenAI Codex CLI** | [Spec](openai-codex.md) | `.codex/config.toml`, `.codex/instructions.md` | TOML, Markdown | Rules, Config | `AGENTS.md` + `.codex/` |
-| **Cursor** | [Spec](cursor.md) | `.cursorrules`, `.cursor/rules/*.mdc` | MDC Frontmatter | MDC Rules & Globs | `.cursor/rules/*.mdc` |
-| **Windsurf** | [Spec](windsurf.md) | `.windsurfrules`, `mcp_config.json` | Text, JSON | Rules & MCP Servers | `.windsurfrules` |
-| **Cline** | [Spec](cline.md) | `.clinerules`, `cline_mcp_settings.json` | Text, JSON | Custom Rules & MCP | `.clinerules` |
-| **Roo Code** | [Spec](roo-code.md) | `.roomodes`, `.clinerules` | JSON, Text | Mode Rules | `.roomodes` |
-| **Aider** | [Spec](aider.md) | `CONVENTIONS.md`, `.aider.conf.yml` | Markdown, YAML | Conventions & Config | `CONVENTIONS.md` |
-| **Continue** | [Spec](continue.md) | `.continue/rules/*.md`, `.continue/config.json` | MDC, JSON | MDC Rules & Config | `.continue/rules/` |
-| **GitHub Copilot** | [Spec](github-copilot.md) | `.github/copilot-instructions.md` | Markdown | Scoped Instructions | `.github/copilot-instructions.md` |
-| **Zed** | [Spec](zed.md) | `.rules`, `.zed/settings.json`, `AGENTS.md` | Text, JSON, Markdown | Settings & Rules | `.rules` + `AGENTS.md` |
-| **OpenCode** | [Spec](opencode.md) | `AGENTS.md` | Markdown | Multi-Agent Rules | `AGENTS.md` |
-| **Antigravity CLI** | [Spec](antigravity.md) | `AGENTS.md`, `.agy/skills/`, `.gemini/settings.json` | Markdown, YAML | Skills & Settings | `AGENTS.md` + `.agy/skills/` |
-| **AWS Kiro IDE** | [Spec](kiro.md) | `.kiro/steering/*.md`, `.kiro/settings/mcp.json` | Frontmatter, JSONC | Steering Rules & MCP | `.kiro/steering/` + `.kiro/settings/` |
-| **Trae IDE** | [Spec](trae.md) | `.trae/rules/*.md`, `.trae/mcp.json` | MDC Frontmatter, JSONC | Scoped Rules & MCP | `.trae/rules/` + `.trae/mcp.json` |
+- **Claude Code / Desktop**
+  - Specification: [Spec](claude.md)
+  - Config Location: `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `.mcp.json`
+  - Format: Markdown, JSON
+  - Import Capabilities: Skills, Agents, MCP Servers
+  - Projection Target: `.claude/` structure
+- **Gemini CLI**
+  - Specification: [Spec](gemini.md)
+  - Config Location: `GEMINI.md`, `.gemini/settings.json`
+  - Format: Markdown, JSON
+  - Import Capabilities: Rules, Settings
+  - Projection Target: Stamped `GEMINI.md`
+- **OpenAI Codex CLI**
+  - Specification: [Spec](openai-codex.md)
+  - Config Location: `.codex/config.toml`, `.codex/instructions.md`
+  - Format: TOML, Markdown
+  - Import Capabilities: Rules, Config
+  - Projection Target: `AGENTS.md` + `.codex/`
+- **Cursor**
+  - Specification: [Spec](cursor.md)
+  - Config Location: `.cursorrules`, `.cursor/rules/*.mdc`
+  - Format: MDC Frontmatter
+  - Import Capabilities: MDC Rules & Globs
+  - Projection Target: `.cursor/rules/*.mdc`
+- **Windsurf**
+  - Specification: [Spec](windsurf.md)
+  - Config Location: `.windsurfrules`, `mcp_config.json`
+  - Format: Text, JSON
+  - Import Capabilities: Rules & MCP Servers
+  - Projection Target: `.windsurfrules`
+- **Cline**
+  - Specification: [Spec](cline.md)
+  - Config Location: `.clinerules`, `cline_mcp_settings.json`
+  - Format: Text, JSON
+  - Import Capabilities: Custom Rules & MCP
+  - Projection Target: `.clinerules`
+- **Roo Code**
+  - Specification: [Spec](roo-code.md)
+  - Config Location: `.roomodes`, `.clinerules`
+  - Format: JSON, Text
+  - Import Capabilities: Mode Rules
+  - Projection Target: `.roomodes`
+- **Aider**
+  - Specification: [Spec](aider.md)
+  - Config Location: `CONVENTIONS.md`, `.aider.conf.yml`
+  - Format: Markdown, YAML
+  - Import Capabilities: Conventions & Config
+  - Projection Target: `CONVENTIONS.md`
+- **Continue**
+  - Specification: [Spec](continue.md)
+  - Config Location: `.continue/rules/*.md`, `.continue/config.json`
+  - Format: MDC, JSON
+  - Import Capabilities: MDC Rules & Config
+  - Projection Target: `.continue/rules/`
+- **GitHub Copilot**
+  - Specification: [Spec](github-copilot.md)
+  - Config Location: `.github/copilot-instructions.md`
+  - Format: Markdown
+  - Import Capabilities: Scoped Instructions
+  - Projection Target: `.github/copilot-instructions.md`
+- **Zed**
+  - Specification: [Spec](zed.md)
+  - Config Location: `.rules`, `.zed/settings.json`, `AGENTS.md`
+  - Format: Text, JSON, Markdown
+  - Import Capabilities: Settings & Rules
+  - Projection Target: `.rules` + `AGENTS.md`
+- **OpenCode**
+  - Specification: [Spec](opencode.md)
+  - Config Location: `AGENTS.md`
+  - Format: Markdown
+  - Import Capabilities: Multi-Agent Rules
+  - Projection Target: `AGENTS.md`
+- **Antigravity CLI**
+  - Specification: [Spec](antigravity.md)
+  - Config Location: `AGENTS.md`, `.agy/skills/`, `.gemini/settings.json`
+  - Format: Markdown, YAML
+  - Import Capabilities: Skills & Settings
+  - Projection Target: `AGENTS.md` + `.agy/skills/`
+- **AWS Kiro IDE**
+  - Specification: [Spec](kiro.md)
+  - Config Location: `.kiro/steering/*.md`, `.kiro/settings/mcp.json`
+  - Format: Frontmatter, JSONC
+  - Import Capabilities: Steering Rules & MCP
+  - Projection Target: `.kiro/steering/` + `.kiro/settings/`
+- **Trae IDE**
+  - Specification: [Spec](trae.md)
+  - Config Location: `.trae/rules/*.md`, `.trae/mcp.json`
+  - Format: MDC Frontmatter, JSONC
+  - Import Capabilities: Scoped Rules & MCP
+  - Projection Target: `.trae/rules/` + `.trae/mcp.json`
 
 ---
 

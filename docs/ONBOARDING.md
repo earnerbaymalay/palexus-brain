@@ -29,15 +29,24 @@ That's the problem PALEXUS exists to remove.
 
 ```text
 ~/AIBrain/
-├── skills/<slug>/          # SKILL.md + skill.yaml
-├── agents/<slug>.md        # Canonical agent definitions
-├── rules/                  # global.md + scoped/<glob>.md
-├── memory/                 # MEMORY.md + topic files
-├── prompts/                # Reusable command templates
-├── mcp/servers/<id>.yaml   # Transports & env placeholders
-├── .brain/                 # Active state & mappings.json
-└── .git/                   # Full Git history (Time Machine)
+├── skills/<slug>/
+├── agents/<slug>.md
+├── rules/
+├── memory/
+├── prompts/
+├── mcp/servers/<id>.yaml
+├── .brain/
+└── .git/
 ```
+
+- `skills/<slug>/` — SKILL.md + skill.yaml
+- `agents/<slug>.md` — Canonical agent definitions
+- `rules/` — global.md + scoped/<glob>.md
+- `memory/` — MEMORY.md + topic files
+- `prompts/` — Reusable command templates
+- `mcp/servers/<id>.yaml` — Transports & env placeholders
+- `.brain/` — Active state & mappings.json
+- `.git/` — Full Git history (Time Machine)
 
 ---
 
@@ -67,14 +76,24 @@ From here, `palexus project` pushes the Brain's contents back out to every tool 
 
 Once your Brain is initialized, unlock long-term features:
 
-| Feature | Command | Benefits |
-|---|---|---|
-| **Time Machine** | `palexus snapshot "msg"` | Every sync is a Git commit. Revert anytime with `palexus rollback <hash>`. |
-| **Auto-Sync Daemon** | `palexus sync --daemon` | Watches the Brain and all tools; resolves drift with a 3-way merge in real time. |
-| **Doctor Auto-Repair** | `palexus doctor --fix` | Diagnoses broken symlinks and config drift, repairing them automatically. |
-| **Runtime Gateway** | `palexus serve` | Local reverse proxy normalizing tool-calls and executing 95% sensory gating compression. |
-| **Context Retrieval** | `palexus mem <query>` | 3-layer semantic retrieval (Layer 1 search, Layer 2 timeline, Layer 3 topic get). |
-| **Vital Signs HUD** | `palexus hud` | Zero-RAM live terminal cockpit displaying token burn, latency, and Brain lockstep. |
+- **Time Machine**
+  - Command: `palexus snapshot "msg"`
+  - Benefits: Every sync is a Git commit. Revert anytime with `palexus rollback <hash>`.
+- **Auto-Sync Daemon**
+  - Command: `palexus sync --daemon`
+  - Benefits: Watches the Brain and all tools; resolves drift with a 3-way merge in real time.
+- **Doctor Auto-Repair**
+  - Command: `palexus doctor --fix`
+  - Benefits: Diagnoses broken symlinks and config drift, repairing them automatically.
+- **Runtime Gateway**
+  - Command: `palexus serve`
+  - Benefits: Local reverse proxy normalizing tool-calls and executing 95% sensory gating compression.
+- **Context Retrieval**
+  - Command: `palexus mem <query>`
+  - Benefits: 3-layer semantic retrieval (Layer 1 search, Layer 2 timeline, Layer 3 topic get).
+- **Vital Signs HUD**
+  - Command: `palexus hud`
+  - Benefits: Zero-RAM live terminal cockpit displaying token burn, latency, and Brain lockstep.
 
 ---
 
